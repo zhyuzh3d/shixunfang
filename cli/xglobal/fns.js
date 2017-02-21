@@ -1,6 +1,19 @@
 /*全局函数文件，将被xglobal插件载入到每个component的this.$xglobal.fns备用
  */
 import $ from 'jquery';
+import Vue from 'vue';
+import {
+    Dialog,
+    Notification,
+    MessageBox,
+}
+from 'element-ui'
+Vue.use(Dialog);
+const notify = Notification
+Vue.prototype.$notify = notify;
+const confirm = MessageBox.confirm;
+Vue.prototype.$confirm = confirm;
+
 
 let fns = {
     getCookie,

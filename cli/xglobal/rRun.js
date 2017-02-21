@@ -2,7 +2,7 @@
  * 全局的post/get远程ajax方法，提供一个rRun方法，返回Promise
  * 需要jquery支持
  */
-
+import $ from 'jquery';
 var rRun = remoteRun;
 export default rRun;
 
@@ -83,7 +83,6 @@ async function remoteRun(api, data, opt) {
         };
 
         //启动请求
-        if (!$) $ = await System.import('jquery');
         $.ajax(ajaxObj);
     });
 

@@ -1,0 +1,80 @@
+<script src="./Account.js"></script>
+
+<template>
+    <div sid='Account' :xid='xid' class="Account">
+        <el-row class='panel'>
+            <el-col :span='2' class='glass'></el-col>
+            <el-col v-xmedia='sm-md-lg' :sm='8' :md='10' :lg='12' class='post'>
+                <img src="http://app.10knet.com/S1YmtOKtl/desktop512tiny.png" class='img'>
+            </el-col>
+            <el-col :span='20' :sm='12' :md='10' :lg='8' class='card'>
+                <el-tabs :active-name="actTab">
+                    <el-tab-pane label="登录" name="login">
+                        <component is="Login"></component>
+                    </el-tab-pane>
+                    <el-tab-pane label="注册" name="reg">
+                        <component is="Register"></component>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .Account {
+        width: 100%;
+        height: 100%;
+    }
+
+    .panel {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #4DB6AC;
+        height: 400px;
+    }
+
+    .card {
+        height: 100%;
+        padding: 16px 24px;
+        background: #FFF;
+    }
+
+    .post {
+        height: 100%;
+        border-right: 4px solid #009688;
+        text-align: right;
+        padding-top: 40px;
+        padding-right: 64px;
+        overflow: hidden;
+    }
+
+    .img {
+        width: 320px;
+        height: 320px;
+        opacity: 0.6;
+    }
+
+    .glass {
+        opacity: 0;
+    }
+
+    .glass:after {
+        content: 'im a glass,you cant see me';
+    }
+
+</style>
+<style>
+    .Account .el-tabs__item {
+        width: 50%;
+        text-align: center;
+        font-weight: 300;
+        font-size: 16px;
+    }
+
+    .Account .el-tabs {
+        width: 100%;
+    }
+
+</style>

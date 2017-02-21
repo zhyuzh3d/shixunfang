@@ -15,6 +15,9 @@ xsetConf.homeView = {
     before: async function beforeXsetHomeView(name, oldName, ctx) {
         var com;
         switch (name) {
+            case 'Account':
+                var com = await System.import('../../user/Account/Account.html');
+                break;
             case 'PracticeDetail':
                 var com = await System.import('../../practice/PracticeDetail/PracticeDetail.html');
                 break;
@@ -68,15 +71,26 @@ com.methods = {};
 //加载到页面前执行的函数
 com.mounted = async function () {
     var ctx = this;
-    var xhash = await ctx.$xsetByHash();
 
-    //如果地址栏没有跳转，那么自动加载用户首页，首页根据用户身份区别处理
-    var xConfHash = ctx.$xgetConf();
-    if (!xConfHash.xhash || !xConfHash.xhashValue['homeView']) {
-        await ctx.$xgo({
-            homeView: 'UserHome',
+    await ctx.$xglobal.fns.autoLogin(ctx);
+    if (!ctx.$xglobal.accInfo) {
+        //如果用户没有登录，那么强制跳转到account账号管理页面
+        await ctx.$xset({
+            homeView: 'Account',
         });
+    } else {
+        //如果地址栏没有跳转也没自动恢复，那么自动加载用户首页，首页根据用户身份区别处理
+        var xhash = await ctx.$xsetByHash();
+        var xConfHash = ctx.$xgetConf();
+        if (!xConfHash.xhash || !xConfHash.xhashValue['homeView']) {
+            await ctx.$xgo({
+                homeView: 'UserHome',
+            });
+        };
     };
+
+
+
 };
 
 

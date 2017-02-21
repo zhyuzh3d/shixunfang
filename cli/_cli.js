@@ -9,6 +9,9 @@ import ElementUI from 'element-ui';
 Vue.use(ElementUI);
 */
 
+//响应式窗口宽度查询
+import xmedia from './plugins/xmedia.js';
+Vue.use(xmedia)
 
 //xglobal全局插件及载入设置
 import conf from './xglobal/conf.js';

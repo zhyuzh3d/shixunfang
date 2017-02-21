@@ -1,0 +1,86 @@
+<script src="./Register.js"></script>
+
+<template>
+    <div sid='Register' :xid='xid' class="Register">
+        <el-row>
+            <el-col :span="24">
+                <p>手机号码</p>
+                <el-input placeholder="使用手机号码作为账号名" v-model="ipt.mobile" ref='regMobile' @change='validate("regMobile")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+
+        <el-row>
+            <el-col :span="6" style='line-height:36px'>
+                <p>验证码</p>
+            </el-col>
+            <el-col :span="10">
+                <el-input placeholder="手机短信中的数字" v-model="ipt.code" ref='regCode' @change='validate("regCode")'></el-input>
+            </el-col>
+            <el-col :span="8" style='padding-left:8px'>
+                <el-button type='primary' class='codeBtn' :disabled='!validates.regMobile.pass || ipt.codeBtnDis' @click='sendRegCode'>{{ipt.codeBtnDis?"请稍后":"发送验证码"}}</el-button>
+            </el-col>
+        </el-row>
+
+        <div style="height:16px"></div>
+        <el-row>
+            <el-col :span="24">
+                <p>账号密码</p>
+                <el-input placeholder="任意6～18位字符" v-model="ipt.pw" ref='regPw' type='password' @change='validate("regPw")'></el-input>
+            </el-col>
+        </el-row>
+
+        <div style="height:18px"></div>
+        <el-row>
+            <el-col :span="24">
+                <el-button type='primary' class=btn :disabled='!validates.regMobile.pass || !validates.regPw.pass || !validates.regCode.pass' @click='regByMobile'>注册新用户</el-button>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .validateFail {
+        background-color: #ffd9d9;
+        border: 1px solid red;
+    }
+
+    .label {
+        text-align: right;
+        padding-right: 12px;
+        line-height: 10px;
+        font-size: 14px;
+        font-weight: 300px;
+    }
+
+    .btn {
+        width: 100%;
+        height: 48px;
+        font-size: 16px
+    }
+
+    input {
+        height: 32px;
+        border-radius: 0;
+    }
+
+    p {
+        margin: 8px 0;
+        white-space: nowrap;
+    }
+
+    .codeBtn {
+        width: 100%;
+        height: 48px
+    }
+
+</style>
+<style>
+    .Register .el-input__inner {
+        height: 48px;
+        border-radius: 0;
+    }
+
+</style>

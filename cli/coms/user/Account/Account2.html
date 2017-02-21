@@ -1,0 +1,176 @@
+<script src="./Account.js"></script>
+
+<template>
+    <div sid='Account' :xid='xid||"Account"'>
+        <el-dialog title="账号管理" v-model="conf.show">
+            <div><small style="color:#A00">测试中,正式版即将发布,敬请期待</small></div>
+            <div style='width:100%;text-align:center'>
+                <el-tabs :active-name="actTab" @tab-click="tabClick" style='width:100%;max-width:500px;text-align:center'>
+                    <el-tab-pane label="注册" name="reg" v-if='!$xglobal.accInfo'>
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>手机号码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input placeholder="使用手机号码作为账号名" v-model="reg.mobile" ref='regMobile' @change='validate("regMobile")'>
+                                </el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>验证码</p>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-input placeholder="手机短信中的数字" v-model="reg.code" ref='regCode' @change='validate("regCode")'></el-input>
+                            </el-col>
+                            <el-col :span="8" style='padding-left:8px'>
+                                <el-button type='primary' style='width:100%;' :disabled='!validates.regMobile.pass || reg.codeBtnDis' @click='sendRegCode'>{{reg.codeBtnDis?"请稍后":"发送验证码"}}</el-button>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>账号密码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input placeholder="任意6～18位字符" v-model="reg.pw" ref='regPw' type='password' @change='validate("regPw")'></el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="24" style='margin-top:12px'>
+                                <el-button type='primary' style='width:100%' :disabled='!validates.regMobile.pass || !validates.regPw.pass || !validates.regCode.pass' @click='regByMobile'>注册新用户</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="登录" name="login" v-if='!$xglobal.accInfo'>
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>手机号码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input placeholder="使用手机号码作为账号名" v-model="login.mobile" ref='loginMobile' @change='validate("loginMobile")'>
+                                </el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>账号密码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input type='password' placeholder="任意6～18位字符" v-model="login.pw" ref='loginPw' @change='validate("loginPw")'></el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="24" style='margin-top:12px'>
+                                <el-button type='primary' style='width:100%' @click='mobileLogin' :disabled='!validates.loginMobile.pass || !validates.loginPw.pass'>登录</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="忘记密码" name="rst">
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>手机号码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input placeholder="使用手机号码作为账号" v-model="rst.mobile" ref='rstMobile' @change='validate("rstMobile")'>
+                                </el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>验证码</p>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-input placeholder="手机短信中的数字" v-model="rst.code" ref='rstCode' @change='validate("rstCode")'></el-input>
+                            </el-col>
+                            <el-col :span="8" style='padding-left:8px'>
+                                <el-button type='primary' style='width:100%;' :disabled='!validates.rstMobile.pass || rst.codeBtnDis' @click='sendRstCode'>{{rst.codeBtnDis?"请稍后":"发送验证码"}}</el-button>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>新密码</p>
+                            </el-col>
+                            <el-col :span="18">
+                                <el-input placeholder="任意6～18位字符" v-model="rst.pw" ref='rstPw' type='password' @change='validate("rstPw")'></el-input>
+                            </el-col>
+                        </el-row>
+
+                        <el-row>
+                            <el-col :span="24" style='margin-top:12px'>
+                                <el-button type='primary' style='width:100%' :disabled='!validates.rstMobile.pass || !validates.rstPw.pass || !validates.rstCode.pass' @click='changePw'>重置密码</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="首页" name="set" v-if='$xglobal.accInfo'>
+                        <el-row>
+                            <el-col :span="6" class='label'>
+                                <p>我的10k主页:</p>
+                            </el-col>
+                            <el-col :span="3" class='net' style='
+        padding-right: 2px;text-align:right'>
+                                <p>http://</p>
+                            </el-col>
+                            <el-col :span="9">
+                                <el-input placeholder="4～18位字母数字" v-model="set.name" ref='setName' @change='validate("setName")'>
+                                </el-input>
+                            </el-col>
+                            <el-col :span="6" class='net' style='
+        padding-left: 2px;'>
+                                <p>.10knet.com</p>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24" style='margin-top:12px'>
+                                <el-button type='primary' style='width:100%' @click='saveProfile' :disabled='!validates.setName.pass'>保存</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="注销" name="logout" v-if='$xglobal.accInfo'>
+                        <el-button type='text' size='small' @click='showLogOutBtn=!showLogOutBtn'>想要注销退出？点击显示注销按钮</el-button>
+                        <div style="color:#A00;font-weight:bold;margin:12px 0">警告:注销将清空编辑器，删除全部设置数据，请慎用</div>
+                        <el-row v-if='showLogOutBtn'>
+                            <el-col :span="24" style='margin-top:12px'>
+                                <el-button type='primary' style='width:100%' @click='accLogout'>注销退出</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </el-dialog>
+    </div>
+</template>
+
+<style scoped>
+    .validateFail {
+        background-color: #ffd9d9;
+        border: 1px solid red;
+    }
+
+    .label {
+        text-align: right;
+        padding-right: 12px;
+        line-height: 10px;
+    }
+
+    .el-tab-pane .el-row {
+        margin: 12px;
+    }
+
+    .net {
+        text-align: left;
+        line-height: 10px;
+        font-weight: bold;
+    }
+
+</style>
