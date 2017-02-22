@@ -16,12 +16,18 @@
                 <el-input type='password' placeholder="任意6～18位字符" v-model="ipt.pw" ref='loginPw' @change='validate("loginPw")'></el-input>
             </el-col>
         </el-row>
-        <div style="height:24px"></div>
+        <el-row>
+            <el-button type='text' @click='resetPwDialogVis=true'>忘记密码了？</el-button>
+        </el-row>
         <el-row>
             <el-col :span="24" style='margin-top:12px'>
                 <el-button type='primary' class='btn' @click='mobileLogin' :disabled='!validates.loginMobile.pass || !validates.loginPw.pass'>登录</el-button>
             </el-col>
         </el-row>
+
+        <el-dialog title="重置密码" v-model="resetPwDialogVis" size="small">
+            <component is="ResetPw" :conf='resetPwConf'></component>
+        </el-dialog>
     </div>
 </template>
 
@@ -43,6 +49,10 @@
         width: 100%;
         height: 48px;
         font-size: 16px
+    }
+
+    p {
+        margin: 8px 0;
     }
 
     input {

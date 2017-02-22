@@ -106,7 +106,7 @@ schemas.user = new $mongoose.Schema({
     mobile: String,
     avatar: {
         type: String,
-        default: 'http://app.10knet.com/ryNCjtgOg/10knetSqr64.png', //必须app.10knet.com以便于裁剪
+        default: 'http://app.10knet.com/HJ4LSF5Ye/defaultIcon128.png', //必须app.10knet.com以便于裁剪
     },
     sex: {
         type: String,

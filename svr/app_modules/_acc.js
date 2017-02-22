@@ -118,33 +118,31 @@ _zrouter.addApi('/accRegByMobile', {
 _zrouter.addApi('/accSaveProfile', {
     validator: {
         token: _conf.regx.token,
-        name: _conf.regx.name,
+        name: function (ipt, ctx) {
+            return _conf.regx.name.test(ipt) || ipt === undefined;
+        },
+        avatar: function (ipt, ctx) {
+            return _conf.regx.avatar.test(ipt) || ipt === undefined;
+        },
     },
     method: async function accSaveProfile(ctx) {
         var name = ctx.xdata.name;
         var token = ctx.xdata.token;
 
-        //先检查name有没有被其他用户使用且不是被自己使用
-        var hasUsed = await _mngs.models.user.findOne(noDel({
-            name: name,
-        }), '_id _token');
-
-        if (hasUsed && hasUsed.toObject()._token != token) throw Error().zbind(_msg.Errs.AccNameHasUsed, `:${name}`);
+        var data = {};
+        if (ctx.xdata.avatar) data.avatar = ctx.xdata.avatar;
+        if (ctx.xdata.name) data.name = ctx.xdata.name; //name不具有唯一性
 
         //mng使用token提取user直接进行操作
         var res = await _mngs.models.user.update(noDel({
             _token: token,
-        }), {
-            name: name,
-        });
+        }), data);
         if (res.n == 0) throw Error().zbind(_msg.Errs.AccNotExist);
 
-        //保存成功后为每个用户创建一个同名的page，作为用户的首页
+        //返回新的用户信息结果
         var acc = await _mngs.models.user.findOne(noDel({
             _token: token,
         }));
-
-        var newPage = await _page.upsertNew(acc.id, name);
         acc = _mngs.fns.clearDoc(acc);
 
         ctx.body = new _msg.Msg(null, ctx, acc);

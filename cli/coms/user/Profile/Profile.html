@@ -1,0 +1,113 @@
+<script src="./Profile.js"></script>
+
+<template>
+    <div sid='Profile' :xid='xid' class="Profile">
+        <div style="height:18px"></div>
+        <el-row>
+            <el-popover ref="avatarPop" placement="right" trigger="hover" content="点击图片更换头像">
+            </el-popover>
+            <img :src="accInfo.avatar" class="avatar" @click='changeAvatar' v-popover:avatarPop>
+            <div class="uname">{{accInfo.name || "未命名"}}</div>
+        </el-row>
+        <div style="height:12px"></div>
+        <el-row style='text-align:right'>
+            <el-button type='text' class='editBtn' @click='setEditMod'><i class="fa fa-pencil fa-lg"></i></el-button>
+        </el-row>
+        <hr>
+        <div style="height:12px"></div>
+        <el-row>
+            <el-col :span='6' :sm='4' :md='3' :lg='2' class="label">真实姓名</el-col>
+            <el-col :span='18' :sm='20' :md='21' :lg='22' class="text">
+                <div v-show='!editMod'>{{accInfo.name || "未命名"}}</div>
+                <el-input v-show='editMod' type='text' :placeholder='accInfo.name || "未命名"' v-model="ipt.name" ref='iptName' @change='validate("iptName")'></el-input>
+            </el-col>
+        </el-row>
+        <div style="height:24px"></div>
+        <el-row v-show='editMod'>
+            <el-button type='primary' class='btn' @click='updateProfile' :disabled='!validates.iptName.pass'>保存</el-button>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .editBtn {
+        margin-right: 8px;
+    }
+
+    .label {
+        font-weight: 300px;
+        font-size: 14px;
+        display: inline-block;
+        vertical-align: top;
+        text-align: left;
+        margin-top: 12px;
+        color: #AAA;
+    }
+
+    .text {
+        word-break: break-all;
+        word-wrap: break-word;
+        font-size: 14px;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 12px;
+    }
+
+    .avatar {
+        width: 128px;
+        height: 128px;
+        border-radius: 128px;
+        border: 1px solid #AAA;
+        cursor: pointer;
+    }
+
+    .uname {
+        font-size: 18px;
+        text-align: center;
+        width: 128px;
+        font-weight: bold;
+        margin-top: 8px;
+        word-wrap: break-word;
+    }
+
+    .validateFail {
+        background-color: #ffd9d9;
+        border: 1px solid red;
+    }
+
+    .btn {
+        width: 240px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    p {
+        margin: 8px 0;
+    }
+
+    input {
+        height: 32px;
+        border-radius: 0;
+        display: inline-block;
+    }
+
+    hr {
+        border: 0;
+        height: 1px;
+        background-color: #AAA;
+    }
+
+</style>
+<style>
+    .Profile .el-input__inner {
+        height: 40px;
+        border-radius: 0;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .Profile .el-input input {
+        margin-top: -12px;
+    }
+
+</style>

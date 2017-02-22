@@ -1,5 +1,5 @@
 /**
- * 账号管理登录注册弹窗
+ * Page:账号登录与注册
  */
 
 import Vue from 'vue';
@@ -50,9 +50,27 @@ com.props = {
 
 //所有数据写在这里
 com.data = function data() {
+    var ctx = this;
     return {
         msg: 'Hello from user/Account/Account.js',
         actTab: 'login',
+        registerConf: {
+            success: async function (info) {
+                await ctx.$xset({
+                    homeView: 'UserHome',
+                }, 'App_mainView-Tt');
+            },
+        },
+        loginConf: {
+            success: async function (info) {
+                await ctx.$xset({
+                    homeView: 'UserHome',
+                }, 'App_mainView-Tt');
+                await ctx.$xset({
+                    activeName: 'Profile',
+                }, 'ttHomeView-UserHome');
+            },
+        },
     };
 };
 
@@ -69,9 +87,6 @@ com.methods = {
 };
 
 //加载到页面后执行的函数
-com.mounted = function () {
-    var ctx = this;
-    //    console.log('xxxxxx', ctx.$data);
-};
+com.mounted = function () {};
 
 //--------------------------functions---------------------------

@@ -43,7 +43,6 @@ xsetConf.homeView = {
 };
 
 
-
 //所有数据写在这里
 com.data = function data() {
     return {
@@ -61,7 +60,7 @@ com.data = function data() {
 com.props = {
     xid: {
         type: String,
-        default: 'Ee',
+        default: 'Tt',
     },
 };
 
@@ -88,9 +87,6 @@ com.mounted = async function () {
             });
         };
     };
-
-
-
 };
 
 

@@ -1,0 +1,99 @@
+<script src="./ResetPw.js"></script>
+
+<template>
+    <div sid='ResetPw' :xid='xid' class="ResetPw">
+        <el-row>
+            <el-col :span="6" class='label'>
+                <p>手机号码</p>
+            </el-col>
+            <el-col :span="18">
+                <el-input placeholder="使用手机号码作为账号" v-model="ipt.mobile" ref='rstMobile' @change='validate("rstMobile")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="6" class='label'>
+                <p>验证码</p>
+            </el-col>
+            <el-col :span="10">
+                <el-input placeholder="手机短信中的数字" v-model="ipt.code" ref='rstCode' @change='validate("rstCode")'></el-input>
+            </el-col>
+            <el-col :span="8" style='padding-left:8px'>
+                <el-button type='primary' style='width:100%;height:40px' :disabled='!validates.rstMobile.pass || ipt.codeBtnDis' @click='sendRstCode'>{{ipt.codeBtnDis?"请稍后":"发送验证码"}}</el-button>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="6" class='label'>
+                <p>新密码</p>
+            </el-col>
+            <el-col :span="18">
+                <el-input placeholder="任意6～18位字符" v-model="ipt.pw" ref='rstPw' type='password' @change='validate("rstPw")'></el-input>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="24" style='margin-top:12px'>
+                <el-button type='primary' class='btn' :disabled='!validates.rstMobile.pass || !validates.rstPw.pass || !validates.rstCode.pass' @click='changePw'>重置密码</el-button>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .ResetPw {
+        min-width: 320px;
+    }
+
+    .ResetPw .el-row{
+        margin-top: 12px;
+    }
+
+    .validateFail {
+        background-color: #ffd9d9;
+        border: 1px solid red;
+    }
+
+    .label {
+        text-align: right;
+        padding-right: 12px;
+        line-height: 10px;
+        font-size: 14px;
+        font-weight: 300px;
+    }
+
+    .btn {
+        width: 100%;
+        height: 48px;
+        font-size: 16px
+    }
+
+    input {
+        height: 32px;
+        border-radius: 0;
+    }
+
+    p {
+        margin: 8px 0;
+        white-space: nowrap;
+        line-height: 24px;
+    }
+
+    .codeBtn {
+        width: 100%;
+        height: 48px
+    }
+
+</style>
+<style>
+    .ResetPw .el-input__inner {
+        height: 40px;
+        border-radius: 0;
+    }
+
+    .el-dialog--small {
+        min-width: 400px;
+    }
+
+</style>

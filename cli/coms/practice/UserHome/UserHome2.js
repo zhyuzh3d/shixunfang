@@ -37,35 +37,11 @@ com.components = {
     ClassCard,
 };
 
-var xsetConf = {};
-xsetConf.activeName = {
-    before: async function beforeXsetHomeView(name, oldName, ctx) {
-        var com;
-        var cname;
-        switch (name) {
-            case 'profile':
-                var com = await System.import('../../user/Profile/Profile.html');
-                cname = 'Profile';
-                break;
-            default:
-                var com = await System.import('../../user/Profile/Profile.html');
-                cname = 'Profile';
-                break;
-        };
-        Vue.component(cname, com);
-        ctx.$set(ctx.$data.coms, cname, cname);
-    },
-};
-
-
-
 //所有数据写在这里
 com.data = function data() {
     return {
-        msg: 'Hello from practice/UserHome/UserHome.js',
-        _xsetConf: xsetConf,
-        coms: {},
-        activeName: '',
+        msg: 'Hello from practice/TeacherHome/TeacherHome.js',
+        activeName: 'practice',
         practiceArr: Fake.practiceArr,
         classArr: Fake.classArr,
         accInfo: Fake.accInfo,
@@ -91,18 +67,6 @@ com.methods = {
 //加载到页面前执行的函数
 com.beforeMount = function () {};
 
-com.mounted = async function () {
-    var ctx = this;
-
-    //如果地址栏没有跳转也没自动恢复，那么自动加载用户首页，首页根据用户身份区别处理
-    var xconf = ctx.$xgetConf();
-    if (!xconf.xset || !xconf.xsetValue['activeName']) {
-        await ctx.$xset({
-            activeName: 'PracticeList',
-        });
-    };
-};
+com.mounted = async function () {};
 
 //-------functions--------
-
-

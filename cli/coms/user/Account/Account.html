@@ -10,10 +10,10 @@
             <el-col :span='20' :sm='12' :md='10' :lg='8' class='card'>
                 <el-tabs :active-name="actTab">
                     <el-tab-pane label="登录" name="login">
-                        <component is="Login"></component>
+                        <component is="Login" :conf='loginConf'></component>
                     </el-tab-pane>
                     <el-tab-pane label="注册" name="reg">
-                        <component is="Register"></component>
+                        <component is="Register" :conf='registerConf'></component>
                     </el-tab-pane>
                 </el-tabs>
             </el-col>
@@ -29,31 +29,32 @@
 
     .panel {
         position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-        background: #4DB6AC;
+        top: 15%;
+        /*transform: translateY(-50%);*/
+        background: #FFF;
         height: 400px;
     }
 
     .card {
         height: 100%;
-        padding: 16px 24px;
+        padding: 16px 32px;
         background: #FFF;
     }
 
     .post {
         height: 100%;
-        border-right: 4px solid #009688;
+        border-right: 4px solid #CCC;
         text-align: right;
         padding-top: 40px;
-        padding-right: 64px;
+        padding-right: 96px;
         overflow: hidden;
+        background: #FAFAFA;
     }
 
     .img {
         width: 320px;
         height: 320px;
-        opacity: 0.6;
+        opacity: 0.33;
     }
 
     .glass {

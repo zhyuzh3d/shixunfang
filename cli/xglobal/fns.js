@@ -13,6 +13,8 @@ const notify = Notification
 Vue.prototype.$notify = notify;
 const confirm = MessageBox.confirm;
 Vue.prototype.$confirm = confirm;
+const ealert = MessageBox.alert;
+Vue.prototype.$alert = ealert;
 
 
 let fns = {
@@ -22,6 +24,7 @@ let fns = {
     showFullMask,
     visualClick,
     sleep,
+    startUploadQn,
 };
 export default fns;
 
@@ -54,7 +57,6 @@ async function autoLogin(ctx) {
 
             //数据放入xglobal
             ctx.$set(ctx.$xglobal, 'accInfo', res.data);
-            ctx.$set(ctx.$data, 'accInfo', res.data);
         };
     } catch (err) {
         if (!ctx.$notify) return;
@@ -231,7 +233,10 @@ function visualClick(joOrId, useBg, notclick) {
     return jo;
 };
 
-//产生带遮罩的全屏_fullPageMask，里面包含一个bg遮罩
+/**
+ * 产生带遮罩的全屏_fullPageMask，里面包含一个bg遮罩
+ * @returns {object} jo
+ */
 function genFullPageMask() {
     var jo;
     jo = $('<div id="_fullPageMask" ></div>');
@@ -255,7 +260,117 @@ function genFullPageMask() {
     return jo;
 };
 
+/**
+ * 选择一个文件上传,自动向#uploadIptBox元素添加一个input并click它
+ * opt:{maxSize,success(res),fileName,tag};
+ */
+async function startUploadQn(opt) {
+    var ctx = this;
+    var iptBox = $('body').find('#uploadIptBox');
+    if (!iptBox[0]) $('body').append($('<div id="uploadIptBox" style="display:none"></div>'))
+    iptBox.empty();
+    var accept = (opt && opt.accept) ? opt.accept : "*";
 
+    var iptJo = $(`<input type="file" accept="${accept}">`);
+    iptJo.change(function (evt) {
+        uploadIptChanged.call(ctx, evt, opt);
+    });
+    iptBox.append(iptJo);
+    iptJo.click();
+};
+
+/**
+ * 监听隐身上传按钮，过滤限制，启动上传一个文件
+ * @param   {object}   evt evt
+ * @param   {object}   opt opt
+ */
+async function uploadIptChanged(evt, opt) {
+    var ctx = this;
+    var file = evt.target.files[0];
+    if (!file) return;
+
+    var maxSize = (opt && opt.maxSize) ? opt.maxSize : 2048;
+
+    //限制上传文件最大1M
+    if (file.size / 1024 > maxSize) {
+        ctx.$notify.error({
+            title: `上传失败，文件大小超过限制`,
+            message: `单个文件上传最大不超过${maxSize}k`,
+        });
+        return;
+    };
+
+    var tag = (opt && opt.tag) ? opt.tag : 'none';
+    var fileName = (opt && opt.fileName) ? opt.fileName : file.name;
+
+    var res = await uploadFile.call(ctx, tag, fileName, file);
+
+    if (opt && opt.success) {
+        await opt.success.call(ctx, res);
+    } else {
+        ctx.$alert(res.url, '上传成功，请复制下面的链接', {
+            confirmButtonText: '确定'
+        });
+    };
+};
+
+/**
+ * 获取token并上传文件
+ * @param   {string} tag      上传标记，参照后端qn设置,none,share,page;自动为page添加pageId
+ * @param   {string} fileName 指定文件名,url格式app.10knet.com/randkey/filename
+ * @param   {string} file     上传的文件对象或者blob
+ * @returns {object} token接口和upload接口两次数据的合并结果
+ */
+async function uploadFile(tag, fileName, file) {
+    var ctx = this;
+    try {
+        //获取随机key的token
+        var tokenApi = ctx.$xglobal.conf.apis.qnRandKeyUploadToken;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            tag: tag ? tag : 'none',
+            fileName: fileName ? fileName : "untitled",
+        };
+
+        //如果accPage本地不为空，那么附带pageId
+        var aPage = JSON.safeParse(localStorage.getItem('accPage'));
+
+        var pageId = aPage ? aPage._id : undefined;
+        if (tag == 'page' && pageId) {
+            data.pageId = pageId;
+        };
+
+        var tokenRes = await ctx.rRun(tokenApi, data);
+
+        var token = tokenRes.data.token;
+
+        //使用token上传文件
+        var formdata = new FormData();
+        formdata.append('file', file);
+        formdata.append('token', tokenRes.data.token);
+        formdata.append('key', tokenRes.data.key);
+
+        var uploadRes = await ctx.rRun({
+            url: "http://up.qiniu.com",
+            data: formdata,
+            type: 'POST',
+            processData: false,
+            contentType: false,
+        });
+
+        var fileInfo = Object.assign({
+            file: file
+        }, uploadRes.data, tokenRes.data);
+
+        return fileInfo;
+
+    } catch (err) {
+        ctx.$notify.error({
+            title: `上传页面文件失败`,
+            message: err.tip || err.message || '原因未知',
+        });
+    }
+};
 
 
 
