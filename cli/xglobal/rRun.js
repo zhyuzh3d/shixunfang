@@ -54,7 +54,7 @@ async function remoteRun(api, data, opt) {
         //补足完成事件和出错处理,使用异步处理，不使用回调
         ajaxObj.success = function (msg) {
             //测试输出
-            if (location.href.indexOf('http://10knet.com/?dev') == 0) {
+            if (location.href.indexOf('/?dev') != -1) {
                 console.log(`rRun:${apistr}:`, data, msg);
             };
 

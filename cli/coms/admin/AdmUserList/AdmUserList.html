@@ -1,0 +1,25 @@
+<script src="./AdmUserList.js"></script>
+
+<template>
+    <div sid='AdmUserList' :xid='xid' style="width:100%" class='AdmUserList'>
+        <el-table :data="userArr" style="width: 100%" border>
+            <el-table-column prop="name" label="姓名" width="120"> </el-table-column>
+            <el-table-column prop="mobile" label="手机" width="160"> </el-table-column>
+            <el-table-column prop="mobile" label="操作">
+                <template scope="scope">
+                    <el-button size='small' @click='showDetails(scope)'>详细</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+</template>
+
+<style>
+
+
+</style>
+
+<style scoped>
+
+
+</style>

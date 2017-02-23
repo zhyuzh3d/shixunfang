@@ -39,6 +39,8 @@ conf.apis = {
     accChangePw: `//${location.host}/api/accChangePw`,
     accAutoLogin: `//${location.host}/api/accAutoLogin`,
 
+    admRunMngsCmd: `//${location.host}/api/admRunMngsCmd`,
+
     pageNew: `//${location.host}/api/pageNew`,
     pageGetList: `//${location.host}/api/pageGetList`,
     pageGetPageByANamePName: `//${location.host}/api/pageGetPageByANamePName`,

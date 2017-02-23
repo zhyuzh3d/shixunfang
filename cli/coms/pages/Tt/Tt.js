@@ -8,6 +8,12 @@ import $ from 'jquery';
 let com = {};
 export default com;
 
+import {
+    Button,
+}
+from 'element-ui';
+Vue.use(Button);
+
 com.components = {};
 
 var xsetConf = {};
@@ -33,6 +39,9 @@ xsetConf.homeView = {
             case 'UserHome':
                 var com = await System.import('../../practice/UserHome/UserHome.html');
                 break;
+            case 'AdmHome':
+                var com = await System.import('../../admin/AdmHome/AdmHome.html');
+                break;
             default:
                 var com = await System.import('../../practice/UserHome/UserHome.html');
                 break;
@@ -45,10 +54,12 @@ xsetConf.homeView = {
 
 //所有数据写在这里
 com.data = function data() {
+    var ctx = this;
     return {
         msg: 'Hello from blocks/Tt/Tt.js',
         homeView: '',
         _xsetConf: xsetConf,
+        accInfo: ctx.$xglobal.accInfo,
         practiceDetailId: '', //映射到PracticeDetail页面
         classDetailId: '', //映射到PracticeDetail页面
         userDetailId: '', //映射到userDetail页面
@@ -65,13 +76,22 @@ com.props = {
 };
 
 //所有直接使用的方法写在这里
-com.methods = {};
+com.methods = {
+    goAdmin: async function () {
+        var ctx = this;
+        await ctx.$xgo({
+            homeView: 'AdmHome',
+        });
+    },
+};
 
 //加载到页面前执行的函数
 com.mounted = async function () {
     var ctx = this;
 
     await ctx.$xglobal.fns.autoLogin(ctx);
+    ctx.$set(ctx.$data, 'accInfo', ctx.$xglobal.accInfo);
+
     if (!ctx.$xglobal.accInfo) {
         //如果用户没有登录，那么强制跳转到account账号管理页面
         await ctx.$xset({

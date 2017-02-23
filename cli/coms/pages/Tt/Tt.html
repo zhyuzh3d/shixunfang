@@ -4,7 +4,8 @@
 
 </style>
 <template>
-    <div sid='Tt' xid='xid' style="width:100%;height:100%">
+    <div sid='Tt' xid='xid' style="width:100%;height:100%;overflow-y: auto;">
+        <el-button v-if='accInfo && accInfo.mobile=="13405045537" && homeView!="AdmHome"' type='text' @click='goAdmin' style='margin:24px'>进入管理页面 &raquo;</el-button>
         <component id='homeView' :is="homeView" xid='ttHomeView' style='position:absolute;z-index:0'></component>
     </div>
 </template>

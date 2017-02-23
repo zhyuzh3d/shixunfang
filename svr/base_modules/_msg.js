@@ -63,6 +63,8 @@ const _msg = {
         PageNoExist: new Err('您请求的页面不存在', 403),
         PageFileNoExist: new Err('您请求页面还没有创建文件', 404),
         PageIdNotFound: new Err('找不到页面ID', 405),
+
+        AdmHaveNoPower: new Err('无权限执行操作', 501),
     },
 };
 
