@@ -131,14 +131,40 @@ schemas.user = new $mongoose.Schema({
 models.user = $mongoose.model('user', schemas.user);
 
 
+//学校数据
+schemas.school = new $mongoose.Schema({
+    name: String,
+    desc: String,
+    link: String,
+    city: String,
+    province: String,
+    parent: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'school',
+    },
+    _note: String,
+    avatar: {
+        type: String,
+        default: 'http://app.10knet.com/HJ4LSF5Ye/defaultIcon128.png', //必须app.10knet.com以便于裁剪
+    },
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.school = $mongoose.model('school', schemas.school);
+
+
 //文件对象
 schemas.file = new $mongoose.Schema({
     uploader: { //上传者id
-        type: String,
+        type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
     page: { //上传者id
-        type: String,
+        type: $mongoose.Schema.Types.ObjectId,
         ref: 'page',
     },
     filename: String,
@@ -159,11 +185,11 @@ models.file = $mongoose.model('file', schemas.file);
 schemas.page = new $mongoose.Schema({
     name: String, //页面名，每用户不可重复
     author: {
-        type: String,
+        type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
     file: { //当前文件
-        type: String,
+        type: $mongoose.Schema.Types.ObjectId,
         ref: 'file',
     },
 }, {
@@ -179,7 +205,7 @@ models.page = $mongoose.model('page', schemas.page);
 schemas.his = new $mongoose.Schema({
     tag: String, //类型
     author: {
-        type: String,
+        type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
     //target: Array,//操作目标对象_id，数组

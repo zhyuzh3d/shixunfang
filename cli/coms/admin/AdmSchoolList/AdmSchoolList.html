@@ -1,0 +1,140 @@
+<script src="./AdmSchoolList.js"></script>
+
+<template>
+    <div sid='AdmSchoolList' :xid='xid' style="width:100%" class='AdmSchoolList'>
+        <el-button @click='opeAddDialog(true)' type='primary' style='width:120px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 建</el-button>
+        <el-button @click='getSchoolList' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <div style="height:12px"></div>
+
+        <el-table :data="schoolArr" style="width: 100%" border>
+            <el-table-column prop="name" label="名称" width="160">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.name}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="省份" width="100">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.province}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="城市" width="100">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.city}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="从属" width="160">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.parent.name}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="操作" style='min-width:160px'>
+                <template scope="scope">
+                    <div style="width:100%;white-space:nowrap">
+                        <el-button v-show='!scope.row.__del&&scope.row.name!="未知院校"' size='small' @click='openEditDialog(scope)'>编辑</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-dialog title="添加／修改院校" v-model="addDialogVis" size='small'>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">上级院校</el-col>
+                <el-col :span="18">
+                    <el-dropdown trigger="click" style='margin-top:8px'>
+                        <span class="el-dropdown-link" style="cursor:pointer">{{addDialogData.parent?addDialogData.parent.name:"none"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-for='item in schoolArr'>
+                                <el-button @click='setParent(item)' class='dropBtn' style='margin:4px 0'>{{item.name}}</el-button>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">院校名称</el-col>
+                <el-col :span="18">
+                    <el-input v-model="addDialogData.name" :placeholder='validates.addDialogName.tip' ref='addDialogName' @change='validate("addDialogName")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">所在省份</el-col>
+                <el-col :span="18">
+                    <el-input v-model="addDialogData.province" :placeholder='validates.addDialogProvince.tip' ref='addDialogProvince' @change='validate("addDialogProvince")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">所在城市</el-col>
+                <el-col :span="18">
+                    <el-input v-model="addDialogData.city" :placeholder='validates.addDialogCity.tip' ref='addDialogCity' @change='validate("addDialogCity")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">院校简介</el-col>
+                <el-col :span="18">
+                    <el-input type='textarea' :placeholder='validates.addDialogDesc.tip' v-model="addDialogData.desc" ref='addDialogDesc' @change='validate("addDialogDesc")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">备注信息</el-col>
+                <el-col :span="18">
+                    <el-input type='textarea' :placeholder='validates.addDialogNote.tip' v-model="addDialogData._note" ref='addDialogNote' @change='validate("addDialogNote")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:18px"></div>
+            <el-row>
+                <el-button @click='dialogBtnClick' type='primary' style='width:160px'>确 定</el-button>
+                <el-button type='text' @click='opeAddDialog(false)' style='width:100px'>取 消</el-button>
+            </el-row>
+        </el-dialog>
+
+    </div>
+</template>
+
+<style>
+    .el-dialog--small {
+        min-width: 400px;
+    }
+
+    .AdmSchoolList .el-input__inner {
+        border-radius: 0px;
+    }
+
+    .AdmSchoolList .el-textarea__inner {
+        border-radius: 0px;
+    }
+
+    .cell {
+        white-space: nowrap
+    }
+
+</style>
+
+<style scoped>
+    .isdel {
+        color: #AAA;
+    }
+
+    .dropBtn {
+        width: 100px;
+        border: none;
+        display: block;
+    }
+
+    .el-row .el-col:first-child {
+        line-height: 36px
+    }
+
+</style>

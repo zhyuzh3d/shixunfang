@@ -2,13 +2,18 @@
 
 <template>
     <div sid='AdmHome' :xid='xid' style="width:100%" class='ttAdmHome'>
+        <el-button @click='goUserHome' type='text' style='width:160px'> <i class='fa fa-caret-left' style="margin-right:12px"></i> 返回用户首页 </el-button>
         <el-row id='main' type="flex" justify="center" style='margin-top:18px'>
-            <el-col :span="20" :sm="16">
+            <el-col :span="20" :sm="18">
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
                     <el-tab-pane label="用户管理" name="AdmUserList">
-                        <el-button type='primary' style='width:160px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新增测试用户</el-button>
                         <el-row style='margin:12px 0'>
-                            <component is="AdmUserList"></component>
+                            <component :is="coms.AdmUserList"></component>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane label="院校管理" name="AdmSchoolList">
+                        <el-row style='margin:12px 0'>
+                            <component :is="coms.AdmSchoolList"></component>
                         </el-row>
                     </el-tab-pane>
                 </el-tabs>

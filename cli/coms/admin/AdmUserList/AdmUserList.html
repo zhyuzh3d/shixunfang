@@ -2,12 +2,43 @@
 
 <template>
     <div sid='AdmUserList' :xid='xid' style="width:100%" class='AdmUserList'>
+        <el-button @click='getUserList' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <div style="height:12px"></div>
+
         <el-table :data="userArr" style="width: 100%" border>
-            <el-table-column prop="name" label="姓名" width="120"> </el-table-column>
-            <el-table-column prop="mobile" label="手机" width="160"> </el-table-column>
+            <el-table-column prop="name" label="姓名" width="120">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.name}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="手机" width="160">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.mobile}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="权限" width="100">
+                <template scope="scope">
+                    <el-dropdown trigger="click">
+                        <span class="el-dropdown-link" style="cursor:pointer">{{scope.row.power}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item>
+                                <el-button @click='setPower(scope,"none")' class='dropBtn' style='margin:4px 0'>none</el-button>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <el-button @click='setPower(scope,"adm")' class='dropBtn' style='margin:4px 0'>adm</el-button>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <el-button @click='setPower(scope,"mng")' class='dropBtn' style='margin:4px 0'>mng</el-button>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+
+                </template>
+            </el-table-column>
             <el-table-column prop="mobile" label="操作">
                 <template scope="scope">
-                    <el-button size='small' @click='showDetails(scope)'>详细</el-button>
+                    <el-button v-show='!scope.row.__del&&scope.row.power!="adm"' size='small' @click='blockUser(scope,true)'>删除</el-button>
+                    <el-button v-show='scope.row.__del&&scope.row.power!="adm"' size='small' @click='blockUser(scope,false)'>恢复</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -20,6 +51,14 @@
 </style>
 
 <style scoped>
+    .isdel {
+        color: #AAA;
+    }
 
+    .dropBtn {
+        width: 100px;
+        border: none;
+        display: block;
+    }
 
 </style>

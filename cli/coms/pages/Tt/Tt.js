@@ -77,7 +77,7 @@ com.props = {
 
 //所有直接使用的方法写在这里
 com.methods = {
-    goAdmin: async function () {
+    goAdmHome: async function () {
         var ctx = this;
         await ctx.$xgo({
             homeView: 'AdmHome',

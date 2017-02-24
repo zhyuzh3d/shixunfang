@@ -104,14 +104,16 @@ com.methods = {
             if (!res.err) {
                 ctx.$notify.success({
                     title: `恭喜您成为新用户！`,
-                    message: '强烈建议您立即设定个人首页地址',
+                    message: '正在为您跳转',
                 });
 
                 //数据放入xglobal
                 ctx.$set(ctx.$xglobal, 'accInfo', res.data);
 
-                //切换tab到设置
-                ctx.$set(ctx.$data, 'actTab', 'set');
+                //跳转到UserHome
+                await ctx.$xcoms['App_mainView-Tt'].$xgo({
+                    homeView: 'UserHome',
+                });
 
                 //将token存到ls
                 localStorage.setItem('accToken', res.data._token);

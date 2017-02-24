@@ -126,7 +126,7 @@ function $xgetComId(ctx) {
 
     //获取自身coms的$data/props的id，或者从元素上提取sid
     var sid = ctx.sid;
-    if (!sid) sid = ctx.$el ? this.$el.getAttribute('sid') : undefined;
+    if (!sid) sid = (ctx.$el && ctx.$el.getAttribute) ? ctx.$el.getAttribute('sid') : undefined;
 
     //真实的索引是外部xid加内部的id
     var comid = xid ? (sid ? xid + '-' + sid : xid) : undefined;

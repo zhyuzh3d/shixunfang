@@ -10,11 +10,17 @@ import {
     Table,
     TableColumn,
     Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
 }
 from 'element-ui'
 Vue.use(Table);
 Vue.use(TableColumn);
 Vue.use(Button);
+Vue.use(Dropdown);
+Vue.use(DropdownItem);
+Vue.use(DropdownMenu);
 
 var com = {};
 export default com;
@@ -38,9 +44,9 @@ com.data = function data() {
 };
 
 com.methods = {
-    showDetails: function (item) {
-        console.log('>>>row', item.row);
-    },
+    blockUser,
+    getUserList,
+    setPower,
 };
 
 com.mounted = async function () {
@@ -51,6 +57,45 @@ com.mounted = async function () {
 
 //--------------------------functions---------------------------
 
+/**
+ * 设置用户权限
+ */
+async function setPower(item, pwr) {
+    var ctx = this;
+    var user = item.row;
+
+    var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        cmd: `models.user.update({mobile:"${user.mobile}"},{power:'${pwr}'})`,
+    };
+
+    var res = await ctx.rRun(api, data);
+    ctx.$set(item.row, 'power', pwr);
+};
+
+
+
+/**
+ * 屏蔽用户
+ */
+async function blockUser(item, block) {
+    var ctx = this;
+    var user = item.row;
+
+    var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        cmd: `models.user.update({mobile:"${user.mobile}"},{__del:${block}})`,
+    };
+
+    var res = await ctx.rRun(api, data);
+    ctx.$set(item.row, '__del', block);
+};
+
+/**
+ * 获取用户列表
+ */
 async function getUserList() {
     var ctx = this;
 
