@@ -1,0 +1,185 @@
+<script src="./AdmClassList.js"></script>
+
+<template>
+    <div sid='AdmClassList' :xid='xid' style="width:100%" class='AdmClassList'>
+        <el-button @click='opeAddDialog(true)' type='primary' style='width:120px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 建</el-button>
+        <el-button @click='getGroupList' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <div style="height:12px"></div>
+
+        <el-table :data="groupArr" style="width: 100%" border>
+            <el-table-column prop="name" label="名称" width="180">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.name}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="院校" width="120">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.school.name}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="管理员" width="120">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.manager?scope.row.manager.name:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="班主任" width="120">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.teacher?scope.row.teacher.name:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="助理" width="120">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.assistant?scope.row.assistant.name:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="操作" style='min-width:160px'>
+                <template scope="scope">
+                    <div style="width:100%;white-space:nowrap">
+                        <el-button v-show='!scope.row.__del' size='small' @click='openEditDialog(scope)'>编辑</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-dialog title="添加／修改班级" v-model="addDialogVis" size='small'>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">所属院校</el-col>
+                <el-col :span="18">
+                    <el-dropdown trigger="click" style='margin-top:8px'>
+                        <span class="el-dropdown-link" style="cursor:pointer">{{addDialogData.school?addDialogData.school.name:"none"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-for='item in schoolArr'>
+                                <el-button @click='setSchool(item)' class='dropBtn' style='margin:4px 0'>{{item.name}}</el-button>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">班级名称</el-col>
+                <el-col :span="18">
+                    <el-autocomplete class="inline-input" v-model="addDialogData.name" :fetch-suggestions="genSearchFn(groupArr,'name')" :placeholder='validates.addDialogName.tip' @change='validate("addDialogName")' ref='addDialogName' @select="selectGroupName" :trigger-on-focus="false"></el-autocomplete>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">入学年份</el-col>
+                <el-col :span="18">
+                    <el-date-picker v-model="dialogBegin" align="right" type="year" placeholder="选择年"> </el-date-picker>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">毕业年份</el-col>
+                <el-col :span="18">
+                    <el-date-picker v-model="dialogEnd" align="right" type="year" placeholder="选择年" @onClick='updateYear'>
+                    </el-date-picker>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">管理员</el-col>
+                <el-col :span="10">
+                    <el-input v-model="addDialogData.manager.mobile" :placeholder='validates.addDialogMobile1.tip' ref='addDialogMobile1' @change='validate("addDialogMobile1","manager")'></el-input>
+                </el-col>
+                <el-col :span="8">
+                    <span class='userName'>{{addDialogData.manager.name||"未知"}}</span>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">班主任</el-col>
+                <el-col :span="10">
+                    <el-input v-model="addDialogData.teacher.mobile" :placeholder='validates.addDialogMobile2.tip' ref='addDialogMobile2' @change='validate("addDialogMobile2","teacher")'></el-input>
+                </el-col>
+                <el-col :span="8">
+                    <span class='userName'>{{addDialogData.teacher.name||"未知"}}</span>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">助理</el-col>
+                <el-col :span="10">
+                    <el-input v-model="addDialogData.assistant.mobile" :placeholder='validates.addDialogMobile3.tip' ref='addDialogMobile3' @change='validate("addDialogMobile3","assistant")'></el-input>
+                </el-col>
+                <el-col :span="8">
+                    <span class='userName'>{{addDialogData.assistant.name||"未知"}}</span>
+                </el-col>
+            </el-row>
+
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">院校简介</el-col>
+                <el-col :span="18">
+                    <el-input type='textarea' :placeholder='validates.addDialogDesc.tip' v-model="addDialogData.desc" ref='addDialogDesc' @change='validate("addDialogDesc")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">备注信息</el-col>
+                <el-col :span="18">
+                    <el-input type='textarea' :placeholder='validates.addDialogNote.tip' v-model="addDialogData._note" ref='addDialogNote' @change='validate("addDialogNote")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+            <div style="height:18px"></div>
+            <el-row>
+                <el-button @click='dialogBtnClick' type='primary' style='width:160px'>确 定</el-button>
+                <el-button type='text' @click='opeAddDialog(false)' style='width:100px'>取 消</el-button>
+            </el-row>
+        </el-dialog>
+
+    </div>
+</template>
+
+<style>
+    .el-dialog--small {
+        min-width: 400px;
+    }
+
+    .AdmClassList .el-input__inner {
+        border-radius: 0px;
+    }
+
+    .AdmClassList .el-textarea__inner {
+        border-radius: 0px;
+    }
+
+    .cell {
+        white-space: nowrap
+    }
+
+</style>
+
+<style scoped>
+    .isdel {
+        color: #AAA;
+    }
+
+    .dropBtn {
+        width: 100px;
+        border: none;
+        display: block;
+    }
+
+    .el-row .el-col:first-child {
+        line-height: 36px
+    }
+
+    .userName {
+        line-height: 34px;
+        margin-left: 8px;
+        color: #888;
+    }
+
+</style>

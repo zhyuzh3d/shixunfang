@@ -56,8 +56,7 @@
             <el-row>
                 <el-col :span="6">院校名称</el-col>
                 <el-col :span="18">
-                    <el-input v-model="addDialogData.name" :placeholder='validates.addDialogName.tip' ref='addDialogName' @change='validate("addDialogName")'>
-                    </el-input>
+                    <el-autocomplete class="inline-input" v-model="addDialogData.name" :fetch-suggestions="genSearchFn(schoolArr,'name')" :placeholder='validates.addDialogName.tip' @change='validate("addDialogName")' ref='addDialogName' @select="selectSchoolName" :trigger-on-focus="false"></el-autocomplete>
                 </el-col>
             </el-row>
 
@@ -65,16 +64,14 @@
             <el-row>
                 <el-col :span="6">所在省份</el-col>
                 <el-col :span="18">
-                    <el-input v-model="addDialogData.province" :placeholder='validates.addDialogProvince.tip' ref='addDialogProvince' @change='validate("addDialogProvince")'>
-                    </el-input>
+                    <el-autocomplete class="inline-input" v-model="addDialogData.province" :fetch-suggestions="genSearchFn(provinceArr)" :placeholder='validates.addDialogProvince.tip' @change='validate("addDialogProvince")' ref='addDialogProvince' @select="selectProvinceName" :trigger-on-focus="false"></el-autocomplete>
                 </el-col>
             </el-row>
             <div style="height:8px"></div>
             <el-row>
                 <el-col :span="6">所在城市</el-col>
                 <el-col :span="18">
-                    <el-input v-model="addDialogData.city" :placeholder='validates.addDialogCity.tip' ref='addDialogCity' @change='validate("addDialogCity")'>
-                    </el-input>
+                    <el-autocomplete class="inline-input" v-model="addDialogData.city" :fetch-suggestions="genSearchFn(cityArr)" :placeholder='validates.addDialogCity.tip' @change='validate("addDialogCity")' ref='addDialogCity' @select="selectCityName" :trigger-on-focus="false"></el-autocomplete>
                 </el-col>
             </el-row>
             <div style="height:8px"></div>

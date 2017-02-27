@@ -143,10 +143,7 @@ schemas.school = new $mongoose.Schema({
         ref: 'school',
     },
     _note: String,
-    avatar: {
-        type: String,
-        default: 'http://app.10knet.com/HJ4LSF5Ye/defaultIcon128.png', //必须app.10knet.com以便于裁剪
-    },
+    avatar: String,
 }, {
     strict: false,
     timestamps: {
@@ -155,6 +152,46 @@ schemas.school = new $mongoose.Schema({
     },
 });
 models.school = $mongoose.model('school', schemas.school);
+
+//班级数据
+schemas.group = new $mongoose.Schema({
+    name: String,
+    desc: String,
+    department: String, //系
+    major: String, //科，专业
+    begin: Date, //入学年份
+    end: Date, //毕业年份
+    manager: { //管理员，客服，发布课程
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    teacher: { //班主任，维护班级成员
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    assistant: { //助理，可协助维护班级成员
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    school: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'school',
+    },
+    members: [{ //成员
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }],
+    avatar: String,
+    _note: String,
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.group = $mongoose.model('group', schemas.group);
+
 
 
 //文件对象

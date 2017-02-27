@@ -1,0 +1,20 @@
+{"time":"2017-02-27T02:00:14.345Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:01:04.593Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:01:04.862Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-02-27T02:01:04.924Z","type":"ERR","data":"_mngs:startPrms:db error"}
+{"time":"2017-02-27T02:04:32.889Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:04:32.933Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-02-27T02:04:33.120Z","type":"INF","data":"_mngs:startPrms:Mongoose is ready on shixunfang."}
+{"time":"2017-02-27T02:04:33.124Z","type":"INF","data":"_app:Http Server is listening on 8088."}
+{"time":"2017-02-27T02:05:26.142Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:05:26.173Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-02-27T02:05:26.252Z","type":"INF","data":"_mngs:startPrms:Mongoose is ready on shixunfang."}
+{"time":"2017-02-27T02:05:26.253Z","type":"INF","data":"_app:Http Server is listening on 8088."}
+{"time":"2017-02-27T02:05:58.107Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:05:58.142Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-02-27T02:05:58.220Z","type":"INF","data":"_mngs:startPrms:Mongoose is ready on shixunfang."}
+{"time":"2017-02-27T02:05:58.222Z","type":"INF","data":"_app:Http Server is listening on 8088."}
+{"time":"2017-02-27T02:06:19.632Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-02-27T02:06:19.662Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-02-27T02:06:19.740Z","type":"INF","data":"_mngs:startPrms:Mongoose is ready on shixunfang."}
+{"time":"2017-02-27T02:06:19.741Z","type":"INF","data":"_app:Http Server is listening on 8088."}

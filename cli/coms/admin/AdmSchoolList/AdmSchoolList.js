@@ -14,6 +14,7 @@ import {
     Dropdown,
     DropdownItem,
     DropdownMenu,
+    Autocomplete,
 }
 from 'element-ui'
 Vue.use(Input);
@@ -23,6 +24,7 @@ Vue.use(Button);
 Vue.use(Dropdown);
 Vue.use(DropdownItem);
 Vue.use(DropdownMenu);
+Vue.use(Autocomplete);
 
 var com = {};
 export default com;
@@ -42,6 +44,8 @@ com.data = function data() {
     return {
         msg: 'Hello from admin/getSchooolList/getSchooolList.js',
         schoolArr: [],
+        provinceArr: [],
+        cityArr: [],
         addDialogVis: false,
         addDialogData: {},
         addDialogMod: 'add',
@@ -80,15 +84,21 @@ com.methods = {
     dialogBtnClick,
     setParent,
     updateSchool,
+    createQueryFilter,
+    genSearchFn,
+    selectCityName,
+    selectSchoolName,
+    selectProvinceName,
 };
 
 com.mounted = async function () {
     var ctx = this;
-    await getSchoolList.call(ctx);
+    await ctx.getSchoolList();
 };
 
 
 //--------------------------functions---------------------------
+
 
 /**
  * 打开编辑院校信息弹窗
@@ -129,12 +139,13 @@ async function dialogBtnClick() {
     var res = await ctx.rRun(api, data);
 
     if (res.data.length != 0) {
-        var ipt = await ctx.$confirm('同名院校已经存在，是否覆盖?', '提示', {
+        ctx.$confirm('同名院校已经存在，是否覆盖?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
-        });
-        if (ipt) await ctx.updateSchool();
+        }).then(async function () {
+            await ctx.updateSchool();
+        }).catch(() => {});
     } else {
         await ctx.updateSchool();
     };
@@ -147,13 +158,14 @@ async function updateSchool() {
     var ctx = this;
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var school = ctx.$data.addDialogData;
+
     if (!school.parent) school.parent = {
         _id: '58aff696582d98268a43852a'
     }; //指向未知院校
 
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: `models.school.update({name:'${school.name}'},{name:'${school.name}',parent:'${school.parent._id}',province:'${school.province}',city:'${school.city}',desc:'${school.desc}',_note:'${school.note}'},{upsert:true})`,
+        cmd: `models.school.update({name:'${school.name}'},{name:'${school.name}',parent:'${school.parent._id}',province:'${school.province}',city:'${school.city}',desc:'${school.desc}',_note:'${school._note}'},{upsert:true})`,
     };
 
     var res = await ctx.rRun(api, data);
@@ -181,7 +193,7 @@ async function opeAddDialog(vis) {
 
 
 /**
- * 获取用户列表
+ * 获取学校列表
  */
 async function getSchoolList() {
     var ctx = this;
@@ -189,12 +201,98 @@ async function getSchoolList() {
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: 'models.school.find({},"").populate("parent").sort({created_at:-1}).limit(50)',
+        cmd: 'models.school.find({},"").populate("parent").sort({created_at:-1})',
     };
 
     var res = await ctx.rRun(api, data);
+
+    res.data.forEach(function (item) {
+        item.value = item.name;
+        if (ctx.$data.provinceArr.indexOf(item.province) == -1) {
+            ctx.$data.provinceArr.push({
+                value: item.province
+            });
+        };
+        if (ctx.$data.cityArr.indexOf(item.city) == -1) {
+            ctx.$data.cityArr.push({
+                value: item.city
+            });
+        };
+    });
+
     ctx.$set(ctx.$data, 'schoolArr', res.data);
 }
+
+/**
+ * 输入框自动完成选择城市名称
+ * @param {object} item object
+ */
+function selectCityName(item) {
+    var ctx = this;
+    //只有先更新其他才能实现更新
+    ctx.$set(ctx.$data.addDialogData, 'city', item.value);
+    setTimeout(function () {
+        ctx.$set(ctx.$data.addDialogData, '_note', ctx.$data.addDialogData._note);
+        ctx.$set(ctx.$data, 'addDialogData', ctx.$data.addDialogData);
+    }, 100);
+};
+
+/**
+ * 输入框自动完成选择院校名称
+ * @param {object} item object
+ */
+function selectProvinceName(item) {
+    var ctx = this;
+    //只有先更新其他才能实现更新
+    ctx.$set(ctx.$data.addDialogData, 'province', item.value);
+    setTimeout(function () {
+        ctx.$set(ctx.$data.addDialogData, '_note', ctx.$data.addDialogData._note);
+        ctx.$set(ctx.$data, 'addDialogData', ctx.$data.addDialogData);
+    }, 100);
+};
+
+/**
+ * 输入框自动完成选择院校名称
+ * @param {object} item object
+ */
+function selectSchoolName(item) {
+    var ctx = this;
+    //只有先更新其他才能实现更新
+    ctx.$set(ctx.$data.addDialogData, 'name', item.value);
+    setTimeout(function () {
+        ctx.$set(ctx.$data.addDialogData, '_note', ctx.$data.addDialogData._note);
+        ctx.$set(ctx.$data, 'addDialogData', ctx.$data.addDialogData);
+    }, 100);
+};
+
+/**
+ * 根据arr生成对应的查询函数
+ * 为数组每一项增加value字段
+ */
+function genSearchFn(arr, key) {
+    var ctx = this;
+    if (key) {
+        arr.forEach(function (item) {
+            item.value = item[key];
+        });
+    };
+    return function (str, cb) {
+        var results = str ? arr.filter(ctx.createQueryFilter(str)) : arr;
+        cb(results);
+    };
+};
+
+/**
+ * 用于搜索框查询使用的函数
+ * @param   {string}   str str
+ * @returns {boolean} 1/0
+ */
+function createQueryFilter(str) {
+    return function (item) {
+        return item.value.toLowerCase().indexOf(str.toLowerCase()) === 0;
+    };
+};
+
 
 
 //

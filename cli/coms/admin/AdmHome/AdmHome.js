@@ -43,6 +43,9 @@ xsetConf.activeName = {
             case 'AdmUserList':
                 var com = await System.import('../../admin/AdmUserList/AdmUserList.html');
                 break;
+            case 'AdmClassList':
+                var com = await System.import('../../admin/AdmClassList/AdmClassList.html');
+                break;
             default:
                 var com = await System.import('../../admin/AdmUserList/AdmUserList.html');
                 break;

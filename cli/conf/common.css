@@ -36,6 +36,10 @@ a:visited {
 }
 
 /*修复element-ui遗漏的样式*/
+.el-dropdown-menu{
+    max-height: 240px;
+    overflow-y: auto;
+}
 
 .el-message-box__message {
     -webkit-user-select: initial;
