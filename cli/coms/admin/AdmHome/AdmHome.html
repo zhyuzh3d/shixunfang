@@ -6,24 +6,34 @@
         <el-row id='main' type="flex" justify="center" style='margin-top:18px'>
             <el-col :span="20" :sm="18">
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
-                    <el-tab-pane label="用户管理" name="AdmUserList">
+                    <el-tab-pane label="用户" name="AdmUserList">
                         <el-row style='margin:12px 0'>
                             <component :is="coms.AdmUserList"></component>
                         </el-row>
                     </el-tab-pane>
-                    <el-tab-pane label="院校管理" name="AdmSchoolList">
+                    <el-tab-pane label="院校" name="AdmSchoolList">
                         <el-row style='margin:12px 0'>
                             <component :is="coms.AdmSchoolList"></component>
                         </el-row>
                     </el-tab-pane>
-                    <el-tab-pane label="班级管理" name="AdmClassList">
+                    <el-tab-pane label="班级" name="AdmClassList">
                         <el-row style='margin:12px 0'>
                             <component :is="coms.AdmClassList"></component>
                         </el-row>
                     </el-tab-pane>
-                    <el-tab-pane label="任务管理" name="AdmTaskList">
+                    <el-tab-pane label="任务" name="AdmTaskList">
                         <el-row style='margin:12px 0'>
                             <component :is="coms.AdmTaskList"></component>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane label="日程" name="AdmPackList">
+                        <el-row style='margin:12px 0'>
+                            <component :is="coms.AdmPackList"></component>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane label="课程" name="AdmCourseList">
+                        <el-row style='margin:12px 0'>
+                            <component :is="coms.AdmCourseList"></component>
                         </el-row>
                     </el-tab-pane>
                 </el-tabs>

@@ -1,12 +1,12 @@
-<script src="./AdmTaskList.js"></script>
+<script src="./AdmCourseList.js"></script>
 
 <template>
-    <div sid='AdmTaskList' :xid='xid' style="width:100%" class='AdmTaskList'>
+    <div sid='AdmCourseList' :xid='xid' style="width:100%" class='AdmCourseList'>
         <el-button @click='opeAddDialog(true)' type='primary' style='width:120px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 建</el-button>
-        <el-button @click='getTaskArr' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <el-button @click='getCourseArr' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
         <div style="height:12px"></div>
 
-        <el-table :data="taskArr" style="width: 100%" border>
+        <el-table :data="courseArr" style="width: 100%" border>
             <el-table-column prop="title" label="标题" width="200" class='elps'>
                 <template scope="scope">
                     <div :class="{isdel:scope.row.__del}">{{scope.row.title}}</div>
@@ -17,19 +17,14 @@
                     <div :class="{isdel:scope.row.__del}">{{scope.row.category}}</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="type" label="形式" width="80">
+            <el-table-column prop="category" label="日程数" width="80">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">{{scope.row.type}}</div>
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.packs.length}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="author" label="作者" width="100" class='elps'>
                 <template scope="scope">
                     <div :class="{isdel:scope.row.__del}">{{scope.row.author?scope.row.author.name:"未知"}}</div>
-                </template>
-            </el-table-column>
-            <el-table-column prop="link" label="链接" width="100">
-                <template scope="scope">
-                    <a :class="{isdel:scope.row.__del}" :href='scope.row.link' target="_blank">点击进入</a>
                 </template>
             </el-table-column>
             <el-table-column prop="tags" label="标签" width="180" class='elps'>
@@ -46,13 +41,13 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="添加／修改任务" v-model="addDialogVis" size='small'>
+        <el-dialog title="添加／修改课程" v-model="addDialogVis" size='small'>
 
             <div style="height:8px"></div>
             <el-row>
                 <el-col :span="6">类别</el-col>
                 <el-col :span="18">
-                    <el-dropdown @command="selectCategory"  style='margin-top:8px'>
+                    <el-dropdown @command="selectCategory" style='margin-top:8px'>
                         <span class="el-dropdown-link">{{addDialogData.category?addDialogData.category:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item v-for='item in categoryArr' v-bind:command="item">{{item}}</el-dropdown-item>
@@ -64,7 +59,7 @@
             <div v-if='addDialogData.category'>
                 <div style="height:8px"></div>
                 <el-row>
-                    <el-col :span="6">任务标题</el-col>
+                    <el-col :span="6">课程标题</el-col>
                     <el-col :span="18">
                         <el-autocomplete class="inline-input" v-model="addDialogData.title" :placeholder='validates.addDialogTitle.tip' @change='validate("addDialogTitle")' :fetch-suggestions="genSearchFn('cateTitleArr')" ref='addDialogTitle' @select="selectTitle" :trigger-on-focus="false"></el-autocomplete>
                     </el-col>
@@ -72,14 +67,22 @@
 
                 <div style="height:8px"></div>
                 <el-row>
-                    <el-col :span="6">形式</el-col>
+                    <el-col :span="6">日程</el-col>
                     <el-col :span="18">
-                        <el-dropdown @command="selectType" style='margin-top:8px'>
-                            <span class="el-dropdown-link">{{addDialogData.type?addDialogData.type:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item v-for='(v,k) in typesObj' v-bind:command="k">{{k}}</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
+                        <el-autocomplete class="inline-input" v-model="addDialogPack" :placeholder='validates.addDialogPack.tip' @change='validate("addDialogPack")' ref='addDialogPack' :fetch-suggestions="genSearchFn('catePackArr')" @select="selectPack" :trigger-on-focus="true"></el-autocomplete>
+                    </el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="18" :offset='6'><span v-for='t in addDialogPacks'>{{t.title}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removePack(t)'><i class='fa fa-times'></i></el-button></span></el-col>
+                </el-row>
+
+
+                <div style="height:8px"></div>
+                <el-row>
+                    <el-col :span="6">课程简介</el-col>
+                    <el-col :span="18">
+                        <el-input type='textarea' :placeholder='validates.addDialogDesc.tip' v-model="addDialogData.desc" ref='addDialogDesc' @change='validate("addDialogDesc")'>
+                        </el-input>
                     </el-col>
                 </el-row>
 
@@ -98,32 +101,6 @@
                     <el-col :span="18" :offset='6'><span v-for='t in addDialogData.tags'>{{t}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removeTag(t)'><i class='fa fa-times'></i></el-button></span></el-col>
                 </el-row>
 
-                <div style="height:8px"></div>
-                <el-row>
-                    <el-col :span="6">链接</el-col>
-                    <el-col :span="18">
-                        <el-input type='text' :placeholder='validates.addDialogLink.tip' v-model="addDialogData.link" ref='addDialogLink' @change='validate("addDialogLink")'>
-                        </el-input>
-                    </el-col>
-                </el-row>
-
-                <div style="height:8px"></div>
-                <el-row>
-                    <el-col :span="6">任务简介</el-col>
-                    <el-col :span="18">
-                        <el-input type='textarea' :placeholder='validates.addDialogDesc.tip' v-model="addDialogData.desc" ref='addDialogDesc' @change='validate("addDialogDesc")'>
-                        </el-input>
-                    </el-col>
-                </el-row>
-
-                <div style="height:8px"></div>
-                <el-row>
-                    <el-col :span="6">通过标准</el-col>
-                    <el-col :span="18">
-                        <el-input type='text' :placeholder='请先选择形式' v-model="addDialogData.pass">
-                        </el-input>
-                    </el-col>
-                </el-row>
             </div>
 
             <div style="height:18px"></div>
@@ -141,11 +118,11 @@
         min-width: 400px;
     }
 
-    .AdmTaskList .el-input__inner {
+    .AdmCourseList .el-input__inner {
         border-radius: 0px;
     }
 
-    .AdmTaskList .el-textarea__inner {
+    .AdmCourseList .el-textarea__inner {
         border-radius: 0px;
     }
 

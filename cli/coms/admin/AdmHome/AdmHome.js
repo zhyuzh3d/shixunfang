@@ -38,19 +38,25 @@ xsetConf.activeName = {
         var com;
         switch (name) {
             case 'AdmSchoolList':
-                var com = await System.import('../../admin/AdmSchoolList/AdmSchoolList.html');
+                com = await System.import('../../admin/AdmSchoolList/AdmSchoolList.html');
                 break;
             case 'AdmUserList':
-                var com = await System.import('../../admin/AdmUserList/AdmUserList.html');
+                com = await System.import('../../admin/AdmUserList/AdmUserList.html');
                 break;
             case 'AdmClassList':
-                var com = await System.import('../../admin/AdmClassList/AdmClassList.html');
+                com = await System.import('../../admin/AdmClassList/AdmClassList.html');
                 break;
             case 'AdmTaskList':
-                var com = await System.import('../../admin/AdmTaskList/AdmTaskList.html');
+                com = await System.import('../../admin/AdmTaskList/AdmTaskList.html');
+                break;
+            case 'AdmPackList':
+                com = await System.import('../../admin/AdmPackList/AdmPackList.html');
+                break;
+            case 'AdmCourseList':
+                com = await System.import('../../admin/AdmCourseList/AdmCourseList.html');
                 break;
             default:
-                var com = await System.import('../../admin/AdmUserList/AdmUserList.html');
+                com = await System.import('../../admin/AdmUserList/AdmUserList.html');
                 break;
         };
         ctx.$set(ctx.$data.coms, name, name);

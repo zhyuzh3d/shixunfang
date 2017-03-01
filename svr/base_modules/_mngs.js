@@ -220,6 +220,58 @@ schemas.task = new $mongoose.Schema({
 models.task = $mongoose.model('task', schemas.task);
 
 
+//任务打包对象，如每日课程，每周课程
+schemas.pack = new $mongoose.Schema({
+    category: String,
+    title: String,
+    desc: String,
+    days: {
+        type: Number,
+        default: 1,
+    },
+    tasks: [{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'task',
+    }],
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    tags: [String],
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.pack = $mongoose.model('pack', schemas.pack);
+
+//课程对象
+schemas.course = new $mongoose.Schema({
+    category: String,
+    title: String,
+    desc: String,
+    packs: [{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'pack',
+    }],
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    tags: [String],
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.course = $mongoose.model('course', schemas.course);
+
+
+
 //文件对象
 schemas.file = new $mongoose.Schema({
     uploader: { //上传者id

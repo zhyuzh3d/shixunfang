@@ -38,7 +38,7 @@ export default com;
 com.props = {
     xid: {
         type: String,
-        default: 'AdmTaskList',
+        default: 'AdmPackList',
     },
     conf: Object,
 };
@@ -47,8 +47,8 @@ com.props = {
 com.data = function data() {
     var ctx = this;
     return {
-        msg: 'Hello from admin/AdmTaskList/AdmTaskList.js',
-        taskArr: [],
+        msg: 'Hello from admin/AdmPackList/AdmPackList.js',
+        packArr: [],
         cateTaskArr: [],
         cateTagArr: [],
         cateTitleArr: [],
@@ -58,6 +58,8 @@ com.data = function data() {
         addDialogData: {},
         addDialogMod: 'add',
         addDialogTag: undefined,
+        addDialogTask: undefined,
+        addDialogTasks: [],
         validates: {
             addDialogTitle: {
                 fn: /^[\s\S]{3,128}$/,
@@ -79,6 +81,10 @@ com.data = function data() {
                 fn: /^[\s\S]{2,32}$/,
                 tip: '任意2~12字符'
             },
+            addDialogTask: {
+                fn: /^[\s\S]{2,128}$/,
+                tip: '输入搜索，下拉添加'
+            },
         },
     };
 };
@@ -87,7 +93,7 @@ com.methods = {
     validate: async function (ref, key) {
         this.$xglobal.fns.validate(this, ref);
     },
-    getTaskArr,
+    getPackArr,
     opeAddDialog,
     openEditDialog,
     dialogBtnClick,
@@ -96,8 +102,10 @@ com.methods = {
     selectType,
     selectTitle,
     selectTag,
+    selectTask,
     addTag,
     removeTag,
+    removeTask,
     genSearchFn,
     createQueryFilter,
     refreshDialogData,
@@ -105,7 +113,7 @@ com.methods = {
 
 com.mounted = async function () {
     var ctx = this;
-    await getTaskArr.call(ctx);
+    await getPackArr.call(ctx);
 };
 
 
@@ -124,6 +132,27 @@ function refreshDialogData() {
         ctx.$set(ddata, 'desc', desc);
         ctx.$set(ctx.$data, 'addDialogData', ddata);
     }, 100);
+};
+
+/**
+ * 将一个任务从addDialogData.tasks数组中移除
+ */
+function removeTask(task) {
+    var ctx = this;
+    var ddata = ctx.$data.addDialogData;
+
+    var pos = ddata.tasks.indexOf(task._id);
+    ddata.tasks.splice(pos, 1);
+    ctx.$set(ctx.$data.addDialogData, 'tasks', ctx.$data.addDialogData.tasks);
+
+    var arr = [];
+    ctx.$data.addDialogTasks.forEach(function (item) {
+        if (item._id != task._id) arr.push(item);
+    });
+    ctx.$set(ctx.$data, 'addDialogTasks', arr);
+
+
+    ctx.refreshDialogData();
 };
 
 /**
@@ -148,6 +177,7 @@ function addTag() {
     var ctx = this;
     var ddata = ctx.$data.addDialogData;
     var tag = ctx.$data.addDialogTag;
+    if (!tag) return;
 
     if (!ddata.tags) ddata.tags = [];
 
@@ -161,7 +191,7 @@ function addTag() {
 };
 
 /**
- * 下拉选择类别
+ * 下拉选择类别,拉取该任务下的全部任务标题
  */
 async function selectCategory(str) {
     var ctx = this;
@@ -171,7 +201,7 @@ async function selectCategory(str) {
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: `models.task.find({category:"${str}"},"title tags")`,
+        cmd: `models.pack.find({category:"${str}"},"title tags")`,
     };
 
     var res = await ctx.rRun(api, data);
@@ -186,14 +216,35 @@ async function selectCategory(str) {
             _id: item._id,
         });
         item.tags.forEach(function (t) {
-            var it = {
+            var exist = tagArr.filter(function (v) {
+                return v.value == t;
+            });
+
+            if (exist.length == 0) tagArr.push({
                 value: t
-            };
-            if (tagArr.indexOf(it) == -1) tagArr.push(it);
+            });
         });
     });
     ctx.$set(ctx.$data, 'cateTitleArr', titleArr);
     ctx.$set(ctx.$data, 'cateTagArr', tagArr);
+
+    //拉取任务标题
+    var api2 = ctx.$xglobal.conf.apis.admRunMngsCmd;
+    var data2 = {
+        token: localStorage.getItem('accToken'),
+        cmd: `models.task.find({category:"${str}"},"title tags")`,
+    };
+
+    var res2 = await ctx.rRun(api2, data2);
+    var taskArr = [];
+    res2.data.forEach(function (item) {
+        taskArr.push({
+            title: item.title,
+            value: item.title,
+            _id: item._id,
+        });
+    });
+    ctx.$set(ctx.$data, 'cateTaskArr', taskArr);
 };
 
 /**
@@ -203,6 +254,27 @@ function selectTitle(item) {
     var ctx = this;
     //只有先更新其他才能实现更新
     ctx.$set(ctx.$data.addDialogData, 'title', item.value);
+    ctx.refreshDialogData();
+};
+
+/**
+ * 任务自动完成的下拉菜单选择；
+ * 由addDialogTask和addDialogTasks共同维护.tasks数组id
+ */
+function selectTask(item) {
+    var ctx = this;
+    if (!ctx.$data.addDialogData.tasks) ctx.$data.addDialogData.tasks = [];
+    var tasks = ctx.$data.addDialogData.tasks;
+
+    //只有先更新其他才能实现更新
+    if (tasks.indexOf(item._id) == -1) {
+        tasks.push(item._id);
+        ctx.$data.addDialogTasks.push(item);
+        ctx.$set(ctx.$data, 'addDialogTasks', ctx.$data.addDialogTasks);
+        ctx.$set(ctx.$data.addDialogData, 'tasks', ctx.$data.addDialogData.tasks);
+    };
+    ctx.$set(ctx.$data, 'addDialogTask', undefined); //清空输入框
+
     ctx.refreshDialogData();
 };
 
@@ -233,17 +305,17 @@ function selectType(key) {
 /**
  * 获取任务列表
  */
-async function getTaskArr() {
+async function getPackArr() {
     var ctx = this;
 
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: 'models.task.find({},"").populate("author","name mobile").sort({created_at:-1})',
+        cmd: 'models.pack.find({},"").populate("author","name mobile").populate("tasks","title").sort({created_at:-1})',
     };
 
     var res = await ctx.rRun(api, data);
-    ctx.$set(ctx.$data, 'taskArr', res.data);
+    ctx.$set(ctx.$data, 'packArr', res.data);
 };
 
 
@@ -254,7 +326,10 @@ async function openEditDialog(item) {
     var ctx = this;
 
     ctx.$set(ctx.$data, 'addDialogData', item.row);
-    ctx.selectCategory(item.row.category);
+
+    ctx.$set(ctx.$data, 'addDialogTasks', item.row.tasks); //计算addDialogTasks
+    ctx.selectCategory(item.row.category); //更新类别
+
     ctx.$set(ctx.$data, 'addDialogVis', true);
     ctx.$set(ctx.$data, 'addDialogMod', 'edit');
 };
@@ -315,27 +390,20 @@ async function updateItem() {
         return;
     };
 
-    if (!item.type) {
-        ctx.$notify.error({
-            title: '必须选择形式!',
-        });
-        return;
-    };
-
     if (!item.type) item.type = '未知';
 
-    var datStr = `{category:'${item.category}',title:'${item.title}',type:'${item.type}',author:'${item.author._id}',desc:'${item.desc}'`;
+    var datStr = `{category:'${item.category}',title:'${item.title}',author:'${item.author._id}',desc:'${item.desc}'`;
 
-    if (item.link) datStr += `,link:'${item.link}'`;
     if (item.tags) datStr += `,tags:${JSON.stringify(item.tags)}`;
+    if (item.tasks) datStr += `,tasks:${JSON.stringify(item.tasks)}`;
 
     datStr += '}';
 
     var cmd;
     if (ctx.$data.addDialogData._id) {
-        cmd = `models.task.update({_id:'${item._id}'},${datStr},{upsert:true})`;
+        cmd = `models.pack.update({_id:'${item._id}'},${datStr},{upsert:true})`;
     } else {
-        cmd = `models.task(${datStr}).save()`;
+        cmd = `models.pack(${datStr}).save()`;
     };
 
     var data = {
@@ -346,7 +414,7 @@ async function updateItem() {
     var res = await ctx.rRun(api, data);
     if (!res.err) {
         ctx.$set(ctx.$data, 'addDialogVis', false);
-        ctx.getTaskArr();
+        ctx.getPackArr();
     } else {
         ctx.$notify.error({
             title: `保存任务信息失败`,
