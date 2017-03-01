@@ -11,6 +11,24 @@ conf.set = {
     accUploadMaxSizeStr: '1M', //注册用户上传限制
     expAutoSaveMin: 10, //自动保存经验最小限制
     expAutoSaveTime: 60 * 1000, //自动保存经验间隔,每2分钟
+    taskTypesObj: {
+        '教程': {
+            pass: '认真观看教程'
+        },
+        '资料': {
+            pass: '下载资料并认真观看阅读'
+        },
+        '作业': {
+            pass: '按照描述完成作业并上传文件，由老师评审'
+        },
+        'github': {
+            pass: '根据描述编写代码，提交到github，填写项目地址，由老师评审'
+        },
+        '测试': {
+            pass: '80'
+        }
+    },
+    taskCategoryArr: ['通用', 'C++', '.net', 'Java', 'Web', 'UI/UE', '其他'],
 };
 
 //所有可路由的组件路径

@@ -28,7 +28,11 @@ _mngs.types = {
     file: 'file',
     page: 'page',
     his: 'his',
+    school: 'school',
+    group: 'group',
+    task: 'task',
 };
+
 
 
 
@@ -192,6 +196,28 @@ schemas.group = new $mongoose.Schema({
 });
 models.group = $mongoose.model('group', schemas.group);
 
+
+//任务对象
+schemas.task = new $mongoose.Schema({
+    category: String,
+    title: String,
+    desc: String,
+    type: String,
+    link: String,
+    pass: String,
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    tags: [String],
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.task = $mongoose.model('task', schemas.task);
 
 
 //文件对象
