@@ -1,37 +1,42 @@
-<script src="./AdmClassList.js"></script>
+<script src="./AdmCaseList.js"></script>
 
 <template>
-    <div sid='AdmClassList' :xid='xid' style="width:100%" class='AdmClassList'>
+    <div sid='AdmCaseList' :xid='xid' style="width:100%" class='AdmCaseList'>
         <el-button @click='opeAddDialog(true)' type='primary' style='width:120px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 建</el-button>
-        <el-button @click='getGroupList' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <el-button @click='getItemArr' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
         <div style="height:12px"></div>
 
-        <el-table :data="groupArr" style="width: 100%" border>
+        <el-table :data="itemArr" style="width: 100%" border>
             <el-table-column prop="name" label="名称" width="180">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">{{scope.row.name}}</div>
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.title}}</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="mobile" label="院校" width="120">
-                <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">{{scope.row.school.name}}</div>
+            <el-table-column prop="group" label="班级" width="120">
+                <template scope="scope" class='elps'>
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.group?scope.row.group.name:"未知"}}</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="mobile" label="管理员" width="120">
+            <el-table-column prop="course" label="课程" width="180">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">{{scope.row.manager?scope.row.manager.name:"未知"}}</div>
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.course?scope.row.course.title:"未知"}}</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="mobile" label="老师" width="120">
+            <el-table-column prop="manager" label="管理员" width="100">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.manager?scope.row.manager.name:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="teachers" label="老师" width="100">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>
                         <span v-for='t in scope.row.teachers'>{{t.name}}</span>
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column prop="mobile" label="助理" width="120">
+            <el-table-column prop="mobile" label="助理" width="100">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>
                         <span v-for='t in scope.row.assistants'>{{t.name}}</span>
                     </div>
                 </template>
@@ -45,17 +50,43 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="添加／修改班级" v-model="addDialogVis" size='small'>
+        <el-dialog title="添加／修改方案" v-model="addDialogVis" size='small'>
+
             <div style="height:8px"></div>
             <el-row>
-                <el-col :span="6">所属院校</el-col>
+                <el-col :span="6">标题</el-col>
                 <el-col :span="18">
-                    <el-dropdown trigger="click" style='margin-top:8px'>
-                        <span class="el-dropdown-link" style="cursor:pointer">{{addDialogData.school?addDialogData.school.name:"none"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                    <el-input type='text' :placeholder='validates.addDialogTitle.tip' v-model="addDialogData.title" ref='addDialogTitle' @change='validate("addDialogTitle")'>
+                    </el-input>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">院校</el-col>
+                <el-col :span="16">
+                    <el-autocomplete class="inline-input" v-model="addDialogData.school.name" :fetch-suggestions="genSearchFn(schoolArr,'name')" @select="selectSchool" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                    <i class='fa fa-caret-down caretdown'></i>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">班级</el-col>
+                <el-col :span="16">
+                    <el-autocomplete class="inline-input" v-model="addDialogData.group.name" :fetch-suggestions="genSearchFn(groupArr,'name')" @select="selelctGroup" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                    <i class='fa fa-caret-down caretdown'></i>
+                </el-col>
+            </el-row>
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">类别</el-col>
+                <el-col :span="18">
+                    <el-dropdown @command="selectCategory" style='margin-top:8px'>
+                        <span class="el-dropdown-link">{{addDialogCategory?addDialogCategory:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item v-for='item in schoolArr'>
-                                <el-button @click='setSchool(item)' class='dropBtn' style='margin:4px 0'>{{item.name}}</el-button>
-                            </el-dropdown-item>
+                            <el-dropdown-item v-for='item in categoryArr' v-bind:command="item">{{item}}</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </el-col>
@@ -63,28 +94,31 @@
 
             <div style="height:8px"></div>
             <el-row>
-                <el-col :span="6">班级名称</el-col>
+                <el-col :span="6">课程</el-col>
+                <el-col :span="16">
+                    <el-autocomplete class="inline-input" v-model="addDialogData.course.title" :fetch-suggestions="genSearchFn(courseArr,'title')" @select="selectCourse" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                    <i class='fa fa-caret-down caretdown'></i>
+                </el-col>
+            </el-row>
+
+
+
+            <div style="height:8px"></div>
+            <el-row>
+                <el-col :span="6">开始日期</el-col>
                 <el-col :span="18">
-                    <el-autocomplete class="inline-input" v-model="addDialogData.name" :fetch-suggestions="genSearchFn(groupArr,'name')" :placeholder='validates.addDialogName.tip' @change='validate("addDialogName")' ref='addDialogName' @select="selectGroupName" :trigger-on-focus="false"></el-autocomplete>
+                    <el-date-picker v-model="addDialogBegin" align="right" type="date" placeholder="选择日期" @change='refreshDialogData()'> </el-date-picker>
                 </el-col>
             </el-row>
 
             <div style="height:8px"></div>
             <el-row>
-                <el-col :span="6">入学年份</el-col>
+                <el-col :span="6">结束日期</el-col>
                 <el-col :span="18">
-                    <el-date-picker v-model="dialogBegin" align="right" type="year" placeholder="选择年"> </el-date-picker>
+                    <el-date-picker v-model="addDialogEnd" align="right" type="date" placeholder="选择日期"></el-date-picker>
                 </el-col>
             </el-row>
 
-            <div style="height:8px"></div>
-            <el-row>
-                <el-col :span="6">毕业年份</el-col>
-                <el-col :span="18">
-                    <el-date-picker v-model="dialogEnd" align="right" type="year" placeholder="选择年" @onClick='updateYear'>
-                    </el-date-picker>
-                </el-col>
-            </el-row>
 
             <div style="height:8px"></div>
             <el-row>
@@ -136,6 +170,7 @@
                     </el-input>
                 </el-col>
             </el-row>
+
             <div style="height:8px"></div>
             <el-row>
                 <el-col :span="6">备注信息</el-col>
@@ -144,9 +179,10 @@
                     </el-input>
                 </el-col>
             </el-row>
+
             <div style="height:18px"></div>
             <el-row>
-                <el-button @click='dialogBtnClick' type='primary' style='width:160px'>确 定</el-button>
+                <el-button @click='updateItem' type='primary' style='width:160px'>确 定</el-button>
                 <el-button type='text' @click='opeAddDialog(false)' style='width:100px'>取 消</el-button>
             </el-row>
         </el-dialog>
@@ -159,11 +195,11 @@
         min-width: 400px;
     }
 
-    .AdmClassList .el-input__inner {
+    .AdmCaseList .el-input__inner {
         border-radius: 0px;
     }
 
-    .AdmClassList .el-textarea__inner {
+    .AdmCaseList .el-textarea__inner {
         border-radius: 0px;
     }
 
@@ -174,6 +210,18 @@
 </style>
 
 <style scoped>
+    .AdmCaseList .el-col {
+        position: relative;
+    }
+
+    .caretdown {
+        float: right;
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        color: #AAA;
+    }
+
     .isdel {
         color: #AAA;
     }
@@ -192,6 +240,13 @@
         line-height: 34px;
         margin-left: 8px;
         color: #888;
+    }
+
+    .elps {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        word-break: break-all;
     }
 
 </style>

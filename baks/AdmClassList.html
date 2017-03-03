@@ -22,18 +22,14 @@
                     <div :class="{isdel:scope.row.__del}">{{scope.row.manager?scope.row.manager.name:"未知"}}</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="mobile" label="老师" width="120">
+            <el-table-column prop="mobile" label="班主任" width="120">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">
-                        <span v-for='t in scope.row.teachers'>{{t.name}}</span>
-                    </div>
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.teacher?scope.row.teacher.name:"未知"}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="mobile" label="助理" width="120">
                 <template scope="scope">
-                    <div :class="{isdel:scope.row.__del}">
-                        <span v-for='t in scope.row.assistants'>{{t.name}}</span>
-                    </div>
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.assistant?scope.row.assistant.name:"未知"}}</div>
                 </template>
             </el-table-column>
             <el-table-column prop="mobile" label="操作" style='min-width:160px'>
@@ -90,43 +86,35 @@
             <el-row>
                 <el-col :span="6">管理员</el-col>
                 <el-col :span="10">
-                    <el-input v-model="addDialogData.manager.mobile" :placeholder='validates.addDialogMobile1.tip' ref='addDialogMobile1' @change='iptMobileChange("manager","addDialogMobile1",addDialogData)'></el-input>
+                    <el-input v-model="addDialogData.manager.mobile" :placeholder='validates.addDialogMobile1.tip' ref='addDialogMobile1' @change='validate("addDialogMobile1","manager")'></el-input>
                 </el-col>
                 <el-col :span="8">
                     <span class='userName'>{{addDialogData.manager.name||"未知"}}</span>
                 </el-col>
             </el-row>
 
-
             <div style="height:8px"></div>
             <el-row>
-                <el-col :span="6">老师</el-col>
+                <el-col :span="6">班主任</el-col>
                 <el-col :span="10">
-                    <el-input class="inline-input" v-model="addDialogTeacher.mobile" :placeholder='validates.addDialogMobile2.tip' @change='iptMobileChange("addDialogTeacher","addDialogMobile2")' ref='addDialogMobile2'></el-input>
+                    <el-input v-model="addDialogData.teacher.mobile" :placeholder='validates.addDialogMobile2.tip' ref='addDialogMobile2' @change='validate("addDialogMobile2","teacher")'></el-input>
                 </el-col>
                 <el-col :span="8">
-                    <span class='userName'>{{addDialogTeacher.name||"未知"}}</span>
-                    <el-button type='primary' style='margin-left:12px' @click='addTeacher'><i class='fa fa-plus'></i></el-button>
+                    <span class='userName'>{{addDialogData.teacher.name||"未知"}}</span>
                 </el-col>
-            </el-row>
-            <el-row>
-                <el-col :span="18" :offset='6'><span v-for='t in addDialogData.teachers'>{{t.name}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removeTeacher(t)'><i class='fa fa-times'></i></el-button></span></el-col>
             </el-row>
 
             <div style="height:8px"></div>
             <el-row>
                 <el-col :span="6">助理</el-col>
                 <el-col :span="10">
-                    <el-input class="inline-input" v-model="addDialogAssistant.mobile" :placeholder='validates.addDialogMobile3.tip' @change='iptMobileChange("addDialogAssistant","addDialogMobile3")' ref='addDialogMobile3'></el-input>
+                    <el-input v-model="addDialogData.assistant.mobile" :placeholder='validates.addDialogMobile3.tip' ref='addDialogMobile3' @change='validate("addDialogMobile3","assistant")'></el-input>
                 </el-col>
                 <el-col :span="8">
-                    <span class='userName'>{{addDialogAssistant.name||"未知"}}</span>
-                    <el-button type='primary' style='margin-left:12px' @click='addAssistant'><i class='fa fa-plus'></i></el-button>
+                    <span class='userName'>{{addDialogData.assistant.name||"未知"}}</span>
                 </el-col>
             </el-row>
-            <el-row>
-                <el-col :span="18" :offset='6'><span v-for='t in addDialogData.assistants'>{{t.name}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removeAssistant(t)'><i class='fa fa-times'></i></el-button></span></el-col>
-            </el-row>
+
 
             <div style="height:8px"></div>
             <el-row>

@@ -50,13 +50,11 @@ com.data = function data() {
         addDialogVis: false,
         addDialogData: {
             manager: {},
-            teachers: {},
-            assistants: {},
+            teacher: {},
+            assistant: {},
         },
         dialogBegin: undefined, //弥补el时间选择器不能自动刷新的问题
         dialogEnd: undefined,
-        addDialogTeacher: {}, //弹窗老师对象
-        addDialogAssistant: {}, //弹窗助理对象
         addDialogMod: 'add',
         validates: {
             addDialogName: {
@@ -112,12 +110,6 @@ com.methods = {
     genSearchFn,
     selectGroupName,
     setDialogUser,
-    addTeacher,
-    addAssistant,
-    removeTeacher,
-    removeAssistant,
-    refreshDialogData,
-    iptMobileChange,
 };
 
 com.mounted = async function () {
@@ -127,136 +119,6 @@ com.mounted = async function () {
 
 
 //--------------------------functions---------------------------
-/**
- * 刷新弹窗数据
- */
-function refreshDialogData() {
-    var ctx = this;
-    var ddata = ctx.$data.addDialogData;
-    setTimeout(function () {
-        var desc = ddata.desc;
-        ctx.$set(ddata, 'desc', '');
-        ctx.$set(ddata, 'desc', desc);
-        ctx.$set(ctx.$data, 'addDialogData', ddata);
-    }, 100);
-};
-
-/**
- * 弹窗添加老师按钮
- * 先添加到adddialogdata.teachers，update的时候再整理
- */
-async function addAssistant() {
-    var ctx = this;
-    var usr = ctx.$data.addDialogAssistant;
-    if (!usr._id) {
-        ctx.$notify.error({
-            title: 'ID未定义!',
-        });
-    };
-
-    var arr = ctx.$data.addDialogData.assistants;
-    var exist = arr.filter(function (v) {
-        return v._id == usr._id;
-    });
-
-    if (exist.length == 0) {
-        arr.push(usr);
-        ctx.$set(ctx.$data.addDialogData, 'assistants', arr);
-        ctx.$set(ctx.$data, 'addDialogAssistant', {});
-    } else {
-        ctx.$notify.error({
-            title: '已经存在，请勿重复添加!',
-        });
-    };
-};
-
-/**
- * 弹窗删除老师按钮
- * 从adddialogdata.teachers中移除，update的时候再整理
- */
-async function removeAssistant(usr) {
-    var ctx = this;
-    var arr = ctx.$data.addDialogData.assistants;
-    var pos = arr.indexOf(usr);
-    if (pos != -1) arr.splice(pos, 1);
-    ctx.$set(ctx.$data.addDialogData, 'assistants', arr);
-};
-
-/**
- * 通用的手机输入框监听，自动读取用户名更新
- * @param {string} usrkey 用户对象在$data中的数据字段，_id和name自动填充到这里
- * @param {string} ref    用于validate的验证ref
- */
-async function iptMobileChange(usrkey, ref, pathObj) {
-    var ctx = this;
-    var obj = pathObj ? pathObj : ctx.$data;
-
-    ctx.$set(obj, usrkey, {
-        mobile: obj[usrkey].mobile
-    }); //清空id和name字段
-
-    if (ref) {
-        var vali = ctx.$xglobal.fns.validate(ctx, ref);
-        if (!vali) return;
-    };
-
-    var usr = obj[usrkey];
-    var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
-    var data = {
-        token: localStorage.getItem('accToken'),
-        cmd: `models.user.findOne({mobile:'${usr.mobile}'},'_id name')`,
-    };
-
-    var res = await ctx.rRun(api, data);
-    if (!res.data) return;
-
-    usr._id = res.data._id;
-    usr.name = res.data.name;
-    ctx.$set(obj, usrkey, usr);
-    ctx.refreshDialogData();
-};
-
-
-/**
- * 弹窗添加老师按钮
- * 先添加到adddialogdata.teachers，update的时候再整理
- */
-async function addTeacher() {
-    var ctx = this;
-    var usr = ctx.$data.addDialogTeacher;
-    if (!usr._id) {
-        ctx.$notify.error({
-            title: 'ID未定义!',
-        });
-    };
-
-    var arr = ctx.$data.addDialogData.teachers;
-    var exist = arr.filter(function (v) {
-        return v._id == usr._id;
-    });
-
-    if (exist.length == 0) {
-        arr.push(usr);
-        ctx.$set(ctx.$data.addDialogData, 'teachers', arr);
-        ctx.$set(ctx.$data, 'addDialogTeacher', {});
-    } else {
-        ctx.$notify.error({
-            title: '已经存在，请勿重复添加!',
-        });
-    };
-};
-
-/**
- * 弹窗删除老师按钮
- * 从adddialogdata.teachers中移除，update的时候再整理
- */
-async function removeTeacher(usr) {
-    var ctx = this;
-    var arr = ctx.$data.addDialogData.teachers;
-    var pos = arr.indexOf(usr);
-    if (pos != -1) arr.splice(pos, 1);
-    ctx.$set(ctx.$data.addDialogData, 'teachers', arr);
-};
 
 /**
  * 根据输入的电话号码兑换用户名称和id
@@ -322,8 +184,8 @@ async function opeAddDialog(vis) {
 
     if (vis) ctx.$set(ctx.$data, 'addDialogData', {
         manager: {},
-        teachers: [],
-        assistants: [],
+        teacher: {},
+        assistant: {},
     });
 
     ctx.$set(ctx.$data, 'addDialogVis', vis);
@@ -390,19 +252,8 @@ async function updateGroup() {
     if (group.begin) datStr += `,begin:'${group.begin}'`;
     if (group.end) datStr += `,end:'${group.end}'`;
     if (group.manager._id) datStr += `,manager:'${group.manager._id}'`;
-
-    var teachersIdArr = []; //转换id数组
-    group.teachers.forEach(function (item) {
-        teachersIdArr.push(item._id);
-    });
-    datStr += `,teachers:${JSON.stringify(teachersIdArr)}`;
-
-
-    var assistantsIdArr = []; //转换id数组
-    group.assistants.forEach(function (item) {
-        assistantsIdArr.push(item._id);
-    });
-    datStr += `,assistants:${JSON.stringify(assistantsIdArr)}`;
+    if (group.teacher._id) datStr += `,teacher:'${group.teacher._id}'`;
+    if (group.assistant._id) datStr += `,assistant:'${group.assistant._id}'`;
 
     datStr += '}';
 
@@ -417,6 +268,9 @@ async function updateGroup() {
         token: localStorage.getItem('accToken'),
         cmd: cmd,
     };
+
+    //manager:'${group.manager._id}',teacher:'${group.teacher._id}',assistant:'${group.assistant._id}',
+    //,begin:'${group.begin}',end:'${group.end}'
 
     var res = await ctx.rRun(api, data);
     if (!res.err) {
@@ -456,7 +310,7 @@ async function getGroupList() {
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: 'models.group.find({},"").populate("school","name mobile").populate("manager","name mobile").populate("teachers","name mobile").populate("assistants","name mobile").sort({created_at:-1})',
+        cmd: 'models.group.find({},"").populate("school","name mobile").populate("manager","name mobile").populate("teacher","name mobile").populate("assistant","name mobile").sort({created_at:-1})',
     };
 
     var res = await ctx.rRun(api, data);

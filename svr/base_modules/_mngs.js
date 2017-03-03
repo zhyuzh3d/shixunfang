@@ -169,14 +169,14 @@ schemas.group = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     },
-    teacher: { //班主任，维护班级成员
+    teachers: [{ //班主任，维护班级成员
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
-    },
-    assistant: { //助理，可协助维护班级成员
+    }],
+    assistants: [{ //助理，可协助维护班级成员
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
-    },
+    }],
     school: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'school',
@@ -269,6 +269,100 @@ schemas.course = new $mongoose.Schema({
     },
 });
 models.course = $mongoose.model('course', schemas.course);
+
+//实施方案
+schemas.case = new $mongoose.Schema({
+    title: String,
+    desc: String,
+    group: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'group',
+    },
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    course: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'course',
+    },
+    manager: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    teachers: [{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }],
+    assistants: [{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }],
+    begin: Date,
+    end: Date,
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.case = $mongoose.model('case', schemas.case);
+
+//任务检查对象,记录用户某个task的完成情况;course,pack,task用于快速查询完成度
+schemas.check = new $mongoose.Schema({
+    case: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'case',
+    },
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    task: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'task',
+    },
+    pack: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'task',
+    },
+    course: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'task',
+    },
+    state: String, //undefined,checked,marking,marked...
+    pass: Boolean,
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.check = $mongoose.model('check', schemas.check);
+
+//评审打分对象,老师对学生提交的check进行打分,同一学生同一个task在被marked之后可以再发起新mark
+schemas.mark = new $mongoose.Schema({
+    check: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'check',
+    },
+    teacher: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user', //系统根据check的case指定到对应的技术老师
+    },
+    comment: String,
+    state: String, //marking,marked...同一个任务，只要处理一个就将其他没marked的都删除
+    pass: Boolean,
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.mark = $mongoose.model('mark', schemas.mark);
 
 
 
