@@ -65,6 +65,8 @@ const _msg = {
         PageIdNotFound: new Err('找不到页面ID', 405),
 
         AdmHaveNoPower: new Err('无权限执行操作', 501),
+
+        GrpNotInGrp:new Err('只有成员才能执行此操作',601),
     },
 };
 

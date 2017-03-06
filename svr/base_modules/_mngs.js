@@ -270,7 +270,7 @@ schemas.course = new $mongoose.Schema({
 models.course = $mongoose.model('course', schemas.course);
 
 //实施方案
-schemas.case = new $mongoose.Schema({
+schemas.plan = new $mongoose.Schema({
     title: String,
     desc: String,
     group: {
@@ -297,6 +297,10 @@ schemas.case = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     }],
+    members:[{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }],
     begin: Date,
     end: Date,
 }, {
@@ -306,7 +310,7 @@ schemas.case = new $mongoose.Schema({
         updatedAt: 'update_at',
     },
 });
-models.case = $mongoose.model('case', schemas.case);
+models.plan = $mongoose.model('plan', schemas.plan);
 
 //任务检查对象,记录用户某个task的完成情况;course,pack,task用于快速查询完成度
 schemas.check = new $mongoose.Schema({

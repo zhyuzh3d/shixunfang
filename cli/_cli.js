@@ -23,6 +23,7 @@ Vue.use(xglobal, {
         //将通过beforCreate附着到组件的this，任意字段
         conf,
         fns, //包含多个函数的object
+        xdata: {},
     },
     xcomponent: {
         //将附着到每个组件，可以使用data，methods等字段

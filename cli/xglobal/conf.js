@@ -65,4 +65,10 @@ conf.apis = {
     pageDel: `//${location.host}/api/pageDel`,
 
     coinChangeExp: `//${location.host}/api/coinChangeExp`,
+
+    //for shixunfang
+    getMyGroupArr: `//${location.host}/api/getMyGroupArr`,
+    getGroupDetail: `//${location.host}/api/getGroupDetail`,
+
+
 };

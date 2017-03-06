@@ -38,12 +38,16 @@ com.components = {
 
 com.data = function data() {
     var ctx = this;
+    var ttCtx = ctx.$xcoms['App_mainView-Tt'];
 
     return {
         msg: 'Hello from pages/ClassDetail/ClassDetail.js',
         activeName: 'practice',
         practiceArr: Fake.practiceArr,
         accInfo: Fake.accInfo,
+        groupInfo: {
+            _id: ttCtx.$data.classDetailId,
+        },
     };
 };
 
@@ -77,4 +81,46 @@ com.methods = {
             homeView: 'UserHome',
         });
     },
+
+    getGroupInfo,
+
 };
+
+com.beforeMount = async function () {
+    var ctx = this;
+    await ctx.getGroupInfo();
+};
+
+com.mounted = async function () {
+    var ctx = this;
+};
+
+
+//--------functions----------
+
+/**
+ * 获取单个班级的详细信息
+ */
+async function getGroupInfo() {
+    var ctx = this;
+
+    var api = ctx.$xglobal.conf.apis.getGroupDetail;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        _id: ctx.$data.groupInfo._id,
+    };
+
+    var res = await ctx.rRun(api, data);
+    ctx.$set(ctx.$data, 'groupInfo', res.data);
+
+};
+
+
+
+
+
+
+
+
+
+//

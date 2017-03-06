@@ -1,7 +1,7 @@
-<script src="./AdmCaseList.js"></script>
+<script src="./AdmPlanList.js"></script>
 
 <template>
-    <div sid='AdmCaseList' :xid='xid' style="width:100%" class='AdmCaseList'>
+    <div sid='AdmPlanList' :xid='xid' style="width:100%" class='AdmPlanList'>
         <el-button @click='opeAddDialog(true)' type='primary' style='width:120px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 建</el-button>
         <el-button @click='getItemArr' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
         <div style="height:12px"></div>
@@ -195,11 +195,11 @@
         min-width: 400px;
     }
 
-    .AdmCaseList .el-input__inner {
+    .AdmPlanList .el-input__inner {
         border-radius: 0px;
     }
 
-    .AdmCaseList .el-textarea__inner {
+    .AdmPlanList .el-textarea__inner {
         border-radius: 0px;
     }
 
@@ -210,7 +210,7 @@
 </style>
 
 <style scoped>
-    .AdmCaseList .el-col {
+    .AdmPlanList .el-col {
         position: relative;
     }
 

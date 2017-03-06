@@ -4,9 +4,9 @@
     <div id='PracticeCard' @click='goClassDetail'>
         <el-row  class="card">
             <el-col :span='20' class='cardLeft'>
-                <div class='ptitle'>{{fill.title}}</div>
-                <p>成员 : {{fill.memberArr.length}}</p>
-                <p>实训 : {{fill.practiceArr.length}}</p>
+                <div class='ptitle'>{{fill.name}}</div>
+                <p>院校 : {{fill.school.name}}</p>
+                <p>成员 : {{fill.members.length}}</p>
             </el-col>
             <el-col :span='4' class='cardBtn'>
                 <i class="fa fa-chevron-right"></i>

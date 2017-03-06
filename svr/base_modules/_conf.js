@@ -43,6 +43,16 @@ _conf.regx = {
     int8: /^-?\d{1,8}$/, //正负整数,99999999
 };
 
+//身份角色
+_conf.role = {
+    'admin': 999,
+    'author': 100,
+    'manager': 90,
+    'teacher': 80,
+    'assitant': 70,
+    'member': 60,
+    'none': 10,
+};
 
 
 

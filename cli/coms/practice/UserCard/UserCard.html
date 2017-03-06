@@ -6,9 +6,9 @@
             <el-col :span='20' class='cardLeft'>
                 <img :src='fill.avatar' class='avatar ib' />
                 <div class="ib" style="margin-left:12px">
-                    <div class='ptitle'>{{fill.nick}}</div>
-                    <p>院校 : </p>
-                    <p>成就 : </p>
+                    <div class='ptitle'>{{fill.name}}</div>
+                    <p v-if='fill.school'>院校 : {{fill.school}}</p>
+                    <p v-if='fill.archive'>成就 : {{fill.archive}}</p>
                 </div>
             </el-col>
             <el-col :span='4' class='cardBtn'>
@@ -38,7 +38,7 @@
     }
 
     .cardLeft {
-        margin-left: 12px
+        margin-left: 0px
     }
 
     .cardLeft p {

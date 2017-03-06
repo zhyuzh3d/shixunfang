@@ -35,7 +35,7 @@ export default com;
 com.props = {
     xid: {
         type: String,
-        default: 'AdmCaseList',
+        default: 'AdmPlanList',
     },
     conf: Object,
 };
@@ -54,7 +54,7 @@ com.data = function data() {
     };
 
     return {
-        msg: 'Hello from admin/AdmCaseList/AdmCaseList.js',
+        msg: 'Hello from admin/AdmPlanList/AdmPlanList.js',
         itemArr: [],
         dialogSchool: {},
         schoolArr: [],
@@ -224,7 +224,7 @@ async function getItemArr() {
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: 'models.case.find({},"").populate("author","name mobile").populate({path:"group",select:"name school",populate:{path:"school",select:"name"}}).populate("course","title").populate("manager","name mobile").populate("teachers","name mobile").populate("assistants","name mobile").sort({created_at:-1})',
+        cmd: 'models.plan.find({},"").populate("author","name mobile").populate({path:"group",select:"name school",populate:{path:"school",select:"name"}}).populate("course","title").populate("manager","name mobile").populate("teachers","name mobile").populate("assistants","name mobile").sort({created_at:-1})',
     };
 
     var res = await ctx.rRun(api, data);
@@ -435,9 +435,9 @@ async function updateItem() {
 
     var cmd;
     if (ctx.$data.addDialogData._id) {
-        cmd = `models.case.update({_id:'${item._id}'},${datStr},{upsert:true})`;
+        cmd = `models.plan.update({_id:'${item._id}'},${datStr},{upsert:true})`;
     } else {
-        cmd = `models.case(${datStr}).save()`;
+        cmd = `models.plan(${datStr}).save()`;
     };
 
     var data = {

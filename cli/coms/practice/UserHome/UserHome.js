@@ -47,6 +47,9 @@ xsetConf.activeName = {
                 var com = await System.import('../../user/Profile/Profile.html');
                 cname = 'Profile';
                 break;
+            case 'ClassList':
+                await ctx.getMyGroupArr();
+                break;
             default:
                 var com = await System.import('../../user/Profile/Profile.html');
                 cname = 'Profile';
@@ -66,6 +69,7 @@ com.data = function data() {
         _xsetConf: xsetConf,
         coms: {},
         activeName: '',
+        myGroupArr: [],
         practiceArr: Fake.practiceArr,
         classArr: Fake.classArr,
         accInfo: Fake.accInfo,
@@ -81,11 +85,8 @@ com.props = {
 
 //所有直接使用的方法写在这里
 com.methods = {
-    xgoTab: function () {
-        this.$xset({
-            activeName: this.$data.activeName
-        });
-    },
+    xgoTab,
+    getMyGroupArr,
 };
 
 //加载到页面前执行的函数
@@ -105,4 +106,37 @@ com.mounted = async function () {
 
 //-------functions--------
 
+/**
+ * 标签卡切换,并且读取并刷新数据
+ */
+async function xgoTab(tab) {
+    var ctx = this;
+    this.$xset({
+        activeName: this.$data.activeName
+    });
+};
 
+
+/**
+ * 获取我的班级列表
+ */
+async function getMyGroupArr() {
+    var ctx = this;
+    var api = ctx.$xglobal.conf.apis.getMyGroupArr;
+    var data = {
+        token: localStorage.getItem('accToken'),
+    };
+
+    var res = await ctx.rRun(api, data);
+    ctx.$set(ctx.$data, 'myGroupArr', res.data);
+
+};
+
+
+
+
+
+
+
+
+//

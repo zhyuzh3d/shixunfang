@@ -22,7 +22,7 @@ com.methods = {
         var tarCtx = ctx.$xcoms['App_mainView-Tt'];
 
         tarCtx.$xgo({
-            classDetailId: ctx.fill.id || null,
+            classDetailId: ctx.fill._id || null,
             homeView: 'ClassDetail',
         });
     },
