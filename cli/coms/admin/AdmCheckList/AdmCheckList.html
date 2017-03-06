@@ -1,0 +1,104 @@
+<script src="./AdmCheckList.js"></script>
+
+<template>
+    <div sid='AdmCheckList' :xid='xid' style="width:100%" class='AdmCheckList'>
+        <el-button @click='getItemArr' type='primary' style='width:120px'> <i class='fa fa-refresh' style="margin-right:12px"></i> 刷 新</el-button>
+        <div style="height:12px"></div>
+
+        <el-table :data="itemArr" style="width: 100%" border>
+            <el-table-column prop="case" label="方案" width="180">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.case?scope.row.case.title:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="task" label="任务" width="180">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.task?scope.row.task.title:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="author" label="提交者" width="120">
+                <template scope="scope" class='elps'>
+                    <div :class="{isdel:scope.row.__del}">{{scope.row.author?scope.row.author.name:"未知"}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="state" label="状态" width="70">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.state}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="pass" label="通过" width="70">
+                <template scope="scope">
+                    <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.pass}}</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="mobile" label="操作" style='min-width:160px'>
+                <template scope="scope">
+                    <div style="width:100%;white-space:nowrap">
+                        <el-button v-if='false' v-show='!scope.row.__del' size='small' @click='openEditDialog(scope)'>编辑</el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+</template>
+
+<style>
+    .el-dialog--small {
+        min-width: 400px;
+    }
+
+    .AdmCheckList .el-input__inner {
+        border-radius: 0px;
+    }
+
+    .AdmCheckList .el-textarea__inner {
+        border-radius: 0px;
+    }
+
+    .cell {
+        white-space: nowrap
+    }
+
+</style>
+
+<style scoped>
+    .AdmCheckList .el-col {
+        position: relative;
+    }
+
+    .caretdown {
+        float: right;
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        color: #AAA;
+    }
+
+    .isdel {
+        color: #AAA;
+    }
+
+    .dropBtn {
+        width: 100px;
+        border: none;
+        display: block;
+    }
+
+    .el-row .el-col:first-child {
+        line-height: 36px
+    }
+
+    .userName {
+        line-height: 34px;
+        margin-left: 8px;
+        color: #888;
+    }
+
+    .elps {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        word-break: break-all;
+    }
+
+</style>

@@ -224,12 +224,16 @@ async function getItemArr() {
     var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
     var data = {
         token: localStorage.getItem('accToken'),
-        cmd: 'models.case.find({},"").populate("author","name mobile").populate({path:"group",select:"name",populate:{path:"school",select:"name"}}).populate("course","title").populate("manager","name mobile").populate("teachers","name mobile").populate("assistants","name mobile").sort({created_at:-1})',
+        cmd: 'models.case.find({},"").populate("author","name mobile").populate({path:"group",select:"name school",populate:{path:"school",select:"name"}}).populate("course","title").populate("manager","name mobile").populate("teachers","name mobile").populate("assistants","name mobile").sort({created_at:-1})',
     };
 
     var res = await ctx.rRun(api, data);
     ctx.$set(ctx.$data, 'itemArr', res.data);
 };
+
+
+
+
 
 /**
  * 打开编辑院校信息弹窗

@@ -7,7 +7,7 @@
         <div style="height:12px"></div>
 
         <el-table :data="itemArr" style="width: 100%" border>
-            <el-table-column prop="name" label="名称" width="180">
+            <el-table-column prop="name" label="标题" width="180">
                 <template scope="scope">
                     <div :class="{isdel:scope.row.__del}" class='elps'>{{scope.row.title}}</div>
                 </template>

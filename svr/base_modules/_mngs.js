@@ -196,7 +196,6 @@ schemas.group = new $mongoose.Schema({
 });
 models.group = $mongoose.model('group', schemas.group);
 
-
 //任务对象
 schemas.task = new $mongoose.Schema({
     category: String,
@@ -348,7 +347,7 @@ schemas.mark = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'check',
     },
-    teacher: {
+    author: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user', //系统根据check的case指定到对应的技术老师
     },

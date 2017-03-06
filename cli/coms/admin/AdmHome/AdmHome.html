@@ -41,6 +41,16 @@
                             <component :is="coms.AdmCaseList"></component>
                         </el-row>
                     </el-tab-pane>
+                    <el-tab-pane label="记录" name="AdmCheckList">
+                        <el-row style='margin:12px 0'>
+                            <component :is="coms.AdmCheckList"></component>
+                        </el-row>
+                    </el-tab-pane>
+                    <el-tab-pane label="评估" name="AdmMarkList">
+                        <el-row style='margin:12px 0'>
+                            <component :is="coms.AdmMarkList"></component>
+                        </el-row>
+                    </el-tab-pane>
                 </el-tabs>
             </el-col>
         </el-row>
