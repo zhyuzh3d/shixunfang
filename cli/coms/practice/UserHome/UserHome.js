@@ -122,7 +122,7 @@ async function xgoTab(tab) {
  */
 async function getMyGroupArr() {
     var ctx = this;
-    var api = ctx.$xglobal.conf.apis.getMyGroupArr;
+    var api = ctx.$xglobal.conf.apis.grpGetMyGroupArr;
     var data = {
         token: localStorage.getItem('accToken'),
     };

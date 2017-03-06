@@ -66,7 +66,8 @@ const _msg = {
 
         AdmHaveNoPower: new Err('无权限执行操作', 501),
 
-        GrpNotInGrp:new Err('只有成员才能执行此操作',601),
+        GrpNotInGrp: new Err('只有成员才能执行此操作', 601),
+        GrpNotExistOrNotInGrp: new Err('班级不存在或者您不属于班级成员，无法访问', 602),
     },
 };
 

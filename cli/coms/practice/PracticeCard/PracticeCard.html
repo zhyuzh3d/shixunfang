@@ -1,21 +1,28 @@
 <script src="./PracticeCard.js"></script>
 
 <template>
-    <div sid='PracticeCard' @click='goPacticeDetail'>
+    <div sid='PracticeCard'>
         <el-row class="card">
             <el-col :span='20' class='cardLeft'>
-                <div class='ptitle'>{{fill.title}}</div>
+                <div class='ptitle' :class='{expire:!fill.open}'>{{fill.title}}</div>
                 <p>班级 : {{fill.group.name}}</p>
                 <p>周期 : {{fill.begin.substr(0,10)}} ~ {{fill.end.substr(0,10)}}</p>
             </el-col>
             <el-col :span='4' class='cardBtn'>
-                <i class="fa fa-chevron-right"></i>
+                <el-button v-if='fill.active && fill.open' @click='goPacticeDetail'>
+                    <i v-if='fill.active' class="fa fa-chevron-right"></i>
+                </el-button>
+                <el-button type='primary' v-if='fill.open'  @click='activePlan'>加入</el-button>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <style scoped>
+    .expire {
+        color: #888;
+    }
+
     .ptitle {
         font-size: 16px;
         font-weight: bold;
@@ -28,7 +35,7 @@
 
     .cardLeft p {
         font-size: 13px;
-        color: #666;
+        color: #888;
         margin: 4px 0;
     }
 
@@ -45,14 +52,12 @@
         border: 1px solid #AAA;
         border-radius: 0;
         padding: 12px;
-        cursor: pointer;
         align-items: center;
         display: flex;
-        cursor: pointer;
     }
 
     .card:hover {
-        box-shadow: 0 0 12px #888;
+        /*        box-shadow: 0 0 12px #888;*/
     }
 
 </style>

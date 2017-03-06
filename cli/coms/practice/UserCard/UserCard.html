@@ -7,6 +7,7 @@
                 <img :src='fill.avatar' class='avatar ib' />
                 <div class="ib" style="margin-left:12px">
                     <div class='ptitle'>{{fill.name}}</div>
+                    <p v-if='role'>{{role}}</p>
                     <p v-if='fill.school'>院校 : {{fill.school}}</p>
                     <p v-if='fill.archive'>成就 : {{fill.archive}}</p>
                 </div>

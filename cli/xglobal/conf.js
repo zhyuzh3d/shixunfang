@@ -67,8 +67,10 @@ conf.apis = {
     coinChangeExp: `//${location.host}/api/coinChangeExp`,
 
     //for shixunfang
-    getMyGroupArr: `//${location.host}/api/getMyGroupArr`,
-    getGroupDetail: `//${location.host}/api/getGroupDetail`,
+    grpGetMyGroupArr: `//${location.host}/api/grpGetMyGroupArr`,
+    grpGetGroupDetail: `//${location.host}/api/grpGetGroupDetail`,
+    plnGetMyPlanArr: `//${location.host}/api/plnGetMyPlanArr`,
+    plnActivePlan: `//${location.host}/api/plnActivePlan`,
 
 
 };

@@ -13,7 +13,7 @@
         </el-row>
         <el-row type="flex" justify="center">
             <el-col class='nav' :span="20" :sm="16">
-                <h2 style="margin:8px 0">{{groupInfo.name}}</h2>
+                <h2 style="margin:8px 0;color:#334">{{groupInfo.name}}</h2>
             </el-col>
         </el-row>
         <el-row v-if='groupInfo.name' id='main' type="flex" justify="center" style='margin-top:12px'>
@@ -28,23 +28,20 @@
                     <el-tab-pane label="班级成员" name="member">
                         <el-button v-if='false' type='primary' style='width:160px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 成 员</el-button>
                         <el-row v-if='groupInfo.manager'>
-                            <div class="roletag">管理员</div>
-                            <component is="userCard" :fill='groupInfo.manager'></component>
+                            <component is="userCard" :fill='groupInfo.manager' role='管理员'></component>
                         </el-row>
                         <div style='height:12px'></div>
                         <el-row v-if='groupInfo.teachers.length>0' v-for='u in groupInfo.teachers'>
-                            <div class="roletag">导师</div>
-                            <component is="userCard" :fill='u'></component>
+                            <component is="userCard" :fill='u' role='导师'></component>
                         </el-row>
                         <div style='height:12px'></div>
                         <el-row v-if='groupInfo.assistants.length>0' v-for='u in groupInfo.assistants'>
-                            <div class="roletag">助理</div>
-                            <component is="userCard" :fill='u'></component>
+                            <component is="userCard" :fill='u' role='助理'></component>
                         </el-row>
 
                         <div style='height:12px'></div>
                         <el-row v-for='(p,n) in fill.members' style='margin:12px 0'>
-                            <component is="userCard" :fill='p' :index='n'></component>
+                            <component is="userCard" :fill='p' :index='n' role='普通成员'></component>
                         </el-row>
                         <div style='height:12px'></div>
                     </el-tab-pane>
@@ -139,10 +136,11 @@
     }
 
     .txtrow div:last-child {
-        font-weight: bold;
+        font-weight: 400;
         width: 49%;
         text-align: left;
         display: inline-block;
+        font-size: 14px;
     }
 
     .avatar {

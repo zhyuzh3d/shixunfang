@@ -13,6 +13,7 @@ com.data = function data() {
 
 com.props = {
     fill: Object,
+    role: String,
     index: Number,
 };
 
@@ -33,4 +34,3 @@ com.methods = {
 };
 
 com.mounted = function () {};
-

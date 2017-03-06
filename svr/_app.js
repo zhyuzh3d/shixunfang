@@ -27,6 +27,7 @@ const _page = global._page = require('./app_modules/_page.js');
 const _coin = global._coin = require('./app_modules/_coin.js');
 const _adm = global._adm = require('./app_modules/_adm.js');
 const _grp = global._grp = require('./app_modules/_grp.js');
+const _pln = global._pln = require('./app_modules/_pln.js');
 
 (async function () {
     //全部api的容器对象
