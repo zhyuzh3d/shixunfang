@@ -69,8 +69,17 @@ conf.apis = {
     //for shixunfang
     grpGetMyGroupArr: `//${location.host}/api/grpGetMyGroupArr`,
     grpGetGroupDetail: `//${location.host}/api/grpGetGroupDetail`,
+    grpCreateVmembers: `//${location.host}/api/grpCreateVmembers`,
     plnGetMyPlanArr: `//${location.host}/api/plnGetMyPlanArr`,
     plnActivePlan: `//${location.host}/api/plnActivePlan`,
 
 
 };
+
+
+
+
+
+
+
+//

@@ -1,0 +1,4 @@
+{"time":"2017-03-07T01:00:50.004Z","type":"INF","data":"_rds:Redis is ready on db8."}
+{"time":"2017-03-07T01:00:50.374Z","type":"INF","data":"_qn:Server is listening on 19118."}
+{"time":"2017-03-07T01:00:50.883Z","type":"INF","data":"_mngs:startPrms:Mongoose is ready on shixunfang."}
+{"time":"2017-03-07T01:00:50.884Z","type":"INF","data":"_app:Http Server is listening on 8088."}

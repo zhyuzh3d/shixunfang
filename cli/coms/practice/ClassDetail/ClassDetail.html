@@ -26,22 +26,20 @@
                         </el-row>
                     </el-tab-pane>
                     <el-tab-pane label="班级成员" name="member">
-                        <el-button v-if='false' type='primary' style='width:160px'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 成 员</el-button>
-                        <el-row v-if='groupInfo.manager'>
-                            <component is="userCard" :fill='groupInfo.manager' role='管理员'></component>
-                        </el-row>
-                        <div style='height:12px'></div>
-                        <el-row v-if='groupInfo.teachers.length>0' v-for='u in groupInfo.teachers'>
-                            <component is="userCard" :fill='u' role='导师'></component>
-                        </el-row>
-                        <div style='height:12px'></div>
-                        <el-row v-if='groupInfo.assistants.length>0' v-for='u in groupInfo.assistants'>
-                            <component is="userCard" :fill='u' role='助理'></component>
-                        </el-row>
-
-                        <div style='height:12px'></div>
-                        <el-row v-for='(p,n) in fill.members' style='margin:12px 0'>
-                            <component is="userCard" :fill='p' :index='n' role='普通成员'></component>
+                        <el-button v-if='groupInfo.myRole=="管理员"' type='primary' style='width:160px' @click='addMemberDialogVis=true'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 成 员</el-button>
+                        <el-row style='margin:-4px;margin-top:8px'>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='groupInfo.manager' class='cardrow'>
+                                <component is="userCard" :fill='groupInfo.manager' role='管理员'></component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='groupInfo.teachers.length>0' v-for='u in groupInfo.teachers' class='cardrow'>
+                                <component is="userCard" :fill='u' role='导师'></component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='groupInfo.assistants.length>0' v-for='u in groupInfo.assistants' class='cardrow'>
+                                <component is="userCard" :fill='u' role='助理'></component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-for='(p,n) in groupInfo.vmembers' class='cardrow'>
+                                <component is="userCard" :fill='p' :index='n' role='普通成员'></component>
+                            </el-col>
                         </el-row>
                         <div style='height:12px'></div>
                     </el-tab-pane>
@@ -76,11 +74,25 @@
             </el-col>
         </el-row>
         <div style="height:120px"></div>
+        <el-dialog title="添加班级新成员" v-model="addMemberDialogVis">
+            <p>请按照‘电话-空格-姓名-空格’格式输入</p>
+            <el-input placeholder="示例:13800008811 王晓明 13988667721 李雷 ..." v-model="addMemberDialog.ipt"></el-input>
+            <el-row>
+                <el-col :span="24" style='margin-top:12px'>
+                    <el-button type='primary' @click='addMembers' style='width:120px'>确定</el-button>
+                    <el-button type='text' @click='addMemberDialogVis=false'>取消</el-button>
+                </el-col>
+            </el-row>
+        </el-dialog>
     </div>
 </template>
 
 
 <style scoped>
+    .cardrow {
+        padding: 4px
+    }
+
     .roletag {
         font-size: 13px;
         color: #888;
@@ -148,6 +160,7 @@
         height: 128px;
         border-radius: 128px;
         border: 1px solid #AAA;
+        background: #EEE
     }
 
     .el-tabs__content {
@@ -182,6 +195,15 @@
 <style>
     .ttClassDetail {
         letter-spacing: 0.2px;
+    }
+
+    .ttClassDetail .el-input__inner {
+        height: 40px;
+        border-radius: 0;
+    }
+
+    .el-dialog--small {
+        min-width: 400px;
     }
 
 </style>

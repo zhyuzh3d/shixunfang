@@ -6,6 +6,7 @@ export default com;
 import {
     Dialog,
     Button,
+    Input,
     Tabs,
     Row,
     Col,
@@ -16,6 +17,7 @@ import {
 from 'element-ui'
 Vue.use(Dialog);
 Vue.use(Button);
+Vue.use(Input);
 Vue.use(Tabs);
 Vue.use(Row);
 Vue.use(Col);
@@ -24,16 +26,16 @@ const notify = Notification
 Vue.prototype.$notify = notify;
 const confirm = MessageBox.confirm;
 Vue.prototype.$confirm = confirm;
+const prompt = MessageBox.prompt;
+Vue.prototype.$prompt = prompt;
 
 import Fake from '../_data/fake.js';
 import PracticeCard from '../../practice/PracticeCard/PracticeCard.html';
 import UserCard from '../../practice/UserCard/UserCard.html';
-import SchoolCard from '../../practice/SchoolCard/SchoolCard.html';
 
 com.components = {
     PracticeCard,
     UserCard,
-    SchoolCard,
 };
 
 com.data = function data() {
@@ -49,6 +51,8 @@ com.data = function data() {
             _id: ttCtx.$data.classDetailId,
         },
         myPlanArr: [],
+        addMemberDialogVis: false,
+        addMemberDialog: {},
     };
 };
 
@@ -71,6 +75,8 @@ com.methods = {
     xgoTab,
     goBack,
     goHome,
+    addMembers,
+    mergeVmembers,
 };
 
 com.beforeMount = async function () {
@@ -84,6 +90,58 @@ com.mounted = async function () {
 
 
 //--------functions----------
+
+/**
+ * 添加虚拟新成员
+ */
+async function addMembers() {
+    var ctx = this;
+    var arr = ctx.$data.addMemberDialog.ipt.replace(/\s+/g, ' ').split(' ');
+    var vmembers = [];
+    for (var i = 0; i < arr.length - 1; i += 2) {
+        vmembers.push({
+            mobile: arr[i],
+            name: arr[i + 1],
+        });
+    };
+
+    var api = ctx.$xglobal.conf.apis.grpCreateVmembers;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        _id: ctx.$data.groupInfo._id,
+        vmembers: JSON.stringify(vmembers),
+    };
+
+    var res = await ctx.rRun(api, data);
+    ctx.$data.groupInfo.vmemebers = res.data;
+    ctx.mergeVmembers();
+};
+
+
+/**
+ * 将成员信息合并到虚拟成员信息中
+ */
+function mergeVmembers() {
+    var ctx = this;
+
+    var mbArr = ctx.$data.groupInfo.members;
+    var vmArr = ctx.$data.groupInfo.vmembers;
+
+    mbArr.forEach(function (mb) {
+        vmArr.forEach(function (vm) {
+            if (vm.mobile == mb.mobile) {
+                vm.active = true;
+                for (var key in mb) {
+                    vm[key] = mb[key];
+                };
+            };
+        })
+    });
+
+    ctx.$data.groupInfo.vmemebers = vmArr;
+    ctx.$set(ctx.$data.groupInfo, 'vmembers', vmArr);
+};
+
 
 /**
  * 获取我的所有已经激活plan的信息
@@ -148,6 +206,9 @@ async function getGroupInfo() {
     group.myRole = myRole;
 
     ctx.$set(ctx.$data, 'groupInfo', group);
+
+    //合并member和vmember
+    ctx.mergeVmembers();
 };
 
 

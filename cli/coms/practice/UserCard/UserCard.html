@@ -6,7 +6,7 @@
             <el-col :span='20' class='cardLeft'>
                 <img :src='fill.avatar' class='avatar ib' />
                 <div class="ib" style="margin-left:12px">
-                    <div class='ptitle'>{{fill.name}}</div>
+                    <div class='ptitle' :class='{unactive:(!fill.active && role=="普通成员")}'>{{fill.name}}{{(!fill.active && role=="普通成员")?"(未激活)":""}}</div>
                     <p v-if='role'>{{role}}</p>
                     <p v-if='fill.school'>院校 : {{fill.school}}</p>
                     <p v-if='fill.archive'>成就 : {{fill.archive}}</p>
@@ -20,6 +20,10 @@
 </template>
 
 <style scoped>
+    .unactive {
+        color: #AAA
+    }
+
     .ib {
         display: inline-block;
         vertical-align: middle;
@@ -30,6 +34,7 @@
         height: 64px;
         border-radius: 128px;
         border: 1px solid #AAA;
+        background: #EFEFEF;
     }
 
     .ptitle {

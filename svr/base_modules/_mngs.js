@@ -134,6 +134,20 @@ schemas.user = new $mongoose.Schema({
 });
 models.user = $mongoose.model('user', schemas.user);
 
+//自动生成的虚拟用户，用于匹配班级内的真实姓名，注册前通过mobile匹配，注册后通过id匹配
+schemas.vuser = new $mongoose.Schema({
+    name: String,
+    mobile: String,
+    uid: $mongoose.Schema.Types.ObjectId,
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.vuser = $mongoose.model('vuser', schemas.vuser);
+
 
 //学校数据
 schemas.school = new $mongoose.Schema({
@@ -184,6 +198,10 @@ schemas.group = new $mongoose.Schema({
     members: [{ //成员
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
+    }],
+    vmembers: [{ //虚拟成员，包含手机信息,普通成员无权拉取
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'vuser',
     }],
     avatar: String,
     _note: String,
@@ -297,7 +315,7 @@ schemas.plan = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     }],
-    members:[{
+    members: [{
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
     }],
