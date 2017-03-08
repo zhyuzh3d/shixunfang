@@ -38,7 +38,9 @@
                                 <component is="userCard" :fill='u' role='助理'></component>
                             </el-col>
                             <el-col :xs='24' :sm='12' :lg='8' v-for='(p,n) in groupInfo.vmembers' class='cardrow'>
-                                <component is="userCard" :fill='p' :index='n' role='普通成员'></component>
+                                <component is="userCard" :fill='p' :index='n' role='普通成员'>
+                                    <el-button type='text' @click='removeMemeber(p)'><i class='fa fa-times fa-lg'></i></el-button>
+                                </component>
                             </el-col>
                         </el-row>
                         <div style='height:12px'></div>

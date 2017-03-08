@@ -1,25 +1,37 @@
 <script src="./UserCard.js"></script>
 
 <template>
-    <div id='UserCard' @click='goUserDetail'>
+    <div id='UserCard'>
         <el-row class="card">
-            <el-col :span='20' class='cardLeft'>
-                <img :src='fill.avatar' class='avatar ib' />
-                <div class="ib" style="margin-left:12px">
-                    <div class='ptitle' :class='{unactive:(!fill.active && role=="普通成员")}'>{{fill.name}}{{(!fill.active && role=="普通成员")?"(未激活)":""}}</div>
-                    <p v-if='role'>{{role}}</p>
-                    <p v-if='fill.school'>院校 : {{fill.school}}</p>
-                    <p v-if='fill.archive'>成就 : {{fill.archive}}</p>
+            <el-col :span='20' class='cardLeft elps'>
+                <div @click='goUserDetail'>
+                    <img :src='fill.avatar' class='avatar ib' />
+                    <div class="ib" style="margin-left:12px">
+                        <div class='ptitle elps' :class='{unactive:!fill.active && role=="普通成员"}'>
+                            <span>{{fill.name}}</span>
+                            <span v-show='role=="普通成员"'>({{fill.active?(fill.alias||"无名"):"未激活"}})</span>
+                        </div>
+                        <p v-if='role'>{{role}}</p>
+                        <p v-if='fill.school'>院校 : {{fill.school}}</p>
+                        <p v-if='fill.archive'>成就 : {{fill.archive}}</p>
+                    </div>
                 </div>
             </el-col>
             <el-col :span='4' class='cardBtn'>
-                <i class="fa fa-chevron-right"></i>
+                <slot><i class="fa fa-chevron-right" @click='goUserDetail'></i></slot>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <style scoped>
+    .elps {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        word-break: break-all;
+    }
+
     .unactive {
         color: #AAA
     }
@@ -38,13 +50,14 @@
     }
 
     .ptitle {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: bold;
         margin: 8px 0;
     }
 
     .cardLeft {
-        margin-left: 0px
+        margin-left: 0px;
+        background: #FFF
     }
 
     .cardLeft p {

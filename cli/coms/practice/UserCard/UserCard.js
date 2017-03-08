@@ -35,5 +35,4 @@ com.methods = {
 
 com.mounted = function () {
     var ctx = this;
-    console.log('>>>>xx', ctx.fill);
 };

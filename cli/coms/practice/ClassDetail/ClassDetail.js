@@ -77,6 +77,7 @@ com.methods = {
     goHome,
     addMembers,
     mergeVmembers,
+    removeMemeber,
 };
 
 com.beforeMount = async function () {
@@ -90,6 +91,27 @@ com.mounted = async function () {
 
 
 //--------functions----------
+
+/**
+ * 移除一个虚拟成员和对应的成员
+ * @param {object} vm vmemeber
+ */
+async function removeMemeber(vm) {
+    var ctx = this;
+    var api = ctx.$xglobal.conf.apis.grpRemoveMemeber;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        _id: ctx.$data.groupInfo._id,
+        vid: vm.vid,
+        rid: vm.rid,
+    };
+
+    var res = await ctx.rRun(api, data);
+
+    await ctx.getGroupInfo();
+};
+
+
 
 /**
  * 添加虚拟新成员
@@ -113,8 +135,10 @@ async function addMembers() {
     };
 
     var res = await ctx.rRun(api, data);
-    ctx.$data.groupInfo.vmemebers = res.data;
-    ctx.mergeVmembers();
+
+    ctx.$set(ctx.$data, 'addMemberDialogVis', false);
+
+    await ctx.getGroupInfo();
 };
 
 
@@ -127,13 +151,25 @@ function mergeVmembers() {
     var mbArr = ctx.$data.groupInfo.members;
     var vmArr = ctx.$data.groupInfo.vmembers;
 
+    vmArr.forEach(function (item) {
+        item.vid = item._id;
+    });
+
+
     mbArr.forEach(function (mb) {
         vmArr.forEach(function (vm) {
             if (vm.mobile == mb.mobile) {
                 vm.active = true;
-                for (var key in mb) {
-                    vm[key] = mb[key];
-                };
+
+                //使用v.name作为name；原用户名作为别名
+                vm.alias = mb.name;
+
+                //使用原_id，保持用卡片一致性；但保留两个id
+                vm.rid = mb._id;
+                vm._id = mb._id;
+
+                //其他信息
+                vm.avatar = mb.avatar;
             };
         })
     });

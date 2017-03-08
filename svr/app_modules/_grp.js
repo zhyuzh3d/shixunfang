@@ -162,6 +162,86 @@ _zrouter.addApi('/grpCreateVmembers', {
     },
 });
 
+/**
+ * 移除一个班级虚拟成员和对应的成员，必须管理员权限
+ * 依赖于前端传递进来的vid和rid
+ * 返回数组
+ */
+_zrouter.addApi('/grpRemoveMemeber', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //班级组的id
+        vid: _conf.regx.mngId, //必须要有vmemeberid
+        rid: function (ipt, ctx) { //可选memeberid
+            return ipt == undefined || _conf.regx.mngId.test(ipt)
+        },
+    },
+    method: async function grpRemoveMemeber(ctx) {
+        var token = ctx.xdata.token;
+        var _id = ctx.xdata._id;
+        var vid = ctx.xdata.vid;
+        var rid = ctx.xdata.rid;
+
+        var acc = await _acc.getAccByToken(token);
+
+        var group = await _mngs.models.group.findOne({
+            _id: _id
+        }, 'manager');
+
+        if (String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        //从数组中删除
+        var res = await _mngs.models.group.updateOne({
+            _id: _id
+        }, {
+            $pull: {
+                vmembers: vid,
+                members: rid
+            }
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
+/**
+ * 移除一个班级虚拟成员和对应的成员，必须管理员权限
+ * 依赖于前端传递进来的vid和rid
+ * 返回数组
+ */
+_zrouter.addApi('/grpFindMyGroup', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+    },
+    method: async function grpFindMyGroup(ctx) {
+        var token = ctx.xdata.token;
+
+        var acc = await _acc.getAccByToken(token, 'mobile');
+
+        //列出我的手机对应的所有虚拟账号
+        var vusrArr = await _mngs.models.vuser.find({
+            mobile: acc.mobile
+        }, '_id');
+
+        var vusrIdArr = [];
+        vusrArr.forEach(function (item) {
+            vusrIdArr.push(item._id);
+        });
+
+        //根据虚拟帐号对应搜索vmembers
+        var groupArr = await _mngs.models.group.find({
+            vmembers: {
+                $in: vusrIdArr
+            },
+        }, 'name');
+
+        ctx.body = new _msg.Msg(null, ctx, groupArr);
+    },
+});
+
+
+
 
 
 

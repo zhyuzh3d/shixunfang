@@ -73,6 +73,7 @@ com.data = function data() {
         practiceArr: Fake.practiceArr,
         classArr: Fake.classArr,
         accInfo: Fake.accInfo,
+        vgroupArr: [],
     };
 };
 
@@ -87,6 +88,7 @@ com.props = {
 com.methods = {
     xgoTab,
     getMyGroupArr,
+    findMyGroup,
 };
 
 //加载到页面前执行的函数
@@ -105,6 +107,33 @@ com.mounted = async function () {
 };
 
 //-------functions--------
+
+/**
+ * 寻找我的班级
+ * 通过扫描我的手机号对应的vuser对象匹配哪些group我可以加入
+ */
+async function findMyGroup() {
+    var ctx = this;
+    var api = ctx.$xglobal.conf.apis.grpFindMyGroup;
+    var data = {
+        token: localStorage.getItem('accToken'),
+    };
+
+    var res = await ctx.rRun(api, data);
+
+    //已经加入的组active=true
+    var vgroupArr = res.data;
+    res.data.forEach(function (vgrp) {
+        ctx.myGroupArr.forEach(function (grp) {
+            if (grp._id == vgrp._id) vgrp.active = true;
+        });
+    });
+    ctx.$set(ctx.$data, 'vgroupArr', vgroupArr);
+    console.log('>>>', vgroupArr);
+};
+
+
+
 
 /**
  * 标签卡切换,并且读取并刷新数据
@@ -128,8 +157,13 @@ async function getMyGroupArr() {
     };
 
     var res = await ctx.rRun(api, data);
-    ctx.$set(ctx.$data, 'myGroupArr', res.data);
 
+    var groups = res.data;
+    groups.forEach(function (item) {
+        item.members = undefined;
+    });
+
+    ctx.$set(ctx.$data, 'myGroupArr', res.data);
 };
 
 
