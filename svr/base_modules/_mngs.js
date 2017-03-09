@@ -125,6 +125,8 @@ schemas.user = new $mongoose.Schema({
         type: Number,
         default: 10
     },
+    qq: String,
+    wechat: String,
 }, {
     strict: false,
     timestamps: {

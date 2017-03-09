@@ -5,7 +5,7 @@
         <el-row class="card" :class='{active:fill.active}'>
             <el-col :span='20' class='cardLeft'>
                 <div @click='goPracticeDetail'>
-                    <div class='ptitle' :class='{expire:!fill.open}'>{{fill.title}}</div>
+                    <div class='ptitle' v-if='file.title' :class='{expire:!fill.open}'>{{fill.title}}</div>
                     <p v-if='fill.group'>班级 : {{fill.group.name}}</p>
                     <p v-if='fill.begin&&fill.end'>周期 : {{fill.begin.substr(0,10)}} ~ {{fill.end.substr(0,10)}}</p>
                 </div>

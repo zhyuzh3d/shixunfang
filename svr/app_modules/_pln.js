@@ -92,19 +92,21 @@ _zrouter.addApi('/plnGetDetail', {
 
         var acc = await _acc.getAccByToken(token);
 
-        //检查权限
         var res = await _mngs.models.plan.findOne(noDel({
-            _id: _id,
-            $or: [{
-                members: acc._id
-            }, {
-                manager: acc._id
-            }, {
-                teachers: acc._id
-            }, {
-                assistants: acc._id
-            }]
-        }));
+                _id: _id,
+                $or: [{
+                    members: acc._id
+                }, {
+                    manager: acc._id
+                }, {
+                    teachers: acc._id
+                }, {
+                    assistants: acc._id
+                }]
+            })).populate('manager', 'name avatar mobile qq')
+            .populate('teachers', 'name avatar mobile qq')
+            .populate('assistants', 'name avatar mobile qq')
+            .populate('group', 'name');
 
         res = _mngs.fns.clearDoc(res);
         if (!res) throw Error().zbind(_msg.Errs.PlnNoPowerOrNonExist);
@@ -112,7 +114,6 @@ _zrouter.addApi('/plnGetDetail', {
         ctx.body = new _msg.Msg(null, ctx, res);
     },
 });
-
 
 
 /**

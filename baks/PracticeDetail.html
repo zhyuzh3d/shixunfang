@@ -13,111 +13,80 @@
         </el-row>
         <el-row type="flex" justify="center">
             <el-col class='nav' :span="20" :sm="16">
-                <h2 style="margin:8px 0">{{planInfo.title}}</h2>
+                <h2 style="margin:8px 0">{{fill.title}}</h2>
             </el-col>
         </el-row>
         <el-row id='main' type="flex" justify="center" style='margin-top:12px'>
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
-
-                    <el-tab-pane v-if='false' label="全部日程" name="days" class='days'>
-                        <el-row v-if='course' v-for='pack in course.packs'>
-                            <el-row v-for='(task,n) in pack' style='margin:12px 0'>
-                                <component is="taskCard" :fill='task' :index='n'></component>
-                            </el-row>
+                    <el-tab-pane label="每日任务" name="practice">
+                        <el-row v-for='(p,n) in fill.days[0].taskArr' style='margin:12px 0'>
+                            <component is="taskCard" :fill='p' :index='n'></component>
                         </el-row>
                     </el-tab-pane>
+                    <el-tab-pane label="全部日程" name="days" class='days'>
 
-                    <el-tab-pane v-if='false' label="今日任务" name="practice">
-                        <el-row v-for='(task,n) in planInfo.todayTaskArr' style='margin:12px 0'>
-                            <component is="taskCard" :fill='task' :index='n'></component>
-                        </el-row>
                     </el-tab-pane>
-
                     <el-tab-pane label="实训信息" name="info">
-
-                        <el-button v-if='planInfo.myRole=="管理员"' type='primary' style='width:120px' @click='editDialogVis=true'> <i class='fa fa-pencil' style="margin-right:12px"></i> 编 辑</el-button>
-
-
                         <div style="height:12px"></div>
-                        <div class="txtrow" v-if='planInfo.manager'>
+                        <div class="txtrow">
                             <div>实训经理</div>
                             <div>
-                                <img :src="planInfo.manager.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
+                                <img :src="fill.manager.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
                                 <div class='master'>
-                                    <div style="color:#000"><b>{{planInfo.manager.name}}</b></div>
+                                    <div style="color:#000"><b>{{fill.manager.name}}</b></div>
                                     <div class='masterinfo'>
-                                        <p v-if='planInfo.manager.qq'>QQ:{{planInfo.manager.qq}}</p>
-                                        <p>Mobile:{{planInfo.manager.mobile}}</p>
+                                        <p>QQ:{{fill.manager.qq}}</p>
+                                        <p>Mobile:{{fill.manager.mobile}}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="txtrow" v-if='planInfo.teachers&&planInfo.teachers.length>0'>
-                            <div>实训导师</div>
-                            <div v-for='usr in planInfo.teachers'>
-                                <img :src="usr.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
+                        <div class="txtrow">
+                            <div>技术导师</div>
+                            <div>
+                                <img :src="fill.master.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
                                 <div class='master'>
-                                    <div style="color:#000"><b>{{usr.name}}</b></div>
+                                    <div style="color:#000"><b>{{fill.master.name}}</b></div>
                                     <div class='masterinfo'>
-                                        <p v-if='usr.qq'>QQ:{{usr.qq}}</p>
-                                        <p>Mobile:{{usr.mobile}}</p>
+                                        <p>QQ:{{fill.master.qq}}</p>
+                                        <p>Mobile:{{fill.master.mobile}}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="txtrow" v-if='planInfo.assistants&&planInfo.assistants.length>0'>
-                            <div>实训助理</div>
-                            <div v-for='usr in planInfo.assistants'>
-                                <img :src="usr.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
-                                <div class='master'>
-                                    <div style="color:#000"><b>{{usr.name}}</b></div>
-                                    <div class='masterinfo'>
-                                        <p v-if='usr.qq'>QQ:{{usr.qq}}</p>
-                                        <p>Mobile:{{usr.mobile}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="txtrow" v-if='planInfo.qqGroup'>
+                        <div class="txtrow">
                             <div>实训QQ群</div>
-                            <div>{{planInfo.qqGroup}}</div>
+                            <div>{{fill.qqGroup}}</div>
                         </div>
-                        <div class="txtrow" v-if='planInfo.begin && planInfo.end'>
+                        <div class="txtrow">
                             <div>实训周期</div>
-                            <div>{{planInfo.begin.substr(0,10)}}～{{planInfo.end.substr(0,10)}}</div>
+                            <div>{{fill.begin}}～{{fill.end}} ／ 共{{fill.days.length}}天</div>
                         </div>
-                        <div class="txtrow" v-if='planInfo.group'>
+                        <div class="txtrow">
                             <div>匹配班级</div>
-                            <div>{{planInfo.group.name}}</div>
+                            <div>{{fill.class.title}} / 共{{fill.class.memberArr.length}}人</div>
                         </div>
-                        <div class="txtrow" v-if='planInfo.desc'>
+                        <div class="txtrow">
                             <div>注意事项</div>
-                            <div>{{planInfo.desc}}</div>
+                            <div>{{fill.desc}}</div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
             </el-col>
         </el-row>
         <div style="height:120px"></div>
-
-        <div id='dialogs'>
-            <el-dialog title="编辑实训方案" v-model="editDialogVis" size="small">
-
-            </el-dialog>
-        </div>
     </div>
 </template>
 
 
 <style scoped>
-    .ttPracticeDetail {
-        height: 100%;
+    .ttPracticeDetail{
+     height: 100%;
         overflow-y: auto;
     }
-
     .master {
+        border-left: 4px solid #CCC;
         display: inline-block;
         padding-left: 12px
     }
@@ -169,7 +138,7 @@
     .txtrow {
         text-align: left;
         width: 100%;
-        font-size: 15px;
+        font-size: 14px;
         margin-bottom: 12px;
         display: flex;
     }
@@ -235,10 +204,6 @@
 
 
 <style>
-    .el-dialog--small {
-        min-width: 400px;
-    }
-
     .ttPracticeDetail .warntag {
         width: 24px;
         height: 24px;
@@ -251,6 +216,32 @@
 
     .ttPracticeDetail {
         letter-spacing: 0.2px;
+    }
+
+    .ttPracticeDetail .el-tabs__header {
+        letter-spacing: 0.05em;
+    }
+
+    .ttPracticeDetail .el-tabs__header {
+        background: #FAFAFA;
+        border: 0;
+    }
+
+    .ttPracticeDetail .el-tabs__active-bar {
+        height: 100%;
+    }
+
+    .ttPracticeDetail .el-tabs__header .is-active {
+        color: #FFF;
+        z-index: 3;
+    }
+
+    .ttPracticeDetail .el-tabs__item {
+        width: 20%;
+        padding: 0 12px;
+        min-width: 120px;
+        max-width: 160px;
+        text-align: center;
     }
 
 </style>

@@ -44,9 +44,6 @@ com.data = function data() {
         planInfo: {
             _id: ttCtx.$data.planeDetailId,
         },
-        todayTaskArr: [], //今天及以前未完成的任务
-        course: {}, //全套课程
-        editDialogVis:false,
     };
 };
 
@@ -55,6 +52,12 @@ com.props = {
         type: String,
         default: 'ClassDetail'
     },
+    fill: {
+        type: Object,
+        default: function () {
+            return Fake.practiceArr[0];
+        },
+    }
 };
 
 com.methods = {
@@ -64,9 +67,16 @@ com.methods = {
     goHome,
 };
 
-com.mounted = async function () {
+com.mounted = function () {
     var ctx = this;
-    await ctx.getPlanInfo();
+    $(document).ready(function () {
+        $('.el-tabs__item:contains(全部日程)').html('全部日程<span class="warntag">' + ctx.fill.daysDelayCount + '</span>');
+        $('.el-tabs__item:contains(每日任务)').html('每日任务<span class="warntag">' + ctx.fill.days[0].taskArr.length + '</span>');
+    });
+
+
+    ctx.getPlanInfo();
+
 };
 
 
@@ -85,29 +95,6 @@ async function getPlanInfo() {
         };
 
         var res = await ctx.rRun(api, data);
-        var plan=res.data;
-        ctx.$set(ctx.$data, 'planInfo', plan);
-        if (plan.course) ctx.$set(ctx.$data, 'course', plan.course);
-
-        //计算用户的plan角色
-        var accInfo = ctx.$xglobal.accInfo;
-        var myRole = '未知'
-        if (plan.manager._id == accInfo._id) {
-            myRole = '管理员';
-        } else {
-            plan.teachers.forEach(function (item) {
-                if (item._id == accInfo._id) myRole = '导师';
-            });
-            if (myRole == '未知') {
-                plan.assistants.forEach(function (item) {
-                    if (item._id == accInfo._id) myRole = '助理';
-                });
-            };
-        };
-        plan.myRole = myRole;
-
-
-
     } catch (err) {
         ctx.$notify.error({
             title: '加入失败!',
