@@ -75,6 +75,7 @@ com.data = function data() {
         accInfo: Fake.accInfo,
         vgroupArr: [],
         grpSearching: false,
+        myPlanArr: [],
     };
 };
 
@@ -91,6 +92,7 @@ com.methods = {
     getMyGroupArr,
     findMyGroup,
     joinGroup,
+    getMyPlanArr,
 };
 
 //加载到页面前执行的函数
@@ -98,6 +100,8 @@ com.beforeMount = function () {};
 
 com.mounted = async function () {
     var ctx = this;
+
+    await ctx.getMyPlanArr();
 
     //如果地址栏没有跳转也没自动恢复，那么自动加载用户首页，首页根据用户身份区别处理
     var xconf = ctx.$xgetConf();
@@ -109,6 +113,29 @@ com.mounted = async function () {
 };
 
 //-------functions--------
+/**
+ * 获取我的所有已经激活plan的信息
+ */
+async function getMyPlanArr() {
+    var ctx = this;
+
+    var api = ctx.$xglobal.conf.apis.plnGetMyPlanArr;
+    var data = {
+        token: localStorage.getItem('accToken'),
+    };
+
+    var res = await ctx.rRun(api, data);
+
+    res.data.forEach(function (item) {
+        item.active = true;
+    });
+
+    ctx.$set(ctx.$data, 'myPlanArr', res.data);
+    return res.data;
+};
+
+
+
 
 /**
  * 加入一个班级

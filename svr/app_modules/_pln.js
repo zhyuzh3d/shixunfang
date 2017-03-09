@@ -28,7 +28,7 @@ _zrouter.addApi('/plnGetMyPlanArr', {
             }, {
                 assistants: acc._id
             }]
-        }), 'title').sort({
+        }), 'title begin end').populate('group', 'name').sort({
             created_at: -1
         });
 
