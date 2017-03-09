@@ -206,8 +206,7 @@ _zrouter.addApi('/grpRemoveMemeber', {
 
 
 /**
- * 移除一个班级虚拟成员和对应的成员，必须管理员权限
- * 依赖于前端传递进来的vid和rid
+ * 寻找等待我加入的班级
  * 返回数组
  */
 _zrouter.addApi('/grpFindMyGroup', {
@@ -234,6 +233,9 @@ _zrouter.addApi('/grpFindMyGroup', {
             vmembers: {
                 $in: vusrIdArr
             },
+            members: {
+                $ne: acc._id,
+            },
         }, 'name');
 
         ctx.body = new _msg.Msg(null, ctx, groupArr);
@@ -241,6 +243,96 @@ _zrouter.addApi('/grpFindMyGroup', {
 });
 
 
+/**
+ * 加入一个班级
+ * 班级的虚拟成员中至少有一个mobile与用户相同
+ * 返回数组
+ */
+_zrouter.addApi('/grpJoinGroup', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //group._id
+    },
+    method: async function grpJoinGroup(ctx) {
+        var token = ctx.xdata.token;
+        var _id = ctx.xdata._id;
+
+        var acc = await _acc.getAccByToken(token, 'mobile');
+
+        //权限检查，提取班级内对应的虚拟帐号，如果有。manager或teacher，assistant都不能加入。
+        var vusrArr = await _mngs.models.group.find({
+            _id: _id,
+        }, 'vmembers').populate({
+            path: 'vmembers',
+            match: {
+                mobile: acc.mobile,
+            },
+            select: '_id',
+            options: {
+                limit: 1
+            }
+        });
+
+        if (vusrArr.length == 0) throw Error().zbind(_msg.Errs.GrpNeedVMemberPower);
+
+        //添加到members
+        var res = await _mngs.models.group.updateOne({
+            _id: _id,
+        }, {
+            $addToSet: {
+                members: acc._id,
+            }
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
+/**
+ * 加入一个班级
+ * 班级的虚拟成员中至少有一个mobile与用户相同
+ * 返回数组
+ */
+_zrouter.addApi('/grpJoinGroup', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //group._id
+    },
+    method: async function grpJoinGroup(ctx) {
+        var token = ctx.xdata.token;
+        var _id = ctx.xdata._id;
+
+        var acc = await _acc.getAccByToken(token, 'mobile');
+
+        //权限检查，提取班级内对应的虚拟帐号，如果有。manager或teacher，assistant都不能加入。
+        var vusrArr = await _mngs.models.group.find({
+            _id: _id,
+        }, 'vmembers').populate({
+            path: 'vmembers',
+            match: {
+                mobile: acc.mobile,
+            },
+            select: '_id',
+            options: {
+                limit: 1
+            }
+        });
+
+        if (vusrArr.length == 0) throw Error().zbind(_msg.Errs.GrpNeedVMemberPower);
+
+        //添加到members
+        var res = await _mngs.models.group.updateOne({
+            _id: _id,
+        }, {
+            $addToSet: {
+                members: acc._id,
+            }
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
 
 
 

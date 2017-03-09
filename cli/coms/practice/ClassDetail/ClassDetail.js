@@ -78,6 +78,10 @@ com.methods = {
     addMembers,
     mergeVmembers,
     removeMemeber,
+    addAssistant,
+    addTeacher,
+    removeTeacher,
+    removeAssistant,
 };
 
 com.beforeMount = async function () {
@@ -91,6 +95,52 @@ com.mounted = async function () {
 
 
 //--------functions----------
+
+/**
+ * 移除一个导师
+ */
+async function removeTeacher() {
+    var ctx = this;
+    var api = ctx.$xglobal.conf.apis.grpRemoveMemeber;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        _id: ctx.$data.groupInfo._id,
+        vid: vm.vid,
+        rid: vm.rid,
+    };
+
+    var res = await ctx.rRun(api, data);
+
+    await ctx.getGroupInfo();
+};
+
+
+/**
+ * 移除一个助理
+ */
+async function removeAssistant() {
+    var ctx = this;
+
+};
+
+/**
+ * 弹出对话框，通过电话号码添加一个导师,导师必须已经注册
+ */
+async function addTeacher() {
+    var ctx = this;
+
+};
+
+
+/**
+ * 弹出对话框，通过电话号码添加一个助理,助理必须已经注册
+ */
+async function addAssistant() {
+    var ctx = this;
+
+};
+
+
 
 /**
  * 移除一个虚拟成员和对应的成员

@@ -74,6 +74,7 @@ com.data = function data() {
         classArr: Fake.classArr,
         accInfo: Fake.accInfo,
         vgroupArr: [],
+        grpSearching: false,
     };
 };
 
@@ -89,6 +90,7 @@ com.methods = {
     xgoTab,
     getMyGroupArr,
     findMyGroup,
+    joinGroup,
 };
 
 //加载到页面前执行的函数
@@ -109,30 +111,40 @@ com.mounted = async function () {
 //-------functions--------
 
 /**
+ * 加入一个班级
+ * 将自身加入到group.members
+ */
+async function joinGroup(grp) {
+    var ctx = this;
+    var api = ctx.$xglobal.conf.apis.grpJoinGroup;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        _id: grp._id,
+    };
+    var res = await ctx.rRun(api, data);
+};
+
+
+/**
  * 寻找我的班级
  * 通过扫描我的手机号对应的vuser对象匹配哪些group我可以加入
  */
 async function findMyGroup() {
     var ctx = this;
+    ctx.$set(ctx.$data, 'grpSearching', true);
     var api = ctx.$xglobal.conf.apis.grpFindMyGroup;
     var data = {
         token: localStorage.getItem('accToken'),
     };
 
     var res = await ctx.rRun(api, data);
-
-    //已经加入的组active=true
-    var vgroupArr = res.data;
-    res.data.forEach(function (vgrp) {
-        ctx.myGroupArr.forEach(function (grp) {
-            if (grp._id == vgrp._id) vgrp.active = true;
-        });
+    var grpArr = res.data;
+    grpArr.forEach(function (item) {
+        item.pending == true;
     });
-    ctx.$set(ctx.$data, 'vgroupArr', vgroupArr);
-    console.log('>>>', vgroupArr);
+    ctx.$set(ctx.$data, 'vgroupArr', res.data);
+    ctx.$set(ctx.$data, 'grpSearching', false);
 };
-
-
 
 
 /**

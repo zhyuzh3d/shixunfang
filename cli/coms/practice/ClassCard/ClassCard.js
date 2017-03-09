@@ -24,7 +24,7 @@ com.methods = {
         var accInfo = ctx.$xglobal.accInfo;
         if (!accInfo) return;
 
-        var myRole = '未知'
+        var myRole = undefined;
         if (group && group.manager == accInfo._id) {
             myRole = '管理员';
         } else {

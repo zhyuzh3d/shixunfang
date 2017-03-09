@@ -13,9 +13,10 @@
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
                     <el-tab-pane label="我的班级" name="ClassList">
                         <el-button type='primary' style='width:200px' @click='findMyGroup'> <i class='fa fa-search' style="margin-right:12px"></i> 寻找可加入的新班级</el-button>
+                        <div v-if='grpSearching' class='tlabel'>正在搜索中...</div>
                         <el-row v-for='(p,n) in vgroupArr' style='margin:12px 0'>
                             <component is="classCard" :fill='p' :index='n'>
-                                <el-button type='primary'>立即加入</el-button>
+                                <el-button type='primary' @click='joinGroup(p)'>立即加入</el-button>
                             </component>
                         </el-row>
                         <div class='tlabel'>已加入的班级</div>
