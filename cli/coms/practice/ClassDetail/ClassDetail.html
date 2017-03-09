@@ -35,17 +35,17 @@
                             </el-col>
                             <el-col :xs='24' :sm='12' :lg='8' v-if='groupInfo.teachers.length>0' v-for='u in groupInfo.teachers' class='cardrow'>
                                 <component is="userCard" :fill='u' role='导师'>
-                                    <el-button type='text' @click='removeTeacher(p)'><i class='fa fa-times fa-lg'></i></el-button>
+                                    <el-button type='text' @click='removeTeacher(u)'><i class='fa fa-times fa-lg'></i></el-button>
                                 </component>
                             </el-col>
                             <el-col :xs='24' :sm='12' :lg='8' v-if='groupInfo.assistants.length>0' v-for='u in groupInfo.assistants' class='cardrow'>
                                 <component is="userCard" :fill='u' role='助理'>
-                                    <el-button type='text' @click='removeAssitant(p)'><i class='fa fa-times fa-lg'></i></el-button>
+                                    <el-button type='text' @click='removeAssistant(u)'><i class='fa fa-times fa-lg'></i></el-button>
                                 </component>
                             </el-col>
-                            <el-col :xs='24' :sm='12' :lg='8' v-for='(p,n) in groupInfo.vmembers' class='cardrow'>
-                                <component is="userCard" :fill='p' :index='n' role='普通成员'>
-                                    <el-button type='text' @click='removeMemeber(p)'><i class='fa fa-times fa-lg'></i></el-button>
+                            <el-col :xs='24' :sm='12' :lg='8' v-for='(u,n) in groupInfo.vmembers' class='cardrow'>
+                                <component is="userCard" :fill='u' :index='n' role='普通成员'>
+                                    <el-button type='text' @click='removeMemeber(u)'><i class='fa fa-times fa-lg'></i></el-button>
                                 </component>
                             </el-col>
                         </el-row>
@@ -206,6 +206,11 @@
     }
 
     .ttClassDetail .el-input__inner {
+        height: 40px;
+        border-radius: 0;
+    }
+
+    .el-message-box__input .el-input__inner {
         height: 40px;
         border-radius: 0;
     }

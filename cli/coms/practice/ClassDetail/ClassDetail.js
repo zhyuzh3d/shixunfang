@@ -99,18 +99,17 @@ com.mounted = async function () {
 /**
  * 移除一个导师
  */
-async function removeTeacher() {
+async function removeTeacher(usr) {
     var ctx = this;
-    var api = ctx.$xglobal.conf.apis.grpRemoveMemeber;
+    var api = ctx.$xglobal.conf.apis.grpRemoveUser;
     var data = {
         token: localStorage.getItem('accToken'),
-        _id: ctx.$data.groupInfo._id,
-        vid: vm.vid,
-        rid: vm.rid,
+        type: 'teacher',
+        gid: ctx.$data.groupInfo._id,
+        uid: usr._id,
     };
 
     var res = await ctx.rRun(api, data);
-
     await ctx.getGroupInfo();
 };
 
@@ -118,26 +117,81 @@ async function removeTeacher() {
 /**
  * 移除一个助理
  */
-async function removeAssistant() {
+async function removeAssistant(usr) {
     var ctx = this;
+    var api = ctx.$xglobal.conf.apis.grpRemoveUser;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        type: 'assistant',
+        gid: ctx.$data.groupInfo._id,
+        uid: usr._id,
+    };
 
+    var res = await ctx.rRun(api, data);
+    await ctx.getGroupInfo();
 };
 
 /**
  * 弹出对话框，通过电话号码添加一个导师,导师必须已经注册
  */
-async function addTeacher() {
+async function addTeacher(usr) {
     var ctx = this;
+    try {
+        var ipt = await ctx.$prompt('请输入导师的电话号码', '添加导师', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^1\d{10}$/,
+            inputErrorMessage: '电话号码不正确，应为11位数组'
+        });
 
+        var api = ctx.$xglobal.conf.apis.grpAddUser;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            type: 'teacher',
+            gid: ctx.$data.groupInfo._id,
+            mobile: ipt.value,
+        };
+
+        var res = await ctx.rRun(api, data);
+        await ctx.getGroupInfo();
+    } catch (err) {
+        ctx.$notify.error({
+            title: '添加失败',
+            message: err.tip || err.message,
+        });
+    };
 };
 
 
 /**
  * 弹出对话框，通过电话号码添加一个助理,助理必须已经注册
  */
-async function addAssistant() {
+async function addAssistant(usr) {
     var ctx = this;
+    try {
+        var ipt = await ctx.$prompt('请输入助理的电话号码', '添加助理', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^1\d{10}$/,
+            inputErrorMessage: '电话号码不正确，应为11位数组'
+        });
 
+        var api = ctx.$xglobal.conf.apis.grpAddUser;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            type: 'assistant',
+            gid: ctx.$data.groupInfo._id,
+            mobile: ipt.value,
+        };
+
+        var res = await ctx.rRun(api, data);
+        await ctx.getGroupInfo();
+    } catch (err) {
+        ctx.$notify.error({
+            title: '添加失败',
+            message: err.tip || err.message,
+        });
+    };
 };
 
 

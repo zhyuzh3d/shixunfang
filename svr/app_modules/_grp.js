@@ -121,7 +121,7 @@ _zrouter.addApi('/grpCreateVmembers', {
         var group = await _mngs.models.group.findOne({
             _id: _id
         }, 'manager vmembers').populate('vmembers', 'mobile name');
-        if (String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+        if (!group || String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
 
         //添加虚拟成员,mng会自动把id写入vmarr
         var vms = await _mngs.models.vuser.collection.insert(vmarr);
@@ -188,7 +188,7 @@ _zrouter.addApi('/grpRemoveMemeber', {
             _id: _id
         }, 'manager');
 
-        if (String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+        if (!group || String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
 
         //从数组中删除
         var res = await _mngs.models.group.updateOne({
@@ -290,49 +290,96 @@ _zrouter.addApi('/grpJoinGroup', {
 
 
 /**
- * 加入一个班级
- * 班级的虚拟成员中至少有一个mobile与用户相同
- * 返回数组
+ * 删除导师或助理
+ * 必须管理员权限
+ * 返回结果
  */
-_zrouter.addApi('/grpJoinGroup', {
+_zrouter.addApi('/grpRemoveUser', {
     validator: {
         token: _conf.regx.token, //用户token认证信息
-        _id: _conf.regx.mngId, //group._id
+        type: /(teacher)|(assistant)/,
+        gid: _conf.regx.mngId, //group._id
+        uid: _conf.regx.mngId, //user._id
     },
-    method: async function grpJoinGroup(ctx) {
+    method: async function grpRemoveUser(ctx) {
         var token = ctx.xdata.token;
-        var _id = ctx.xdata._id;
+        var type = ctx.xdata.type;
+        var gid = ctx.xdata.gid;
+        var uid = ctx.xdata.uid;
 
-        var acc = await _acc.getAccByToken(token, 'mobile');
+        var acc = await _acc.getAccByToken(token);
 
-        //权限检查，提取班级内对应的虚拟帐号，如果有。manager或teacher，assistant都不能加入。
-        var vusrArr = await _mngs.models.group.find({
-            _id: _id,
-        }, 'vmembers').populate({
-            path: 'vmembers',
-            match: {
-                mobile: acc.mobile,
-            },
-            select: '_id',
-            options: {
-                limit: 1
-            }
-        });
+        //权限判断
+        var group = await _mngs.models.group.findOne({
+            _id: gid
+        }, 'manager');
+        if (!group || String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
 
-        if (vusrArr.length == 0) throw Error().zbind(_msg.Errs.GrpNeedVMemberPower);
+        //执行
+        var op = {};
+        op.$pull = type == 'teacher' ? {
+            teachers: uid,
+        } : {
+            assistants: uid
+        };
 
-        //添加到members
         var res = await _mngs.models.group.updateOne({
-            _id: _id,
-        }, {
-            $addToSet: {
-                members: acc._id,
-            }
-        });
+            _id: gid
+        }, op);
 
         ctx.body = new _msg.Msg(null, ctx, res);
     },
 });
+
+/**
+ * 通过电话号码添加导师或助理
+ * 必须管理员权限
+ * 返回结果
+ */
+_zrouter.addApi('/grpAddUser', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        type: /(teacher)|(assistant)/,
+        gid: _conf.regx.mngId, //group._id
+        mobile: _conf.regx.mobile, //user.mobile
+    },
+    method: async function grpAddUser(ctx) {
+        var token = ctx.xdata.token;
+        var type = ctx.xdata.type;
+        var gid = ctx.xdata.gid;
+        var mobile = ctx.xdata.mobile;
+
+        var acc = await _acc.getAccByToken(token);
+
+        //权限判断
+        var group = await _mngs.models.group.findOne({
+            _id: gid
+        }, 'manager');
+        if (!group || String(group.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        //获取mobile对应的用户
+        var usr = await _mngs.models.user.findOne({
+            mobile: mobile
+        }, '_id');
+        if (!usr) throw Error().zbind(_msg.Errs.AccNotExist);
+
+        //执行
+        var op = {};
+        op.$push = type == 'teacher' ? {
+            teachers: usr._id,
+        } : {
+            assistants: usr._id,
+        };
+
+        var res = await _mngs.models.group.updateOne({
+            _id: gid
+        }, op);
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
 
 
 

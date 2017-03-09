@@ -73,6 +73,8 @@ conf.apis = {
     grpRemoveMemeber: `//${location.host}/api/grpRemoveMemeber`,
     grpFindMyGroup: `//${location.host}/api/grpFindMyGroup`,
     grpJoinGroup: `//${location.host}/api/grpJoinGroup`,
+    grpRemoveUser: `//${location.host}/api/grpRemoveUser`,
+    grpAddUser: `//${location.host}/api/grpAddUser`,
 
     plnGetMyPlanArr: `//${location.host}/api/plnGetMyPlanArr`,
     plnActivePlan: `//${location.host}/api/plnActivePlan`,
