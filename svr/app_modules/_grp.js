@@ -1,6 +1,7 @@
 /*group组合班级相关功能
  */
 var _grp = {};
+var noDel = _mngs.fns.noDel;
 
 module.exports = _grp;
 
@@ -18,7 +19,7 @@ _zrouter.addApi('/grpGetMyGroupArr', {
         //根据token获取用户id
         var acc = await _acc.getAccByToken(token);
 
-        var res = await _mngs.models.group.find({
+        var res = await _mngs.models.group.find(noDel({
             $or: [{
                 manager: acc._id
             }, {
@@ -28,7 +29,7 @@ _zrouter.addApi('/grpGetMyGroupArr', {
             }, {
                 members: acc._id
             }]
-        }).populate('school', 'name').sort({
+        })).populate('school', 'name').sort({
             created_at: -1
         });
 
@@ -54,7 +55,7 @@ _zrouter.addApi('/grpGetGroupDetail', {
 
         var acc = await _acc.getAccByToken(token);
 
-        var res = await _mngs.models.group.findOne({
+        var res = await _mngs.models.group.findOne(noDel({
                 _id: _id,
                 $or: [{
                     manager: acc._id
@@ -65,7 +66,7 @@ _zrouter.addApi('/grpGetGroupDetail', {
                 }, {
                     members: acc._id
                 }],
-            }).populate('school', 'name')
+            })).populate('school', 'name')
             .populate('manager', 'name avatar')
             .populate('teachers', 'name avatar')
             .populate('assistants', 'name avatar')
@@ -76,10 +77,9 @@ _zrouter.addApi('/grpGetGroupDetail', {
         res = _mngs.fns.clearDoc(res);
 
         //读取此班级的plan方案列表
-        var plans = await _mngs.models.plan.find({
+        var plans = await _mngs.models.plan.find(noDel({
                 group: _id
-            })
-            .populate('group', 'name')
+            })).populate('group', 'name')
             .sort({
                 created_at: -1
             });
@@ -145,7 +145,7 @@ _zrouter.addApi('/grpCreateVmembers', {
         });
 
         //重新设定vmemebrs
-        var res = await _mngs.models.group.update({
+        var res = await _mngs.models.group.updateOne({
             _id: _id
         }, {
             $set: {
@@ -153,17 +153,12 @@ _zrouter.addApi('/grpCreateVmembers', {
             }
         });
 
-
-        var xx = await _mngs.models.group.findOne({
-            _id: _id
-        }, 'manager vmembers').populate('vmembers', 'mobile name');
-
         ctx.body = new _msg.Msg(null, ctx, vmArrRes);
     },
 });
 
 /**
- * 移除一个班级虚拟成员和对应的成员，必须管理员权限
+ * 移除一个班级虚拟成员和对应的成员（虚拟成员彻底删除），必须管理员权限
  * 依赖于前端传递进来的vid和rid
  * 返回数组
  */
@@ -200,6 +195,11 @@ _zrouter.addApi('/grpRemoveMemeber', {
             }
         });
 
+        //删除虚拟成员
+        await _mngs.models.vuser.remove({
+            _id: vid
+        });
+
         ctx.body = new _msg.Msg(null, ctx, res);
     },
 });
@@ -229,14 +229,14 @@ _zrouter.addApi('/grpFindMyGroup', {
         });
 
         //根据虚拟帐号对应搜索vmembers
-        var groupArr = await _mngs.models.group.find({
+        var groupArr = await _mngs.models.group.find(noDel({
             vmembers: {
                 $in: vusrIdArr
             },
             members: {
                 $ne: acc._id,
             },
-        }, 'name');
+        }), 'name');
 
         ctx.body = new _msg.Msg(null, ctx, groupArr);
     },

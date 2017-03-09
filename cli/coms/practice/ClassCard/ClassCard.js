@@ -7,7 +7,7 @@ export default com;
 //所有数据写在这里
 com.data = function data() {
     return {
-        msg: 'Hello from units/PracticeCard/PracticeCard.js'
+        msg: 'Hello from units/ClassCard/ClassCard.js'
     };
 };
 

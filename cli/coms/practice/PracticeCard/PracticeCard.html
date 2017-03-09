@@ -2,23 +2,31 @@
 
 <template>
     <div sid='PracticeCard'>
-        <el-row class="card">
+        <el-row class="card" :class='{active:fill.active}'>
             <el-col :span='20' class='cardLeft'>
-                <div class='ptitle' :class='{expire:!fill.open}'>{{fill.title}}</div>
-                <p>班级 : {{fill.group.name}}</p>
-                <p>周期 : {{fill.begin.substr(0,10)}} ~ {{fill.end.substr(0,10)}}</p>
+                <div @click='goPracticeDetail'>
+                    <div class='ptitle' :class='{expire:!fill.open}'>{{fill.title}}</div>
+                    <p v-if='fill.group'>班级 : {{fill.group.name}}</p>
+                    <p v-if='fill.begin&&fill.end'>周期 : {{fill.begin.substr(0,10)}} ~ {{fill.end.substr(0,10)}}</p>
+                </div>
             </el-col>
             <el-col :span='4' class='cardBtn'>
-                <el-button v-if='fill.active && fill.open' @click='goPacticeDetail'>
-                    <i v-if='fill.active' class="fa fa-chevron-right"></i>
-                </el-button>
-                <el-button type='primary' v-if='fill.open'  @click='activePlan'>加入</el-button>
+                <slot>
+                    <el-button v-if='fill.active' @click='goPracticeDetail' type='text'>
+                        <i v-if='fill.active' class="fa fa-chevron-right"></i>
+                    </el-button>
+                    <el-button type='primary' v-if='!fill.active' @click='joinPlan'>加入</el-button>
+                </slot>
             </el-col>
         </el-row>
     </div>
 </template>
 
 <style scoped>
+    .active {
+        cursor: pointer;
+    }
+
     .expire {
         color: #888;
     }

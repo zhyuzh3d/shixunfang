@@ -7,6 +7,7 @@ export default com;
 //所有数据写在这里
 com.data = function data() {
     var ctx = this;
+
     return {
         msg: 'Hello from units/PracticeCard/PracticeCard.js',
     };
@@ -19,9 +20,9 @@ com.props = {
 
 com.methods = {
     isExpire,
-    goPacticeDetail,
+    goPracticeDetail,
     forceRefresh,
-    activePlan,
+    joinPlan,
 };
 
 com.mounted = function () {
@@ -34,23 +35,21 @@ com.mounted = function () {
 
 
 /**
- * 加入一个实训方案
+ * 加入一个实训方案,成功后跳转进入
  */
-async function activePlan() {
+async function joinPlan() {
+    var ctx = this;
     try {
-        var ctx = this;
 
-        var api = ctx.$xglobal.conf.apis.plnActivePlan;
+        var api = ctx.$xglobal.conf.apis.plnJoinPlan;
         var data = {
             token: localStorage.getItem('accToken'),
             _id: ctx.fill._id,
         };
 
         var res = await ctx.rRun(api, data);
-
-        if (res.error) throw res.error;
-        ctx.$set(ctx.fill, 'active', true);
-        ctx.forceRefresh();
+        ctx.fill.active = true;
+        ctx.goPracticeDetail();
     } catch (err) {
         ctx.$notify.error({
             title: '加入失败!',
@@ -89,16 +88,14 @@ function forceRefresh() {
 /**
  * 跳转到实训详情页面
  */
-function goPacticeDetail() {
+function goPracticeDetail() {
     var ctx = this;
     var tarCtx = ctx.$xcoms['App_mainView-Tt'];
 
-    //跳转到detail页面
-    tarCtx.$xset({
-        practiceDetailId: ctx.fill.id,
-    });
-
-    tarCtx.$xgo({
-        homeView: 'PracticeDetail',
-    });
-}
+    if (ctx.fill.active) {
+        tarCtx.$xgo({
+            planeDetailId: ctx.fill._id || null,
+            homeView: 'PracticeDetail',
+        });
+    };
+};

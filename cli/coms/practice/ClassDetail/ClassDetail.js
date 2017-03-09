@@ -82,6 +82,8 @@ com.methods = {
     addTeacher,
     removeTeacher,
     removeAssistant,
+    addPlan,
+    removePlan,
 };
 
 com.beforeMount = async function () {
@@ -95,6 +97,61 @@ com.mounted = async function () {
 
 
 //--------functions----------
+/**
+ * 移除一个方案，标识为del
+ */
+async function removePlan(p) {
+    var ctx = this;
+    try {
+        var api = ctx.$xglobal.conf.apis.plnRemovePlan;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            _id: p._id,
+        };
+
+        var res = await ctx.rRun(api, data);
+        ctx.getGroupInfo();
+
+    } catch (err) {
+        ctx.$notify.error({
+            title: '删除方案失败!',
+            message: err.tip || err.message,
+        });
+    };
+};
+
+
+/**
+ * 添加新方案
+ */
+async function addPlan() {
+    var ctx = this;
+    try {
+        var ipt = await ctx.$prompt('请输入方案的标题', '添加方案', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^[\S\s]{1,128}$/,
+            inputErrorMessage: '任意1～128字符'
+        });
+
+        var api = ctx.$xglobal.conf.apis.plnCreatePlan;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            title: ipt.value,
+            gid: ctx.groupInfo._id,
+        };
+
+        var res = await ctx.rRun(api, data);
+        ctx.getGroupInfo();
+
+    } catch (err) {
+        ctx.$notify.error({
+            title: '创建失败!',
+            message: err.tip || err.message,
+        });
+    };
+};
+
 
 /**
  * 移除一个导师
@@ -320,12 +377,12 @@ async function getGroupInfo() {
     var res = await ctx.rRun(api, data);
     var group = res.data;
 
-    //计算方案是否被用户激活active
+    //计算方案是否被用户激活active;忽略班级字段
     group.plans.forEach(function (item, n) {
+        item.group = undefined;
         if (planIdArr.indexOf(item._id) != -1) {
             item.active = true;
         };
-
     });
 
     //计算用户的班级角色role

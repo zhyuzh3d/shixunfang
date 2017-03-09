@@ -36,11 +36,14 @@ com.components = {
 
 com.data = function data() {
     var ctx = this;
+    var ttCtx = ctx.$xcoms['App_mainView-Tt'];
 
     return {
-        msg: 'Hello from pages/ClassDetail/ClassDetail.js',
+        msg: 'Hello from practice/PracticeDetail/PracticeDetail.js',
         activeName: 'practice',
-        accInfo: Fake.accInfo,
+        planInfo: {
+            _id: ttCtx.$data.planeDetailId,
+        },
     };
 };
 
@@ -58,22 +61,10 @@ com.props = {
 };
 
 com.methods = {
-    xgoTab: function () {
-        this.$xset({
-            activeName: this.$data.activeName
-        });
-    },
-    goBack: function () {
-        history.back()
-    },
-    goHome: function () {
-        var ctx = this;
-        var tarCtx = ctx.$xcoms['App_mainView-Tt'];
-
-        tarCtx.$xgo({
-            homeView: 'UserHome',
-        });
-    },
+    getPlanInfo,
+    xgoTab,
+    goBack,
+    goHome,
 };
 
 com.mounted = function () {
@@ -82,7 +73,67 @@ com.mounted = function () {
         $('.el-tabs__item:contains(全部日程)').html('全部日程<span class="warntag">' + ctx.fill.daysDelayCount + '</span>');
         $('.el-tabs__item:contains(每日任务)').html('每日任务<span class="warntag">' + ctx.fill.days[0].taskArr.length + '</span>');
     });
+
+
+    ctx.getPlanInfo();
+
 };
+
+
+
+//--------------functions--------------
+/**
+ * 获取plan详细信息
+ */
+async function getPlanInfo() {
+    var ctx = this;
+    try {
+        var api = ctx.$xglobal.conf.apis.plnGetDetail;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            _id: ctx.planInfo._id,
+        };
+
+        var res = await ctx.rRun(api, data);
+    } catch (err) {
+        ctx.$notify.error({
+            title: '加入失败!',
+            message: err.tip || err.message,
+        });
+    };
+};
+
+
+
+
+
+
+
+
+
+//---------------functions------------
+function goHome() {
+    var ctx = this;
+    var tarCtx = ctx.$xcoms['App_mainView-Tt'];
+
+    tarCtx.$xgo({
+        homeView: 'UserHome',
+    });
+}
+
+function goBack() {
+    history.back()
+};
+
+function xgoTab() {
+    this.$xset({
+        activeName: this.$data.activeName
+    });
+};
+
+
+
+
 
 
 

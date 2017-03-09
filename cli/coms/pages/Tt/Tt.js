@@ -61,7 +61,8 @@ com.data = function data() {
         _xsetConf: xsetConf,
         accInfo: ctx.$xglobal.accInfo,
         practiceDetailId: '', //映射到PracticeDetail页面
-        classDetailId: '', //映射到PracticeDetail页面
+        classDetailId: '', //映射到classDetail页面
+        planeDetailId: '', //映射到PracticeDetail页面
         userDetailId: '', //映射到userDetail页面
         schoolDetailId: '', //映射到schoolDetail页面
         _xrestoreDisabled: true, //停用自动恢复

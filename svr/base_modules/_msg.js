@@ -69,7 +69,11 @@ const _msg = {
         GrpNotInGrp: new Err('只有成员才能执行此操作', 601),
         GrpNotExistOrNotInGrp: new Err('班级不存在或者您不属于班级成员，无法访问', 602),
         GrpNeedManagerPower: new Err('需要管理员权限才能操作', 603),
-        GrpNeedVMemberPower: new Err('需要班级管理员将您添加到班级后才能加入', 604),
+        GrpNeedVMemberPower: new Err('需要班级管理员将您添加到班级后才能操作', 604),
+        GrpNeedMemberPower: new Err('您必须是班级成员才能执行此操作', 605),
+
+        PlnNoPowerOrNonExist:new Err('您无权访问此方案或方案不存在', 701),
+        PlnNonExist:new Err('您请求的方案不存在', 702),
     },
 };
 
