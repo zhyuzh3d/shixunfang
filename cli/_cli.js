@@ -18,7 +18,8 @@ import conf from './xglobal/conf.js';
 import fns from './xglobal/fns.js';
 import rRun from './xglobal/rRun.js';
 import xglobal from './plugins/xglobal.js';
-Vue.use(xglobal, {
+
+var xoption = {
     xglobal: {
         //将通过beforCreate附着到组件的this，任意字段
         conf,
@@ -34,7 +35,15 @@ Vue.use(xglobal, {
             return {};
         },
     },
-});
+};
+
+//添加所有注入方法
+import methods from './xglobal/methods.js';
+for (var key in methods) {
+    xoption.xcomponent.methods[key] = methods[key];
+};
+
+Vue.use(xglobal, xoption);
 
 //xrouter路由插件
 import xrouter from './plugins/xrouter.js';

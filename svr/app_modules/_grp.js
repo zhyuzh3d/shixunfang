@@ -92,6 +92,36 @@ _zrouter.addApi('/grpGetGroupDetail', {
 
 
 /**
+ * 获取某个班级的虚拟成员信息，用于对比检查虚拟成员情况;
+ * 必须是班级管理员或导师、助理
+ * 返回数组
+ */
+_zrouter.addApi('/grpGetVmembers', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //group._id
+    },
+    method: async function grpGetVmembers(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var res = await _mngs.models.group.findOne(noDel({
+            _id: ctx.xdata._id,
+            $or: [{
+                manager: acc._id
+                }, {
+                teachers: acc._id
+                }, {
+                assistants: acc._id
+                }],
+        }), 'vmembers').populate('vmembers', 'name mobile');
+        if (!res) throw Error().zbind(_msg.Errs.GrpNotExistOrNotInGrp);
+
+        ctx.body = new _msg.Msg(null, ctx, res.vmembers);
+    },
+});
+
+
+/**
  * 创建虚拟成员;需要manager权限
  * 返回完整的虚拟成员数组
  */

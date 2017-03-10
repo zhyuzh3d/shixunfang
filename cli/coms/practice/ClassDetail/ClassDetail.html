@@ -21,7 +21,7 @@
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
                     <el-tab-pane label="实训方案" name="practice">
                         <el-button v-if='groupInfo.myRole=="管理员"' type='primary' style='width:120px' @click='addPlan'> <i class='fa fa-plus' style="margin-right:12px"></i> 新 实 训</el-button>
-                        <el-row v-for='(p,n) in groupInfo.plans' style='margin:12px 0'>
+                        <el-row v-if='false' v-for='(p,n) in groupInfo.plans' style='margin:12px 0'>
                             <component is="practiceCard" :fill='p' :index='n'>
                                 <el-button v-if='groupInfo.myRole=="管理员"' type='text' @click='removePlan(p)'><i class='fa fa-times fa-lg'></i></el-button>
                             </component>

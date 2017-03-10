@@ -1,0 +1,235 @@
+<script src="./PlanInfoEdit.js"></script>
+
+<template>
+    <div sid='PlanInfoEdit' :xid='xid' style="width:100%" class='PlanInfoEdit'>
+        <el-row class='iptrow'>
+            <el-col :span="6">方案名称</el-col>
+            <el-col :span="18">
+                <el-input type='text' :placeholder='validates.title.tip' v-model="fill.title" ref='title' @change='validate("title")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <el-row class='iptrow'>
+            <el-col :span="6">技术方向</el-col>
+            <el-col :span="18">
+                <el-dropdown @command="selectCategory" style='margin-top:8px' trigger="click">
+                    <span class="el-dropdown-link">{{fill.category||"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for='item in categoryArr' v-bind:command="item">{{item}}</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-col>
+        </el-row>
+
+        <el-row class='iptrow' v-if='fill.category'>
+            <el-col :span="6">课程方案</el-col>
+            <el-col :span="18">
+                <el-dropdown @command="selectCourse" style='margin-top:8px' trigger="click">
+                    <span class="el-dropdown-link">{{fill.course && fill.course.title?fill.course.title:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for='item in courseArr' v-bind:command="JSON.stringify(item)">{{item.title}}</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-col>
+        </el-row>
+
+        <el-row class='iptrow' v-if='fill.course && fill.course.title'>
+            <el-col :span="6">开始日期</el-col>
+            <el-col :span="18">
+                <el-date-picker v-model="fill.begin" align="right" type="date" placeholder="选择日期"> </el-date-picker>
+            </el-col>
+        </el-row>
+
+        <el-row class='iptrow' v-if='fill.course && fill.course.title'>
+            <el-col :span="6">结束日期</el-col>
+            <el-col :span="18">
+                <el-date-picker v-model="fill.end" align="right" type="date" placeholder="选择日期"> </el-date-picker>
+            </el-col>
+        </el-row>
+
+        <el-row class='iptrow'>
+            <el-col :span="6">介绍信息</el-col>
+            <el-col :span="18">
+                <el-input type='textarea' :placeholder='validates.desc.tip' v-model="fill.desc" ref='desc' @change='validate("desc")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <!--
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">院校</el-col>
+            <el-col :span="16">
+                <el-autocomplete class="inline-input" v-model="addDialogData.school.name" :fetch-suggestions="genSearchFn(schoolArr,'name')" @select="selectSchool" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                <i class='fa fa-caret-down caretdown'></i>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">班级</el-col>
+            <el-col :span="16">
+                <el-autocomplete class="inline-input" v-model="addDialogData.group.name" :fetch-suggestions="genSearchFn(groupArr,'name')" @select="selelctGroup" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                <i class='fa fa-caret-down caretdown'></i>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">类别</el-col>
+            <el-col :span="18">
+                <el-dropdown @command="selectCategory" style='margin-top:8px'>
+                    <span class="el-dropdown-link">{{addDialogCategory?addDialogCategory:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for='item in categoryArr' v-bind:command="item">{{item}}</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">课程</el-col>
+            <el-col :span="16">
+                <el-autocomplete class="inline-input" v-model="addDialogData.course.title" :fetch-suggestions="genSearchFn(courseArr,'title')" @select="selectCourse" placeholder='输入搜索，下拉选择'></el-autocomplete>
+                <i class='fa fa-caret-down caretdown'></i>
+            </el-col>
+        </el-row>
+
+
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">开始日期</el-col>
+            <el-col :span="18">
+                <el-date-picker v-model="addDialogBegin" align="right" type="date" placeholder="选择日期" @change='refreshDialogData()'> </el-date-picker>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">结束日期</el-col>
+            <el-col :span="18">
+                <el-date-picker v-model="addDialogEnd" align="right" type="date" placeholder="选择日期"></el-date-picker>
+            </el-col>
+        </el-row>
+
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">管理员</el-col>
+            <el-col :span="10">
+                <el-input v-model="addDialogData.manager.mobile" :placeholder='validates.addDialogMobile1.tip' ref='addDialogMobile1' @change='iptMobileChange("manager","addDialogMobile1",addDialogData)'></el-input>
+            </el-col>
+            <el-col :span="8">
+                <span class='userName'>{{addDialogData.manager.name||"未知"}}</span>
+            </el-col>
+        </el-row>
+
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">老师</el-col>
+            <el-col :span="10">
+                <el-input class="inline-input" v-model="addDialogTeacher.mobile" :placeholder='validates.addDialogMobile2.tip' @change='iptMobileChange("addDialogTeacher","addDialogMobile2")' ref='addDialogMobile2'></el-input>
+            </el-col>
+            <el-col :span="8">
+                <span class='userName'>{{addDialogTeacher.name||"未知"}}</span>
+                <el-button type='primary' style='margin-left:12px' @click='addTeacher'><i class='fa fa-plus'></i></el-button>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="18" :offset='6'><span v-for='t in addDialogData.teachers'>{{t.name}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removeTeacher(t)'><i class='fa fa-times'></i></el-button></span></el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">助理</el-col>
+            <el-col :span="10">
+                <el-input class="inline-input" v-model="addDialogAssistant.mobile" :placeholder='validates.addDialogMobile3.tip' @change='iptMobileChange("addDialogAssistant","addDialogMobile3")' ref='addDialogMobile3'></el-input>
+            </el-col>
+            <el-col :span="8">
+                <span class='userName'>{{addDialogAssistant.name||"未知"}}</span>
+                <el-button type='primary' style='margin-left:12px' @click='addAssistant'><i class='fa fa-plus'></i></el-button>
+            </el-col>
+        </el-row>
+        <el-row>
+            <el-col :span="18" :offset='6'><span v-for='t in addDialogData.assistants'>{{t.name}}<el-button size='mini' type='text' style='margin:0 12px 0 4px' @click='removeAssistant(t)'><i class='fa fa-times'></i></el-button></span></el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">院校简介</el-col>
+            <el-col :span="18">
+                <el-input type='textarea' :placeholder='validates.addDialogDesc.tip' v-model="addDialogData.desc" ref='addDialogDesc' @change='validate("addDialogDesc")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <div style="height:8px"></div>
+        <el-row>
+            <el-col :span="6">备注信息</el-col>
+            <el-col :span="18">
+                <el-input type='textarea' :placeholder='validates.addDialogNote.tip' v-model="addDialogData._note" ref='addDialogNote' @change='validate("addDialogNote")'>
+                </el-input>
+            </el-col>
+        </el-row>
+
+        <div style="height:18px"></div>
+        <el-row>
+            <el-button @click='updateItem' type='primary' style='width:160px'>确 定</el-button>
+            <el-button type='text' @click='opeAddDialog(false)' style='width:100px'>取 消</el-button>
+        </el-row>
+
+-->
+    </div>
+</template>
+
+<style>
+    .PlanInfoEdit .el-input__inner {
+        border-radius: 0px;
+    }
+
+    .PlanInfoEdit .el-textarea__inner {
+        border-radius: 0px;
+    }
+
+</style>
+
+<style scoped>
+    .iptrow {
+        margin-top: 8px;
+    }
+
+    .PlanInfoEdit .el-col {
+        position: relative;
+    }
+
+    .caretdown {
+        float: right;
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        color: #AAA;
+    }
+
+    .el-row .el-col:first-child {
+        line-height: 36px
+    }
+
+    .userName {
+        line-height: 34px;
+        margin-left: 8px;
+        color: #888;
+    }
+
+    .elps {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        word-break: break-all;
+    }
+
+</style>

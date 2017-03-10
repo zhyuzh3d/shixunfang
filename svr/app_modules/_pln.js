@@ -106,7 +106,9 @@ _zrouter.addApi('/plnGetDetail', {
             })).populate('manager', 'name avatar mobile qq')
             .populate('teachers', 'name avatar mobile qq')
             .populate('assistants', 'name avatar mobile qq')
-            .populate('group', 'name');
+            .populate('members', 'name avatar mobile')
+            .populate('group', 'name')
+            .populate('course', 'title');
 
         res = _mngs.fns.clearDoc(res);
         if (!res) throw Error().zbind(_msg.Errs.PlnNoPowerOrNonExist);
@@ -118,7 +120,7 @@ _zrouter.addApi('/plnGetDetail', {
 
 /**
  * 创建一个新的方案，必须有班级id
- * 必须是班级的manager
+ * 必须是班级的manager，作者也自动被设置为新plan.manager
  * 返回结果
  */
 _zrouter.addApi('/plnCreatePlan', {
@@ -144,6 +146,8 @@ _zrouter.addApi('/plnCreatePlan', {
         var res = await new _mngs.models.plan({
             title: title,
             group: gid,
+            manager: acc._id,
+            author:acc._id,
         }).save();
 
         ctx.body = new _msg.Msg(null, ctx, res);
@@ -160,7 +164,7 @@ _zrouter.addApi('/plnRemovePlan', {
         token: _conf.regx.token, //用户token认证信息
         _id: _conf.regx.mngId, //plan._id
     },
-    method: async function plnCreatePlan(ctx) {
+    method: async function plnRemovePlan(ctx) {
         var token = ctx.xdata.token;
         var _id = ctx.xdata._id;
 
@@ -180,6 +184,221 @@ _zrouter.addApi('/plnRemovePlan', {
         //删除
         var res = await plan.update({
             __del: true
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+/**
+ * 更新一个方案的标题
+ * 必须是plan.manager
+ * 返回结果
+ */
+_zrouter.addApi('/plnUpdateTitle', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        title: _conf.regx.title,
+        _id: _conf.regx.mngId, //plan._id
+    },
+    method: async function plnUpdateTitle(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id,
+        });
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        var res = await plan.update({
+            title: ctx.xdata.title
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
+/**
+ * 更新一个方案的描述
+ * 必须是plan.manager
+ * 返回结果
+ */
+_zrouter.addApi('/plnUpdateDesc', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        desc: _conf.regx.text,
+        _id: _conf.regx.mngId, //plan._id
+    },
+    method: async function plnUpdateDesc(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id,
+        });
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        var res = await plan.update({
+            desc: ctx.xdata.desc
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+/**
+ * 更新一个方案的开始时间
+ * 必须是plan.manager
+ * 返回结果
+ */
+_zrouter.addApi('/plnUpdateBegin', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        begin: /\d{4}-\d{2}-\d{2}/,
+        _id: _conf.regx.mngId, //plan._id
+    },
+    method: async function plnUpdateBegin(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id,
+        });
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        var res = await plan.update({
+            begin: new Date(ctx.xdata.begin),
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+/**
+ * 更新一个方案的结束时间
+ * 必须是plan.manager
+ * 返回结果
+ */
+_zrouter.addApi('/plnUpdateEnd', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        end: /\d{4}-\d{2}-\d{2}/,
+        _id: _conf.regx.mngId, //plan._id
+    },
+    method: async function plnUpdateEnd(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id,
+        });
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        var res = await plan.update({
+            end: new Date(ctx.xdata.end),
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+/**
+ * 删除导师或助理
+ * 必须管理员权限
+ * 返回结果
+ */
+_zrouter.addApi('/plnRemoveUser', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        type: /(teacher)|(assistant)/,
+        pid: _conf.regx.mngId, //group._id
+        uid: _conf.regx.mngId, //user._id
+    },
+    method: async function plnRemoveUser(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        //权限判断
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata.pid
+        }, 'manager');
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.PlnNeedManagerPower);
+
+        //执行
+        var op = {};
+        op.$pull = ctx.xdata.type == 'teacher' ? {
+            teachers: ctx.xdata.uid,
+        } : {
+            assistants: ctx.xdata.uid
+        };
+
+        var res = await plan.update(op);
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+/**
+ * 通过电话号码添加导师或助理
+ * 必须管理员权限
+ * 返回结果
+ */
+_zrouter.addApi('/plnAddUser', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        type: /(teacher)|(assistant)/,
+        pid: _conf.regx.mngId, //group._id
+        mobile: _conf.regx.mobile, //user.mobile
+    },
+    method: async function plnAddUser(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        //权限判断
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata.pid
+        }, 'manager');
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.PlnNeedManagerPower);
+
+        //获取mobile对应的用户
+        var usr = await _mngs.models.user.findOne({
+            mobile: ctx.xdata.mobile
+        }, '_id');
+        if (!usr) throw Error().zbind(_msg.Errs.AccNotExist);
+
+        //执行
+        var op = {};
+        op.$push = ctx.xdata.type == 'teacher' ? {
+            teachers: usr._id,
+        } : {
+            assistants: usr._id,
+        };
+
+        var res = await plan.update(op);
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
+/**
+ * 移除一个已经加入的成员，必须管理员权限
+ * 未加入成员应在班级内移除
+ * 返回数组
+ */
+_zrouter.addApi('/plnRemoveMemeber', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //班级组的id
+        uid: _conf.regx.mngId, //需要移除的人员_id
+    },
+    method: async function plnRemoveMemeber(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id
+        }, 'manager');
+
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.PlnNeedManagerPower);
+
+        //从数组中删除
+        var res =await plan.update({
+            $pull: {
+                members: ctx.xdata.uid
+            }
         });
 
         ctx.body = new _msg.Msg(null, ctx, res);

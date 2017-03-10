@@ -9,7 +9,7 @@
                     <div class="ib" style="margin-left:12px">
                         <div class='ptitle elps' :class='{unactive:!fill.active && role=="普通成员"}'>
                             <span>{{fill.name}}</span>
-                            <span v-show='role=="普通成员"'>({{fill.active?(fill.alias||"无名"):"未激活"}})</span>
+                            <span v-show='role=="普通成员" && fill.alias!=fill.name'>({{fill.active?(fill.alias||"无名"):"未激活"}})</span>
                         </div>
                         <p v-if='role'>{{role}}</p>
                         <p v-if='fill.school'>院校 : {{fill.school}}</p>

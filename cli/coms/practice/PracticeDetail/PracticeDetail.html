@@ -11,11 +11,36 @@
                 <span>实训详情</span>
             </el-col>
         </el-row>
+
         <el-row type="flex" justify="center">
             <el-col class='nav' :span="20" :sm="16">
-                <h2 style="margin:8px 0">{{planInfo.title}}</h2>
+                <div class='ptitle'>
+                    <span>{{planInfo.title}}</span>
+                    <span v-if='planInfo.myRole' class='ml12' style="font-size:15px;font-weight:normal"> [ {{planInfo.myRole}} ] </span>
+                    <el-button v-if='planInfo.myRole=="管理员"' @click='editTitle' type='text' size='large' class='ml12'><i class='fa fa-pencil'></i></el-button>
+                </div>
             </el-col>
         </el-row>
+
+        <el-row type="flex" justify="center">
+            <el-col :span="20" :sm="16" style='font-size:14px'>
+                <span>{{Moment(planInfo.begin).format('YYYY年MM月DD日')}}</span>
+                <el-button v-if='planInfo.myRole=="管理员"' @click='beginDialogVis=true;beginDate=planInfo.begin' type='text' class='mr12'><i class='fa fa-pencil'></i></el-button>
+                <span>～</span>
+                <span>{{Moment(planInfo.end).format('YYYY年MM月DD日')}}</span>
+                <el-button v-if='planInfo.myRole=="管理员"' @click='endDialogVis=true;endDate=planInfo.end' type='text' class='mr12'><i class='fa fa-pencil'></i></el-button>
+            </el-col>
+        </el-row>
+
+        <el-row type="flex" justify="center" v-if='planInfo.desc'>
+            <el-col :span="20" :sm="16" style='font-size:14px'>
+                <span style="font-weight:800">公告:</span>
+                <span style="font-weight:800">{{planInfo.desc}}</span>
+                <el-button v-if='planInfo.myRole=="管理员"' @click='editDesc' type='text' class='mr12'><i class='fa fa-pencil'></i></el-button>
+            </el-col>
+        </el-row>
+
+
         <el-row id='main' type="flex" justify="center" style='margin-top:12px'>
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
@@ -34,84 +59,83 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="实训信息" name="info">
+                    <el-tab-pane label="实训成员" name="info">
+                        <el-button v-if='planInfo.myRole=="管理员"' type='primary' style='width:120px' @click='addTeacher'> <i class='fa fa-plus' style="margin-right:8px"></i> 新 导 师</el-button>
+                        <el-button v-if='planInfo.myRole=="管理员"' type='primary' style='width:120px' @click='addAssistant'> <i class='fa fa-plus' style="margin-right:8px"></i> 新 助 理</el-button>
 
-                        <el-button v-if='planInfo.myRole=="管理员"' type='primary' style='width:120px' @click='editDialogVis=true'> <i class='fa fa-pencil' style="margin-right:12px"></i> 编 辑</el-button>
-
-
-                        <div style="height:12px"></div>
-                        <div class="txtrow" v-if='planInfo.manager'>
-                            <div>实训经理</div>
-                            <div>
-                                <img :src="planInfo.manager.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
-                                <div class='master'>
-                                    <div style="color:#000"><b>{{planInfo.manager.name}}</b></div>
-                                    <div class='masterinfo'>
-                                        <p v-if='planInfo.manager.qq'>QQ:{{planInfo.manager.qq}}</p>
-                                        <p>Mobile:{{planInfo.manager.mobile}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="txtrow" v-if='planInfo.teachers&&planInfo.teachers.length>0'>
-                            <div>实训导师</div>
-                            <div v-for='usr in planInfo.teachers'>
-                                <img :src="usr.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
-                                <div class='master'>
-                                    <div style="color:#000"><b>{{usr.name}}</b></div>
-                                    <div class='masterinfo'>
-                                        <p v-if='usr.qq'>QQ:{{usr.qq}}</p>
-                                        <p>Mobile:{{usr.mobile}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="txtrow" v-if='planInfo.assistants&&planInfo.assistants.length>0'>
-                            <div>实训助理</div>
-                            <div v-for='usr in planInfo.assistants'>
-                                <img :src="usr.avatar" class="avatar" style="margin-right:12px;margin-bottom:12px">
-                                <div class='master'>
-                                    <div style="color:#000"><b>{{usr.name}}</b></div>
-                                    <div class='masterinfo'>
-                                        <p v-if='usr.qq'>QQ:{{usr.qq}}</p>
-                                        <p>Mobile:{{usr.mobile}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="txtrow" v-if='planInfo.qqGroup'>
-                            <div>实训QQ群</div>
-                            <div>{{planInfo.qqGroup}}</div>
-                        </div>
-                        <div class="txtrow" v-if='planInfo.begin && planInfo.end'>
-                            <div>实训周期</div>
-                            <div>{{planInfo.begin.substr(0,10)}}～{{planInfo.end.substr(0,10)}}</div>
-                        </div>
-                        <div class="txtrow" v-if='planInfo.group'>
-                            <div>匹配班级</div>
-                            <div>{{planInfo.group.name}}</div>
-                        </div>
-                        <div class="txtrow" v-if='planInfo.desc'>
-                            <div>注意事项</div>
-                            <div>{{planInfo.desc}}</div>
-                        </div>
+                        <el-row style='margin:-4px;margin-top:8px'>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='planInfo.manager' class='cardrow'>
+                                <component is="userCard" :fill='planInfo.manager' role='管理员'></component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='planInfo.teachers.length>0' v-for='u in planInfo.teachers' class='cardrow'>
+                                <component is="userCard" :fill='u' role='导师'>
+                                    <el-button type='text' v-if='planInfo.myRole=="管理员"' @click='removeTeacher(u)'><i class='fa fa-times fa-lg'></i></el-button>
+                                </component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-if='planInfo.assistants.length>0' v-for='u in planInfo.assistants' class='cardrow'>
+                                <component is="userCard" :fill='u' role='助理'>
+                                    <el-button type='text' v-if='planInfo.myRole=="管理员"' @click='removeAssistant(u)'><i class='fa fa-times fa-lg'></i></el-button>
+                                </component>
+                            </el-col>
+                            <el-col :xs='24' :sm='12' :lg='8' v-for='(u,n) in amembers' class='cardrow'>
+                                <component is="userCard" :fill='u' :index='n' role='普通成员'>
+                                    <el-button type='text' v-if='planInfo.myRole=="管理员" && u.active' @click='removeMemeber(u)'><i class='fa fa-times fa-lg'></i></el-button>
+                                </component>
+                            </el-col>
+                        </el-row>
+                        <div style="height:48px"></div>
                     </el-tab-pane>
                 </el-tabs>
             </el-col>
         </el-row>
         <div style="height:120px"></div>
 
-        <div id='dialogs'>
-            <el-dialog title="编辑实训方案" v-model="editDialogVis" size="small">
-
+        <div>
+            <el-dialog title="修改开始日期" v-model="beginDialogVis" size='small'>
+                <el-row>
+                    <el-date-picker v-model="beginDate" align="right" type="date" placeholder="选择日期"></el-date-picker>
+                </el-row>
+                <el-row style='margin-top:24px'>
+                    <el-button @click='editBegin' type='primary' style='width:160px'>确 定</el-button>
+                    <el-button type='text' @click='beginDialogVis=false' style='width:100px'>取 消</el-button>
+                </el-row>
+            </el-dialog>
+            <el-dialog title="修改结束日期" v-model="endDialogVis" size='small'>
+                <el-row>
+                    <el-date-picker v-model="endDate" align="right" type="date" placeholder="选择日期"></el-date-picker>
+                </el-row>
+                <el-row style='margin-top:24px'>
+                    <el-button @click='editEnd' type='primary' style='width:160px'>确 定</el-button>
+                    <el-button type='text' @click='endDialogVis=false' style='width:100px'>取 消</el-button>
+                </el-row>
             </el-dialog>
         </div>
+
     </div>
 </template>
 
 
 <style scoped>
+    .cardrow {
+        padding: 4px
+    }
+
+    .ml12 {
+        margin-left: 12px;
+    }
+
+    .mr12 {
+        margin-right: 12px;
+    }
+
+    .ptitle {
+        font-size: 20px;
+        color: #334;
+        display: inline-block;
+        margin: 12px 0 0 0;
+        font-weight: bold;
+    }
+
     .ttPracticeDetail {
         height: 100%;
         overflow-y: auto;
@@ -239,6 +263,14 @@
         min-width: 400px;
     }
 
+    .el-input__inner {
+        border-radius: 0;
+    }
+
+    .el-dialog--small {
+        min-width: 400px;
+    }
+
     .ttPracticeDetail .warntag {
         width: 24px;
         height: 24px;
@@ -251,6 +283,10 @@
 
     .ttPracticeDetail {
         letter-spacing: 0.2px;
+    }
+
+    .el-input__inner {
+        border-radius: 0;
     }
 
 </style>

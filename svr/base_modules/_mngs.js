@@ -356,6 +356,7 @@ schemas.check = new $mongoose.Schema({
     },
     state: String, //undefined,checked,marking,marked...
     pass: Boolean,
+    passAt:Date,
 }, {
     strict: false,
     timestamps: {

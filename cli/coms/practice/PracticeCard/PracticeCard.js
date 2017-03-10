@@ -49,7 +49,7 @@ async function joinPlan() {
 
         var res = await ctx.rRun(api, data);
         ctx.fill.active = true;
-        ctx.goPracticeDetail();
+        //ctx.goPracticeDetail();
     } catch (err) {
         ctx.$notify.error({
             title: '加入失败!',

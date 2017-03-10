@@ -75,12 +75,22 @@ conf.apis = {
     grpJoinGroup: `//${location.host}/api/grpJoinGroup`,
     grpRemoveUser: `//${location.host}/api/grpRemoveUser`,
     grpAddUser: `//${location.host}/api/grpAddUser`,
+    grpGetVmembers: `//${location.host}/api/grpGetVmembers`,
 
     plnGetMyPlanArr: `//${location.host}/api/plnGetMyPlanArr`,
     plnGetDetail: `//${location.host}/api/plnGetDetail`,
     plnJoinPlan: `//${location.host}/api/plnJoinPlan`,
     plnCreatePlan: `//${location.host}/api/plnCreatePlan`,
     plnRemovePlan: `//${location.host}/api/plnRemovePlan`,
+    plnUpdateTitle: `//${location.host}/api/plnUpdateTitle`,
+    plnUpdateDesc: `//${location.host}/api/plnUpdateDesc`,
+    plnUpdateBegin: `//${location.host}/api/plnUpdateBegin`,
+    plnUpdateEnd: `//${location.host}/api/plnUpdateEnd`,
+    plnRemoveUser: `//${location.host}/api/plnRemoveUser`,
+    plnAddUser: `//${location.host}/api/plnAddUser`,
+    plnRemoveMemeber: `//${location.host}/api/plnRemoveMemeber`,
+
+    crsGetAllCourse: `//${location.host}/api/crsGetAllCourse`,
 
 
 };

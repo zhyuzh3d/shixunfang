@@ -74,6 +74,7 @@ const _msg = {
 
         PlnNoPowerOrNonExist:new Err('您无权访问此方案或方案不存在', 701),
         PlnNonExist:new Err('您请求的方案不存在', 702),
+        PlnNeedManagerPower: new Err('需要管理员权限才能操作', 703),
     },
 };
 
