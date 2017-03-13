@@ -86,11 +86,15 @@ conf.apis = {
     plnUpdateDesc: `//${location.host}/api/plnUpdateDesc`,
     plnUpdateBegin: `//${location.host}/api/plnUpdateBegin`,
     plnUpdateEnd: `//${location.host}/api/plnUpdateEnd`,
+    plnUpdateGroup: `//${location.host}/api/plnUpdateGroup`,
     plnRemoveUser: `//${location.host}/api/plnRemoveUser`,
     plnAddUser: `//${location.host}/api/plnAddUser`,
     plnRemoveMemeber: `//${location.host}/api/plnRemoveMemeber`,
 
     crsGetAllCourse: `//${location.host}/api/crsGetAllCourse`,
+
+    schlGetSchoolArr: `//${location.host}/api/schlGetSchoolArr`,
+    schlGetSchoolGroupArr: `//${location.host}/api/schlGetSchoolGroupArr`,
 
 
 };

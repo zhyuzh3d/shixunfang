@@ -34,10 +34,12 @@ Vue.prototype.$prompt = prompt;
 import Fake from '../_data/fake.js';
 import TaskCard from '../../practice/TaskCard/TaskCard.html';
 import UserCard from '../../practice/UserCard/UserCard.html';
+import SelectGroup from '../../dialog/SelectGroup/SelectGroup.html';
 
 com.components = {
     UserCard,
     TaskCard,
+    SelectGroup,
 };
 
 com.data = function data() {
@@ -57,6 +59,13 @@ com.data = function data() {
         endDialogVis: false,
         endDate: undefined,
         amembers: [], //plan.members+group.vmembers
+        selectGroupDialogVis: false,
+        selectGroupDialogConf: {
+            okfn: ctx.editGroup,
+            cancelfn: function () {
+                ctx.$set(ctx.$data, 'selectGroupDialogVis', false)
+            },
+        },
     };
 };
 
@@ -73,6 +82,7 @@ com.methods = {
     editBegin,
     editEnd,
     editDesc,
+    editGroup,
     removeMemeber,
     removeTeacher,
     addTeacher,
@@ -84,6 +94,7 @@ com.methods = {
     xgoTab,
     goBack,
     goHome,
+    goGroup,
 };
 
 com.mounted = async function () {
@@ -315,6 +326,30 @@ async function editEnd() {
     };
 };
 
+/**
+ * 编辑结束日期
+ */
+async function editGroup(school,group) {
+    var ctx = this;
+    try {
+        var api = ctx.$xglobal.conf.apis.plnUpdateGroup;
+        var data = {
+            token: localStorage.getItem('accToken'),
+            _id: ctx.planInfo._id,
+            gid: group._id,
+        };
+
+        var res = await ctx.rRun(api, data);
+        ctx.$set(ctx.planInfo, 'group', group);
+        ctx.selectGroupDialogVis = false;
+    } catch (err) {
+        ctx.$notify.error({
+            title: '编辑失败!',
+            message: err.tip || err.message,
+        });
+    };
+};
+
 
 /**
  * 获取group的虚拟成员列表
@@ -439,7 +474,16 @@ function xgoTab() {
     });
 };
 
+function goGroup() {
+    var ctx = this;
+    var tarCtx = ctx.$xcoms['App_mainView-Tt'];
+    var gid = ctx.planInfo.group._id;
 
+    tarCtx.$xgo({
+        classDetailId: gid,
+        homeView: 'ClassDetail',
+    });
+};
 
 
 

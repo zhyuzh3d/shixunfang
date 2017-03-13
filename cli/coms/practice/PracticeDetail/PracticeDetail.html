@@ -32,10 +32,19 @@
             </el-col>
         </el-row>
 
-        <el-row type="flex" justify="center" v-if='planInfo.desc'>
+        <el-row type="flex" justify="center">
+            <el-col :span="20" :sm="16" style='font-size:14px'>
+                <span style="font-weight:800">班级:</span>
+                <el-button @click='goGroup' type='text' v-if='planInfo.group'>{{planInfo.group.name||"未设定"}}</el-button>
+                <span v-if='!planInfo.group'>未设定</span>
+                <el-button v-if='planInfo.myRole=="管理员"' @click='selectGroupDialogVis=true' type='text' class='mr12'><i class='fa fa-pencil'></i></el-button>
+            </el-col>
+        </el-row>
+
+        <el-row type="flex" justify="center">
             <el-col :span="20" :sm="16" style='font-size:14px'>
                 <span style="font-weight:800">公告:</span>
-                <span style="font-weight:800">{{planInfo.desc}}</span>
+                <span style="font-weight:800">{{planInfo.desc||"无"}}</span>
                 <el-button v-if='planInfo.myRole=="管理员"' @click='editDesc' type='text' class='mr12'><i class='fa fa-pencil'></i></el-button>
             </el-col>
         </el-row>
@@ -91,6 +100,10 @@
         <div style="height:120px"></div>
 
         <div>
+            <el-dialog title="选择班级" v-model="selectGroupDialogVis" size='small'>
+                <component is="SelectGroup" :conf='selectGroupDialogConf'></component>
+            </el-dialog>
+
             <el-dialog title="修改开始日期" v-model="beginDialogVis" size='small'>
                 <el-row>
                     <el-date-picker v-model="beginDate" align="right" type="date" placeholder="选择日期"></el-date-picker>
@@ -100,6 +113,7 @@
                     <el-button type='text' @click='beginDialogVis=false' style='width:100px'>取 消</el-button>
                 </el-row>
             </el-dialog>
+
             <el-dialog title="修改结束日期" v-model="endDialogVis" size='small'>
                 <el-row>
                     <el-date-picker v-model="endDate" align="right" type="date" placeholder="选择日期"></el-date-picker>
@@ -138,7 +152,6 @@
 
     .ttPracticeDetail {
         height: 100%;
-        overflow-y: auto;
     }
 
     .master {

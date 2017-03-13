@@ -147,7 +147,7 @@ _zrouter.addApi('/plnCreatePlan', {
             title: title,
             group: gid,
             manager: acc._id,
-            author:acc._id,
+            author: acc._id,
         }).save();
 
         ctx.body = new _msg.Msg(null, ctx, res);
@@ -273,6 +273,38 @@ _zrouter.addApi('/plnUpdateBegin', {
 });
 
 /**
+ * 更新一个方案的开始时间
+ * 必须是plan.manager
+ * 返回结果
+ */
+_zrouter.addApi('/plnUpdateGroup', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        _id: _conf.regx.mngId, //plan._id
+        gid: _conf.regx.mngId, //group._id
+    },
+    method: async function plnUpdateGroup(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var plan = await _mngs.models.plan.findOne({
+            _id: ctx.xdata._id,
+        });
+        if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.GrpNeedManagerPower);
+
+        var res = await plan.update({
+            group: ctx.xdata.gid,
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, res);
+    },
+});
+
+
+
+
+
+
+/**
  * 更新一个方案的结束时间
  * 必须是plan.manager
  * 返回结果
@@ -395,7 +427,7 @@ _zrouter.addApi('/plnRemoveMemeber', {
         if (!plan || String(plan.manager) != acc._id) throw Error().zbind(_msg.Errs.PlnNeedManagerPower);
 
         //从数组中删除
-        var res =await plan.update({
+        var res = await plan.update({
             $pull: {
                 members: ctx.xdata.uid
             }

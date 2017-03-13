@@ -1,0 +1,66 @@
+<script src="./SelectGroup.js"></script>
+
+<template>
+    <div sid='SelectGroup' :xid='xid' class="SelectGroup">
+        <el-row>
+            <el-col :span='6' class='label'>选择院校</el-col>
+            <el-col :span="18">
+                <el-autocomplete v-model="schoolObj.name" :fetch-suggestions="xsearch(schoolArr,'name')" placeholder="输入搜索，下拉选择" @select="schoolSelect"></el-autocomplete>
+            </el-col>
+            <el-button class='droptag' type='text' @click='clearSchool'>
+                <i class="fa fa-caret-down "></i>
+            </el-button>
+        </el-row>
+        <div style="height:12px"></div>
+        <el-row v-if='schoolObj._id'>
+            <el-col :span='6' class='label'>选择班级</el-col>
+            <el-col :span="18" v-if='groupArr.length>0'>
+                <el-autocomplete v-model="groupObj.name" :fetch-suggestions="xsearch(groupArr,'name')" placeholder="输入搜索，下拉选择" @select="groupSelect"></el-autocomplete>
+            </el-col>
+            <el-col :span="18" v-if='!groupArr.length>0' class='notip'>此学院还没创建班级</el-col>
+            <el-button v-if='groupArr.length>0' class='droptag' type='text' @click='clearGroup($event)'>
+                <i class="fa fa-caret-down"></i>
+            </el-button>
+        </el-row>
+        <div style="height:24px"></div>
+        <el-row>
+            <el-col :span="18">
+                <el-button type='primary' v-if='conf.okfn' @click='conf.okfn(schoolObj,groupObj)' style='width:120px'>确定</el-button>
+                <el-button type='text' v-if='conf.cancelfn' @click='conf.cancelfn(schoolObj,groupObj)' style='margin-left:24px'>取消</el-button>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .validateFail {
+        background-color: #ffd9d9;
+        border: 1px solid red;
+    }
+
+</style>
+<style>
+    .notip {
+        color: #AAA;
+        line-height: 40px;
+    }
+
+    .droptag {
+        line-height: 24px;
+        float: right;
+        margin-left: -24px;
+        position: absolute;
+    }
+
+    .SelectGroup .el-input__inner {
+        height: 40px;
+        border-radius: 0;
+    }
+
+    .label {
+        text-align: right;
+        line-height: 40px;
+        padding-right: 12px;
+    }
+
+</style>

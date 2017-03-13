@@ -29,6 +29,7 @@ const _adm = global._adm = require('./app_modules/_adm.js');
 const _grp = global._grp = require('./app_modules/_grp.js');
 const _pln = global._pln = require('./app_modules/_pln.js');
 const _crs = global._crs = require('./app_modules/_crs.js');
+const _schl = global._schl = require('./app_modules/_schl.js');
 
 (async function () {
     //全部api的容器对象

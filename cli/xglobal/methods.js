@@ -22,7 +22,7 @@ methods.xsearch = function (arr, key) {
         });
     };
     return function (str, cb) {
-        var results = str ? arr.filter(ctx.createQueryFilter(str)) : arr;
+        var results = str ? arr.filter(createQueryFilter(str)) : arr;
         cb(results);
     };
 };
@@ -34,6 +34,6 @@ methods.xsearch = function (arr, key) {
  */
 function createQueryFilter(str) {
     return function (item) {
-        return item.value.toLowerCase().indexOf(str.toLowerCase()) === 0;
+        return item.value.toLowerCase().indexOf(str.toLowerCase()) != -1;
     };
 };
