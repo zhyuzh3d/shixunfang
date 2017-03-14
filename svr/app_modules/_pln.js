@@ -108,7 +108,14 @@ _zrouter.addApi('/plnGetDetail', {
             .populate('assistants', 'name avatar mobile qq')
             .populate('members', 'name avatar mobile')
             .populate('group', 'name')
-            .populate('course', 'title');
+            .populate({
+                path: 'course',
+                select: 'title packs category desc',
+                populate: {
+                    path:'packs',
+                    select:'title desc days'
+                }
+            });
 
         res = _mngs.fns.clearDoc(res);
         if (!res) throw Error().zbind(_msg.Errs.PlnNoPowerOrNonExist);

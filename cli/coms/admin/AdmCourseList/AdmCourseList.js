@@ -266,17 +266,18 @@ function selectPack(item) {
     var packs = ctx.$data.addDialogData.packs;
 
     if (packs.indexOf(item._id) == -1) {
-        packs.push(item._id);
         ctx.$data.addDialogPacks.push(item);
         ctx.$set(ctx.$data, 'addDialogPacks', ctx.$data.addDialogPacks);
         ctx.$set(ctx.$data.addDialogData, 'packs', ctx.$data.addDialogData.packs);
-    }else{
+    } else {
         ctx.$notify.error({
             title: '已经添加，请勿重复添加!',
         });
     };
     ctx.$set(ctx.$data, 'addDialogPack', undefined); //清空输入框
 
+
+    console.log('>>ctx.$data.addDialogPacks',ctx.$data.addDialogPacks);
     ctx.refreshDialogData();
 };
 

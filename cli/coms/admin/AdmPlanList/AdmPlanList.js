@@ -62,6 +62,7 @@ com.data = function data() {
         courseArr: [],
         categoryArr: ctx.$xglobal.conf.set.taskCategoryArr,
         addDialogCategory: undefined,
+        itemDefault: itemDefault,
 
         addDialogVis: false,
         addDialogDefault: itemDefault,
@@ -240,9 +241,13 @@ async function getItemArr() {
  */
 async function openEditDialog(item) {
     var ctx = this;
-    await ctx.getSchoolArr();
 
-    ctx.$set(ctx.$data, 'addDialogData', item.row);
+    await ctx.getSchoolArr();
+    var dialogData = Object.assign(ctx.itemDefault, item.row);
+
+    ctx.$set(ctx.$data, 'addDialogData', dialogData);
+    ctx.$set(ctx.$data, 'addDialogBegin', dialogData.begin);
+    ctx.$set(ctx.$data, 'addDialogEnd', dialogData.end);
 
     if (!item.row.manager) ctx.$data.addDialogData.manager = {};
     if (!item.row.teacher) ctx.$data.addDialogData.teacher = {};

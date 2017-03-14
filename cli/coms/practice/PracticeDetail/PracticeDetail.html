@@ -54,10 +54,10 @@
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab()" style='width:100%'>
 
-                    <el-tab-pane v-if='false' label="全部日程" name="days" class='days'>
-                        <el-row v-if='course' v-for='pack in course.packs'>
-                            <el-row v-for='(task,n) in pack' style='margin:12px 0'>
-                                <component is="taskCard" :fill='task' :index='n'></component>
+                    <el-tab-pane label="全部日程" name="days" class='days'>
+                        <el-row v-if='planInfo && planInfo.course'>
+                            <el-row v-for='pack in planInfo.course.packs' style='margin:12px 0'>
+                                <component is="PackCard" :fill='pack' :index='n'></component>
                             </el-row>
                         </el-row>
                     </el-tab-pane>

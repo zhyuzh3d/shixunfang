@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import $ from 'jquery';
 import Moment from 'moment';
+Moment.locale('zh-cn');
 
 var com = {};
 export default com;
@@ -33,12 +34,14 @@ Vue.prototype.$prompt = prompt;
 
 import Fake from '../_data/fake.js';
 import TaskCard from '../../practice/TaskCard/TaskCard.html';
+import PackCard from '../../practice/PackCard/PackCard.html';
 import UserCard from '../../practice/UserCard/UserCard.html';
 import SelectGroup from '../../dialog/SelectGroup/SelectGroup.html';
 
 com.components = {
     UserCard,
     TaskCard,
+    PackCard,
     SelectGroup,
 };
 
@@ -89,6 +92,7 @@ com.methods = {
     removeAssistant,
     addAssistant,
     getGroupVmembers,
+    genPackDate,
 
     Moment,
     xgoTab,
@@ -329,7 +333,7 @@ async function editEnd() {
 /**
  * 编辑结束日期
  */
-async function editGroup(school,group) {
+async function editGroup(school, group) {
     var ctx = this;
     try {
         var api = ctx.$xglobal.conf.apis.plnUpdateGroup;
@@ -342,6 +346,10 @@ async function editGroup(school,group) {
         var res = await ctx.rRun(api, data);
         ctx.$set(ctx.planInfo, 'group', group);
         ctx.selectGroupDialogVis = false;
+
+        //刷新成员数据
+        await ctx.getPlanInfo();
+
     } catch (err) {
         ctx.$notify.error({
             title: '编辑失败!',
@@ -435,7 +443,10 @@ async function getPlanInfo() {
             item.active = true;
         });
 
-        //对普通成员不显示成员列表
+        //计算日期
+        ctx.genPackDate();
+
+        //对管理员显示成员列表，对普通成员不显示成员列表
         if (plan.myRole) await ctx.getGroupVmembers();
 
     } catch (err) {
@@ -446,7 +457,22 @@ async function getPlanInfo() {
     };
 };
 
+/**
+ * 计算每个pack的实际日期
+ * 以begin为参考，每个pack加1天
+ */
+function genPackDate() {
+    var ctx = this;
+    var packs = ctx.planInfo.course.packs;
+    var begin = ctx.planInfo.begin;
 
+    var date = begin;
+    for (var i = 0; i < packs.length; i++) {
+        var pack = packs[i];
+        date = Moment(date).add(Number(pack.days), 'days');
+        pack.date = date;
+    };
+};
 
 
 
@@ -462,7 +488,7 @@ function goHome() {
     tarCtx.$xgo({
         homeView: 'UserHome',
     });
-}
+};
 
 function goBack() {
     history.back()
