@@ -90,7 +90,6 @@ conf.apis = {
     plnRemoveUser: `//${location.host}/api/plnRemoveUser`,
     plnAddUser: `//${location.host}/api/plnAddUser`,
     plnRemoveMemeber: `//${location.host}/api/plnRemoveMemeber`,
-    plnGetCurTaskArr: `//${location.host}/api/plnGetCurTaskArr`,
     plnGetCheckArr: `//${location.host}/api/plnGetCheckArr`,
 
     crsGetAllCourse: `//${location.host}/api/crsGetAllCourse`,

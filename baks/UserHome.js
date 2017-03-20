@@ -59,6 +59,7 @@ xsetConf.activeName = {
             case 'TaskList':
                 if (!ctx.hasGetPlanArr) await ctx.getMyPlanArr();
                 await ctx.getUnfiniTasks();
+                //await ctx.getMyCurTaskArr();
                 break;
             default:
                 var com = await System.import('../../user/Profile/Profile.html');
@@ -105,6 +106,8 @@ com.methods = {
     findMyGroup,
     joinGroup,
     getMyPlanArr,
+    getMyCurTaskArr,
+    getMyCurCheckArr,
     getUnfiniTasks,
 };
 
@@ -125,6 +128,70 @@ com.mounted = async function () {
 };
 
 //-------functions--------
+
+/**
+ * 获取今天的任务列表
+ */
+async function getMyCurTaskArr() {
+    var ctx = this;
+
+    var api = ctx.$xglobal.conf.apis.plnGetCurTaskArr;
+    var data = {
+        token: localStorage.getItem('accToken'),
+    };
+
+    var res = await ctx.rRun(api, data);
+    var packArr = res.data;
+
+    ctx.$data.curPackArr = packArr;
+
+    //获取对应的check列表，并转为{task._id:check
+    var checkArr = await ctx.getMyCurCheckArr();
+    var checks = {};
+    checkArr.forEach(function (check) {
+        checks[check.task] = check;
+    });
+
+    //填充到每个task对象
+    packArr.forEach(function (pack) {
+        if (pack.tasks) return;
+        pack.tasks.forEach(function (task) {
+            if (checks[task._id]) {
+                task.check = checks[task._id];
+            };
+        });
+    });
+
+    ctx.$set(ctx.$data, 'curPackArr', packArr);
+
+    return res.data;
+};
+
+
+/**
+ * 获取今天的任务列表
+ */
+async function getMyCurCheckArr() {
+    var ctx = this;
+
+    //组装curTaskIdArr参数
+    var taskIdArr = [];
+    ctx.$data.curPackArr.forEach(function (pack) {
+        if (!pack.tasks) return;
+        pack.tasks.forEach(function (task) {
+            taskIdArr.push(task._id);
+        });
+    });
+
+    var api = ctx.$xglobal.conf.apis.plnGetCheckArr;
+    var data = {
+        token: localStorage.getItem('accToken'),
+        idArr: JSON.stringify(taskIdArr),
+    };
+
+    var res = await ctx.rRun(api, data);
+    return res.data;
+};
 
 /**
  * 获取我的所有已经激活plan的信息

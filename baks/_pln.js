@@ -491,6 +491,88 @@ _zrouter.addApi('/plnGetPlanTaskArr', {
 
 
 
+
+
+/**
+ * 获取用户当天的所有任务列表
+ * 只考虑已经加入的plan的members成员
+ * 返回数组,每个task包含planId
+ */
+_zrouter.addApi('/plnGetCurTaskArr', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+    },
+    method: async function plnGetCurTaskArr(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        //拉取所有未结束的plan
+        var planArr = await _mngs.models.plan.find({
+            members: acc._id,
+            end: {
+                $gte: new Date(),
+            },
+        }, 'title begin end course members').populate({
+            path: 'course',
+            select: 'packs',
+            populate: {
+                path: 'packs',
+                select: '_id'
+            }
+        });
+
+        //计算每个plan中早于今天的pack列表
+        var packIdArr = [];
+        planArr.forEach(function (plan) {
+            if (!plan.begin || !plan.course || !plan.course.packs) return;
+            var date = plan.begin;
+            var now = new Date().getTime();
+            plan.course.packs.forEach(function (pack) {
+                var days = pack.days === undefined ? 1 : Number(pack.days);
+                var time = new Date(date).getTime();
+                if (time < now) {
+                    packIdArr.push(pack._id);
+                };
+                date = $moment(date).add(days, 'days');
+            });
+        });
+
+        //根据今天的pack拉取task列表
+        var packArr = await _mngs.models.pack.find({
+            _id: {
+                $in: packIdArr,
+            }
+        }, 'title tasks').populate('tasks');
+
+
+        ctx.body = new _msg.Msg(null, ctx, packArr);
+
+
+
+        /*
+                var packIdArr = [];
+                planArr.forEach(function (plan) {
+                    if (!plan.begin || !plan.course || !plan.course.packs) return;
+                    var date = plan.begin;
+                    plan.course.packs.forEach(function (pack) {
+                        var days = pack.days === undefined ? 1 : Number(pack.days);
+                        date = $moment(date).add(days, 'days');
+                        if ($moment(date).format('YYYYMMDD') == $moment().format('YYYYMMDD')) {
+                            packIdArr.push(pack._id);
+                        };
+                    });
+                });
+
+                //根据今天的pack拉取task列表
+                var packArr = await _mngs.models.pack.find({
+                    _id: {
+                        $in: packIdArr,
+                    }
+                }, 'title tasks').populate('tasks');
+        ctx.body = new _msg.Msg(null, ctx, packArr);
+        */
+    },
+});
+
 /**
  * 获取多个task对应的check列表
  * 配合plnGetCurTaskArr使用
