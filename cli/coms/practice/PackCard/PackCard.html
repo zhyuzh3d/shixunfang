@@ -12,7 +12,9 @@
                 <p>{{fill.desc || "暂无信息"}}</p>
             </el-col>
             <el-col :span='2' class='cardBtn'>
-                <i class="fa fa-chevron-right"></i>
+                <el-button @click='goPackDetail' type='text'>
+                    <i class="fa fa-chevron-right"></i>
+                </el-button>
             </el-col>
         </el-row>
     </div>

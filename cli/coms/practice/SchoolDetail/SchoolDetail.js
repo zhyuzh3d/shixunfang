@@ -51,7 +51,6 @@ com.props = {
             scl.classArr = Fake.classArr;
             scl.teacherArr = Fake.classArr[0].memberArr;
             scl.practiceArr = Fake.practiceArr;
-            console.log('>>>school',scl);
             return scl;
         },
     }

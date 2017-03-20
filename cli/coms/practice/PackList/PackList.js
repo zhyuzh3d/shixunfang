@@ -19,7 +19,7 @@ Vue.use(Col);
 //所有数据写在这里
 com.data = function data() {
     return {
-        msg: 'Hello from paractice/PackCard/PackCard.js',
+        msg: 'Hello from paractice/PackList/PackList.js',
     };
 };
 
@@ -28,20 +28,15 @@ com.props = {
         type: Object,
     },
     index: Number,
+    xid: {
+        type: String,
+        default: 'PackDetail',
+    }
 };
 
 
 com.methods = {
     Moment,
-    goPackDetail: function () {
-        var ctx = this;
-        var tarCtx = ctx.$xcoms['App_mainView-Tt'];
-
-        tarCtx.$xgo({
-            packDetailId: ctx.fill._id || null,
-            homeView: 'PackDetail',
-        });
-    },
 };
 
 com.mounted = function () {};

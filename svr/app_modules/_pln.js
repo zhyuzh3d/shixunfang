@@ -112,8 +112,8 @@ _zrouter.addApi('/plnGetDetail', {
                 path: 'course',
                 select: 'title packs category desc',
                 populate: {
-                    path:'packs',
-                    select:'title desc days'
+                    path: 'packs',
+                    select: 'title desc days'
                 }
             });
 
@@ -446,6 +446,88 @@ _zrouter.addApi('/plnRemoveMemeber', {
 
 
 
+/**
+ * 获取用户当天的所有任务列表
+ * 只考虑已经加入的plan的members成员
+ * 返回数组,每个task包含planId
+ */
+_zrouter.addApi('/plnGetCurTaskArr', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+    },
+    method: async function plnGetCurTaskArr(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        //拉取所有未结束的plan
+        var planArr = await _mngs.models.plan.find({
+            members: acc._id,
+            end: {
+                $gte: new Date(),
+            },
+        }, 'title begin end course members').populate({
+            path: 'course',
+            select: 'packs',
+            populate: {
+                path: 'packs',
+                select: '_id'
+            }
+        });
+
+        //计算每个plan对应到今天的pack
+        var packIdArr = [];
+        planArr.forEach(function (plan) {
+            if (!plan.begin || !plan.course || !plan.course.packs) return;
+            var date = plan.begin;
+            plan.course.packs.forEach(function (pack) {
+                var days = pack.days === undefined ? 1 : Number(pack.days);
+                date = $moment(date).add(days, 'days');
+                if ($moment(date).format('YYYYMMDD') == $moment().format('YYYYMMDD')) {
+                    packIdArr.push(pack._id);
+                };
+            });
+        });
+
+        //根据今天的pack拉取task列表
+        var packArr = await _mngs.models.pack.find({
+            _id: {
+                $in: packIdArr,
+            }
+        }, 'title tasks').populate('tasks');
+
+        ctx.body = new _msg.Msg(null, ctx, packArr);
+    },
+});
+
+/**
+ * 获取多个task对应的check列表
+ * 配合plnGetCurTaskArr使用
+ * 返回数组
+ */
+_zrouter.addApi('/plnGetCheckArr', {
+    validator: {
+        token: _conf.regx.token, //用户token认证信息
+        idArr: function (ipt, ctx) {
+            var json = JSON.parse(ipt);
+            return json && json.constructor == Array;
+        }, //[task._id]
+    },
+    method: async function plnGetCheckArr(ctx) {
+        var acc = await _acc.getAccByToken(ctx.xdata.token);
+
+        var packArr = await _mngs.models.check.find({
+            _id: {
+                $in: JSON.parse(ctx.xdata.idArr),
+            }
+        });
+
+        ctx.body = new _msg.Msg(null, ctx, packArr);
+    },
+});
+
+
+
+
+//---------functions-------------
 
 
 

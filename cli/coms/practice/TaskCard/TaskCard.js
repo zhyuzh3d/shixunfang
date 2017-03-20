@@ -37,12 +37,23 @@ com.props = {
     index: Number,
 };
 
-com.methods = {};
+com.methods = {
+    submit,
+};
 
-com.mounted = function () {};
+com.mounted = function () {
+    var ctx = this;
+};
 
 
 //----------------------------functions----------------------
+/**
+ * 提交任务请求审核
+ */
+function submit() {
+    console.log('>>>submit>>');
+};
+
 
 
 

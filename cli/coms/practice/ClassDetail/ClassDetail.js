@@ -402,7 +402,10 @@ async function getGroupInfo() {
     };
     group.myRole = myRole;
 
+
+
     ctx.$set(ctx.$data, 'groupInfo', group);
+    console.log('>>groupInfo', ctx.groupInfo.plans);
 
     //合并member和vmember
     ctx.mergeVmembers();

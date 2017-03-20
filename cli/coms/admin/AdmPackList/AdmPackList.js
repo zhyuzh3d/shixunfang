@@ -268,7 +268,6 @@ function selectTask(item) {
 
     //只有先更新其他才能实现更新
     if (tasks.indexOf(item._id) == -1) {
-        tasks.push(item._id);
         ctx.$data.addDialogTasks.push(item);
         ctx.$set(ctx.$data, 'addDialogTasks', ctx.$data.addDialogTasks);
         ctx.$set(ctx.$data.addDialogData, 'tasks', ctx.$data.addDialogData.tasks);

@@ -36,6 +36,7 @@ import Fake from '../_data/fake.js';
 import TaskCard from '../../practice/TaskCard/TaskCard.html';
 import PackCard from '../../practice/PackCard/PackCard.html';
 import UserCard from '../../practice/UserCard/UserCard.html';
+import PackList from '../../practice/PackList/PackList.html';
 import SelectGroup from '../../dialog/SelectGroup/SelectGroup.html';
 
 com.components = {
@@ -43,6 +44,7 @@ com.components = {
     TaskCard,
     PackCard,
     SelectGroup,
+    PackList,
 };
 
 com.data = function data() {
@@ -55,7 +57,7 @@ com.data = function data() {
         planInfo: {
             _id: ttCtx.$data.planeDetailId,
         },
-        todayTaskArr: [], //今天及以前未完成的任务
+        curPack: undefined, //今天的任务包
         course: {}, //全套课程
         beginDialogVis: false,
         beginDate: undefined,

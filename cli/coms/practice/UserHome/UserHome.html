@@ -11,6 +11,13 @@
         <el-row id='main' type="flex" justify="center" style='margin-top:18px'>
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
+                    <el-tab-pane v-show='curPackArr.length>0' label="今日任务" name="TaskList">
+                        <el-row v-for='(p,n) in curPackArr'>
+                            <div class='planTitle'>{{p.title}}</div>
+                            <component v-for='t in p.tasks' is="taskCard" :fill='t' :index='n' style='margin:12px 0'></component>
+                        </el-row>
+                    </el-tab-pane>
+
                     <el-tab-pane v-show='myPlanArr.length>0' label="我的实训" name="PracticeList">
                         <el-row v-for='(p,n) in myPlanArr' style='margin:12px 0'>
                             <component is="practiceCard" :fill='p' :index='n'></component>
@@ -31,8 +38,6 @@
                         </el-row>
                     </el-tab-pane>
 
-
-
                     <el-tab-pane id='profile' label="我的资料" name="Profile">
                         <component :is="coms.Profile"></component>
                     </el-tab-pane>
@@ -51,6 +56,13 @@
 </style>
 
 <style scoped>
+    .planTitle{
+        font-size: 13px;
+        width:100%;
+        background: #EEE;
+        padding: 8px
+    }
+
     .tlabel {
         font-size: 13px;
         color: #888;

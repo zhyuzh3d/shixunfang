@@ -223,7 +223,6 @@ schemas.task = new $mongoose.Schema({
     desc: String,
     type: String,
     link: String,
-    pass: String,
     author: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
@@ -334,9 +333,9 @@ models.plan = $mongoose.model('plan', schemas.plan);
 
 //任务检查对象,记录用户某个task的完成情况;course,pack,task用于快速查询完成度
 schemas.check = new $mongoose.Schema({
-    case: {
+    plan: {
         type: $mongoose.Schema.Types.ObjectId,
-        ref: 'case',
+        ref: 'plan',
     },
     author: {
         type: $mongoose.Schema.Types.ObjectId,
