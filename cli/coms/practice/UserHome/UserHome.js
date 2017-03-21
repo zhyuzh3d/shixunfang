@@ -88,6 +88,7 @@ com.data = function data() {
         myPlanArr: [],
         curPackArr: [],
         hasGetPlanArr: false,
+        showTabs: false,
     };
 };
 
@@ -132,19 +133,27 @@ com.mounted = async function () {
 async function getMyPlanArr() {
     var ctx = this;
 
-    var api = ctx.$xglobal.conf.apis.plnGetMyPlanArr;
-    var data = {
-        token: localStorage.getItem('accToken'),
+    try {
+        var api = ctx.$xglobal.conf.apis.plnGetMyPlanArr;
+        var data = {
+            token: localStorage.getItem('accToken'),
+        };
+
+        var res = await ctx.rRun(api, data);
+
+        res.data.forEach(function (item) {
+            item.active = true;
+        });
+
+        ctx.$set(ctx.$data, 'myPlanArr', res.data);
+        ctx.hasGetPlanArr = true;
+    } catch (err) {
+        ctx.$notify.error({
+            title: '读取实训列表失败',
+            message: err.tip || err.message,
+        });
     };
-
-    var res = await ctx.rRun(api, data);
-
-    res.data.forEach(function (item) {
-        item.active = true;
-    });
-
-    ctx.$set(ctx.$data, 'myPlanArr', res.data);
-    ctx.hasGetPlanArr = true;
+    ctx.$set(ctx.$data, 'showTabs', true);
 
     return res.data;
 };

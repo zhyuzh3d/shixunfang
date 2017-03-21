@@ -13,17 +13,19 @@
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
 
                     <el-tab-pane label="今日任务" name="TaskList">
-                        <el-row v-for='(p,n) in curPackArr'  v-show='curPackArr.length>0'>
+                        <el-row v-for='(p,n) in curPackArr' v-show='curPackArr.length>0'>
                             <div class='planTitle'>{{p.title}}</div>
                             <component v-for='t in p.tasks' is="taskCard" :fill='t' :index='n' style='margin:12px 0'></component>
                         </el-row>
-                        <el-row  v-show='myPlanArr.length>0'>
-                            <div class='planTitle'>正在进行的实训</div>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="我的实训" name="PracticeList" v-if='myPlanArr.length>0'>
+                        <el-row v-show='myPlanArr.length>0'>
                             <component v-for='(p,n) in myPlanArr' is="practiceCard" :fill='p' :index='n' style='margin:12px 0'></component>
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="我的班级" name="ClassList">
+                    <el-tab-pane label="我的班级" name="ClassList" v-if='showTabs'>
                         <el-button type='primary' style='width:200px' @click='findMyGroup'> <i class='fa fa-search' style="margin-right:12px"></i> 寻找可加入的新班级</el-button>
                         <div v-if='grpSearching' class='tlabel'>正在搜索中...</div>
                         <el-row v-for='(p,n) in vgroupArr' style='margin:12px 0'>
@@ -37,7 +39,7 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane id='profile' label="我的资料" name="Profile">
+                    <el-tab-pane id='profile' label="我的资料" name="Profile" v-if='showTabs'>
                         <component :is="coms.Profile"></component>
                     </el-tab-pane>
                 </el-tabs>
