@@ -223,6 +223,7 @@ schemas.task = new $mongoose.Schema({
     desc: String,
     type: String,
     link: String,
+    submitType:String,//提交的类型,与sumbit.type同步，none,text,image,video,link...
     author: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
@@ -345,15 +346,17 @@ schemas.check = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'task',
     },
-    lastMark:{
+    lastMark: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'mark',
     },
+    lastSubmit: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'submit',
+    },
     state: String, //undefined,checked,marking,marked...
-    pass: Boolean,
+    pass: Boolean, //这里保留pass是为了自动完成的task，不具备lastMark
     passAt: Date,
-    urls: [String], //用户提交的作品地址或github地址
-    files: [String], //用户提交的文件地址
 }, {
     strict: false,
     timestamps: {
@@ -362,6 +365,30 @@ schemas.check = new $mongoose.Schema({
     },
 });
 models.check = $mongoose.model('check', schemas.check);
+
+//学生的提交对象，允许学生多次提交，但只使用lastSubmit最近一次提交
+schemas.submit = new $mongoose.Schema({
+    check: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'check',
+    },
+    author: {
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    },
+    comment: String, //提交时候的附注
+    type: String, //显示类型，text,image,video,link,
+    content: String, //提交的文字或者链接、文件地址，根据type确定
+}, {
+    strict: false,
+    timestamps: {
+        createdAt: 'created_at',
+        updatedAt: 'update_at',
+    },
+});
+models.submit = $mongoose.model('submit', schemas.submit);
+
+
 
 //评审打分对象,老师对学生提交的check进行打分,同一学生同一个task在被marked之后可以再发起新mark
 schemas.mark = new $mongoose.Schema({

@@ -28,6 +28,13 @@ conf.set = {
             pass: '80'
         }
     },
+    submitTypesObj:{
+     'none':'自动过审，不需要提交内容',
+     'text':'将一段文字作为提交内容',
+     'image':'上传图片，并提交图片链接地址作为内容',
+     'video':'上传视频，并提交视频链接地址作为内容',
+     'link':'提交一个地址链接作为内容，可以是第三方页面，如github项目文件地址',
+    },
     taskCategoryArr: ['通用', 'C++', '.net', 'Java', 'Web', 'UI/UE', '其他'],
 };
 

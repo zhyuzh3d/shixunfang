@@ -83,6 +83,18 @@
                     </el-col>
                 </el-row>
 
+                <el-row>
+                    <el-col :span="6">提交</el-col>
+                    <el-col :span="18">
+                        <el-dropdown @command="selectSubmit" style='margin-top:8px'>
+                            <span class="el-dropdown-link">{{addDialogData.submitType?addDialogData.submitType:"下拉选择"}}<i class="el-icon-caret-bottom el-icon--right"></i></span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for='(v,k) in submitTypesObj' v-bind:command="k">{{k}}</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </el-col>
+                </el-row>
+
 
                 <div style="height:8px"></div>
                 <el-row>

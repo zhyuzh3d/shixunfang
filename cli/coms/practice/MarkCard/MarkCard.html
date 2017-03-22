@@ -29,11 +29,15 @@
                 <div class='inline' style='padding-left:12px'>
                     <div class='ptitle'>{{fill.check.task.type}} : {{fill.check.plan.title}} / {{fill.check.task.title}}</div>
                     <p>{{fill.check.author.name}} / {{Moment(fill.created_at).format('MM-DD hh:mm:ss')}}</p>
-                    <div v-if='fill.check.urls'>
-                        <a v-for='url in fill.check.urls' :href='url' target="_blank">url</a>
-                    </div>
-                    <div v-if='fill.check.files'>
-                        <a v-for='url in fill.check.files' :href='url' target="_blank">url</a>
+                    <div v-if='fill.check && fill.check.lastSubmit'>
+                        <p v-if='fill.check.lastSubmit=="text"'>fill.check.lastSubmit.content</p>
+                        <a v-if='fill.check.lastSubmit=="image"' :href="fill.check.lastSubmit.content" target="_blank">
+                            <img src='fill.check.lastSubmit.content' style='height:180px'>
+                        </a>
+                        <a v-if='fill.check.lastSubmit=="video"' :href="fill.check.lastSubmit.content" target="_blank">
+                            <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
+                        </a>
+                        <a v-if='fill.check.lastSubmit=="link"' :href="fill.check.lastSubmit.content" target="_blank">fill.check.lastSubmit.content</a>
                     </div>
                 </div>
             </el-col>

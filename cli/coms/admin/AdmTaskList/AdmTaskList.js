@@ -53,6 +53,7 @@ com.data = function data() {
         cateTagArr: [],
         cateTitleArr: [],
         typesObj: ctx.$xglobal.conf.set.taskTypesObj,
+        submitTypesObj:ctx.$xglobal.conf.set.submitTypesObj,
         categoryArr: ctx.$xglobal.conf.set.taskCategoryArr,
         addDialogVis: false,
         addDialogData: {},
@@ -96,6 +97,7 @@ com.methods = {
     selectType,
     selectTitle,
     selectTag,
+    selectSubmit,
     addTag,
     removeTag,
     genSearchFn,
@@ -217,7 +219,7 @@ function selectTag(item) {
 };
 
 /**
- * 标题自动完成的下拉菜单选择
+ * 任务类型自动完成的下拉菜单选择
  */
 function selectType(key) {
     var ctx = this;
@@ -227,6 +229,17 @@ function selectType(key) {
 
     //只有先更新其他才能实现更新
     ctx.$set(ctx.$data.addDialogData, 'type', key);
+    ctx.refreshDialogData();
+};
+
+/**
+ * 提交格式自动完成的下拉菜单选择
+ */
+function selectSubmit(key) {
+    var ctx = this;
+
+    //只有先更新其他才能实现更新
+    ctx.$set(ctx.$data.addDialogData, 'submitType', key);
     ctx.refreshDialogData();
 };
 
@@ -275,25 +288,8 @@ async function opeAddDialog(vis) {
  */
 async function dialogBtnClick() {
     var ctx = this;
-
-    if (ctx.$data.addDialogMod == 'edit') {
-        await ctx.updateItem();
-        return;
-    };
-
-    //先检查班级名称是否存在
-    var api = ctx.$xglobal.conf.apis.admRunMngsCmd;
-    var data = {
-        token: localStorage.getItem('accToken'),
-        cmd: `models.school.find({name:'${ctx.$data.addDialogData.name}'})`,
-    };
-
-    var res = await ctx.rRun(api, data);
     await ctx.updateItem();
 };
-
-
-
 
 
 /**
@@ -322,9 +318,15 @@ async function updateItem() {
         return;
     };
 
-    if (!item.type) item.type = '未知';
+    if (!item.submitType) {
+        ctx.$notify.error({
+            title: '必须选择提交格式!',
+        });
+        return;
+    };
 
-    var datStr = `{category:'${item.category}',title:'${item.title}',type:'${item.type}',author:'${item.author._id}',desc:'${item.desc}'`;
+
+    var datStr = `{category:'${item.category}',title:'${item.title}',type:'${item.type}',submitType:'${item.submitType}',author:'${item.author._id}',desc:'${item.desc}'`;
 
     if (item.link) datStr += `,link:'${item.link}'`;
     if (item.tags) datStr += `,tags:${JSON.stringify(item.tags)}`;
