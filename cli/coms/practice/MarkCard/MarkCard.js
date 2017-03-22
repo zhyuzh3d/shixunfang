@@ -38,7 +38,8 @@ com.props = {
 };
 
 com.methods = {
-    submit,
+    setPass,
+    setReject,
 };
 
 com.mounted = function () {
@@ -49,29 +50,16 @@ com.mounted = function () {
 
 //----------------------------functions----------------------
 /**
- * 提交任务请求审核
+ * 通过审阅
  */
-async function submit() {
-    var ctx = this;
-    try {
-
-        var api = ctx.$xglobal.conf.apis.chckSubmit;
-        var data = {
-            token: localStorage.getItem('accToken'),
-            _id: ctx.fill._id,
-            planId: ctx.fill.plan._id,
-        };
-        var res = await ctx.rRun(api, data);
-
-        //更新check的数据
-        var check = Object.assign(ctx.fill.check || {}, res.data);
-        ctx.$set(ctx.fill, 'check', check);
-    } catch (err) {
-        ctx.$notify.error({
-            title: '提交失败',
-            message: err.tip || err.message,
-        });
-    }
+function setPass() {
+    console.log('>>>setPass>>');
+};
+/**
+ * 驳回审阅
+ */
+function setReject() {
+    console.log('>>>setReject>>');
 };
 
 

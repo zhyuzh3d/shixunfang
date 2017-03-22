@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import $ from 'jquery';
 import Moment from 'moment';
-
+Moment.locale('zh-cn');
 
 
 let com = {};
@@ -32,12 +32,14 @@ Vue.prototype.$confirm = confirm;
 import PracticeCard from '../../practice/PracticeCard/PracticeCard.html';
 import ClassCard from '../../practice/ClassCard/ClassCard.html';
 import TaskCard from '../../practice/TaskCard/TaskCard.html';
+import MarkCard from '../../practice/MarkCard/MarkCard.html';
 import Fake from '../_data/fake.js';
 
 com.components = {
     PracticeCard,
     ClassCard,
     TaskCard,
+    MarkCard,
 };
 
 var xsetConf = {};
@@ -87,6 +89,7 @@ com.data = function data() {
         grpSearching: false,
         myPlanArr: [],
         curPackArr: [],
+        curMarkArr: [],
         hasGetPlanArr: false,
         showTabs: false,
     };
@@ -101,6 +104,7 @@ com.props = {
 
 //所有直接使用的方法写在这里
 com.methods = {
+    Moment,
     xgoTab,
     getMyGroupArr,
     findMyGroup,
@@ -165,6 +169,7 @@ async function getMyPlanArr() {
 async function getUnfiniTasks() {
     var ctx = this;
 
+
     //扫描所有plan，找出尚未结束的end>now
     var livePlanIdArr = [];
     var now = new Date().getTime();
@@ -201,19 +206,21 @@ async function getUnfiniTasks() {
         begin = Moment(begin);
         plan.course.packs.forEach(function (pack) {
             if (Number(begin.format('x')) < now) { //早于今天
-                console.log('>>>pack.title', pack.title)
-                pack.date = begin;
+                pack.date = new Date(begin);
+                if (begin.format('YYYY-MM-DD') == Moment().format('YYYY-MM-DD')) {
+                    pack.isToday = true;
+                };
+                pack.plan = plan;
                 pastPackArr.push(pack);
                 pastPackIdArr.push(pack._id);
 
                 //提取tasks
                 if (pack.tasks) {
                     pack.tasks.forEach(function (task) {
-                        if (pastTaskIdArr.indexOf(task._id) == -1) {
-                            task.date = begin;
-                            pastTaskIdArr.push(task._id);
-                            pastTaskArr.push(task);
-                        }
+                        task.date = new Date(begin);;
+                        task.plan = plan;
+                        pastTaskIdArr.push(task._id);
+                        pastTaskArr.push(task);
                     });
                 };
             };
@@ -224,6 +231,7 @@ async function getUnfiniTasks() {
             };
         });
     });
+
 
     //从服务端获取所有taskarr对应的check，然后判断是否已经完成
     api = ctx.$xglobal.conf.apis.plnGetCheckArr;
@@ -245,6 +253,7 @@ async function getUnfiniTasks() {
     });
 
     ctx.$set(ctx.$data, 'curPackArr', pastPackArr);
+
 
     return pastTaskArr;
 };

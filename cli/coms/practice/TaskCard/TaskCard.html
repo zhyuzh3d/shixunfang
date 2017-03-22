@@ -5,16 +5,22 @@
         <el-row class="card">
             <el-col :span='22' :lg='22' class='cardLeft'>
                 <div class='inline lbtnGrp'>
-                    <div v-if='fill.check && fill.check.state!="reject"'>
-                        <el-tooltip v-show='fill.check.pass' content="已通过" placement="left-start">
-                            <i class="fa fa-check"></i>
+                    <div v-if='fill.check && fill.check.state!="reject"' class='checkPart'>
+                        <el-tooltip v-show='fill.check.pass' content="已通过" placement="right-start">
+                            <i class="fa fa-check fa-lg priColor"></i>
                         </el-tooltip>
-                        <el-tooltip v-show='!fill.check.pass && !fill.check.state!="reject"' content="等待审核" placement="left-start">
+                        <el-tooltip v-show='!fill.check.pass && !fill.check.state!="reject"' content="等待审核" placement="right-start">
                             <i class="fa fa-clock-o"></i>
                         </el-tooltip>
                     </div>
-                    <el-button v-if='fill.check && fill.check.state=="reject"' type='danger' style='padding:18px' @click='submit'>重新提交</el-button>
-                    <el-button v-if='!fill.check' type='primary' style='padding:18px' @click='submit'>提交</el-button>
+                    <el-tooltip v-if='fill.check && fill.check.state=="reject"' placement="right-start">
+                        <div slot="content" class='tip'>您的提交被老师驳回，请检查修改后重新提交</div>
+                        <el-button type='danger' style='padding:18px' @click='submit'>重新提交</el-button>
+                    </el-tooltip>
+                    <el-tooltip v-if='!fill.check' placement="right-start">
+                        <div slot="content" class='tip'>如果您已经完成此任务，请点击提交按钮，请求审核通过</div>
+                        <el-button  type='primary' style='padding:18px' @click='submit'>提交</el-button>
+                    </el-tooltip>
                 </div>
                 <div class='inline' style='padding-left:12px'>
                     <div v-show='!fill.link' class='ptitle'>{{fill.type}} : {{fill.title}}</div>
@@ -32,6 +38,14 @@
 </template>
 
 <style scoped>
+    .tip{
+        width:120px
+    }
+
+    .priColor {
+        color: #009688;
+    }
+
     .lbtnGrp {
         width: 60px;
         border-right: 1px solid #CCC;
@@ -58,6 +72,11 @@
         font-size: 16px;
         font-weight: bold;
         margin: 8px 0;
+    }
+
+    .checkPart {
+        text-align: center;
+        padding-right: 8px;
     }
 
     .cardLeft p {

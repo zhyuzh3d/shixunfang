@@ -331,7 +331,7 @@ schemas.plan = new $mongoose.Schema({
 });
 models.plan = $mongoose.model('plan', schemas.plan);
 
-//任务检查对象,记录用户某个task的完成情况;course,pack,task用于快速查询完成度
+//任务检查对象,记录用户某个task的完成情况;plan用于快速查询完成度
 schemas.check = new $mongoose.Schema({
     plan: {
         type: $mongoose.Schema.Types.ObjectId,
@@ -345,17 +345,11 @@ schemas.check = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'task',
     },
-    pack: {
-        type: $mongoose.Schema.Types.ObjectId,
-        ref: 'task',
-    },
-    course: {
-        type: $mongoose.Schema.Types.ObjectId,
-        ref: 'task',
-    },
     state: String, //undefined,checked,marking,marked...
     pass: Boolean,
-    passAt:Date,
+    passAt: Date,
+    urls: [String], //用户提交的作品地址或github地址
+    files: [String], //用户提交的文件地址
 }, {
     strict: false,
     timestamps: {

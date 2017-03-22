@@ -12,10 +12,16 @@
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
 
-                    <el-tab-pane label="今日任务" name="TaskList">
-                        <el-row v-for='(p,n) in curPackArr' v-show='curPackArr.length>0'>
-                            <div class='planTitle'>{{p.title}}</div>
-                            <component v-for='t in p.tasks' is="taskCard" :fill='t' :index='n' style='margin:12px 0'></component>
+                    <el-tab-pane label="待我审阅" name="MarkList" v-show='curMarkArr.length>0'>
+                        <el-row v-for='(m,n) in curMarkArr'>
+                            <component v-for='m in p.tasks' is="MarkCard" :fill='m' :index='n' style='margin:12px 0'></component>
+                        </el-row>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="今日任务" name="TaskList" v-show='curPackArr.length>0'>
+                        <el-row v-for='(p,n) in curPackArr'>
+                            <div class='planTitle'>{{Moment(p.date).format('MM/DD(dddd)')}} : {{p.plan.title}} / {{p.title}}</div>
+                            <component v-for='t in p.tasks' v-show='!t.check || t.check.pass==false || p.isToday' is="taskCard" :fill='t' style='margin:12px 0'></component>
                         </el-row>
                     </el-tab-pane>
 

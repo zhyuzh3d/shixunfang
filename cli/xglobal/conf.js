@@ -97,6 +97,8 @@ conf.apis = {
     schlGetSchoolArr: `//${location.host}/api/schlGetSchoolArr`,
     schlGetSchoolGroupArr: `//${location.host}/api/schlGetSchoolGroupArr`,
 
+    chckSubmit: `//${location.host}/api/chckSubmit`,
+
 
 };
 

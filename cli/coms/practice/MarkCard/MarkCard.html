@@ -1,0 +1,87 @@
+<script src="./MarkCard.js"></script>
+
+<template>
+    <div sid='MarkCard'>
+        <el-row class="card">
+            <el-col :span='22' :lg='22' class='cardLeft'>
+                <div class='inline lbtnGrp'>
+                    <div v-if='fill.state=="marked"'>
+                        <el-tooltip v-show='fill.pass' content="已通过" placement="left-start">
+                            <i class="fa fa-check"></i>
+                        </el-tooltip>
+                        <el-tooltip v-show='!fill.pass' content="已驳回" placement="left-start">
+                            <i class="fa fa-close"></i>
+                        </el-tooltip>
+                    </div>
+                    <div v-if='fill.state=="marking"'>
+                        <el-button  type='danger' style='padding:18px' @click='setPass'>通过</el-button>
+                        <el-button  type='danger' style='padding:18px' @click='setReject'>驳回</el-button>
+                    </div>
+                </div>
+                <div class='inline' style='padding-left:12px'>
+                    <div class='ptitle'>{{fill.check.type}} : {{fill.check.title}}</div>
+                    <p>{{fill.check.author.name}}</p>
+                </div>
+            </el-col>
+        </el-row>
+    </div>
+</template>
+
+<style scoped>
+    .lbtnGrp {
+        width: 60px;
+        border-right: 1px solid #CCC;
+        height: 100%;
+    }
+
+    .inline {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .cardcheck {
+        text-align: center;
+        cursor: pointer;
+        height: 100%;
+        margin-left: -8px;
+    }
+
+    .curpointer {
+        cursor: pointer;
+    }
+
+    .ptitle {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 8px 0;
+    }
+
+    .cardLeft p {
+        font-size: 13px;
+        color: #666;
+        margin: 4px 0;
+    }
+
+    .cardBtn {
+        text-align: right;
+        margin-right: 12px
+    }
+
+    .cardBtn i {
+        color: #AAA
+    }
+
+    .card {
+        border: 1px solid #AAA;
+        border-radius: 0;
+        padding: 12px;
+        align-items: center;
+        display: flex;
+        cursor: pointer;
+    }
+
+    .card2:hover {
+        box-shadow: 0 0 12px #888;
+    }
+
+</style>

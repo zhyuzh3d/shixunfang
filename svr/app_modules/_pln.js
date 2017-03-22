@@ -508,13 +508,15 @@ _zrouter.addApi('/plnGetCheckArr', {
         var acc = await _acc.getAccByToken(ctx.xdata.token);
 
         var packArr = await _mngs.models.check.find({
-            _id: {
+            task: {
                 $in: JSON.parse(ctx.xdata.idArr),
             }
         });
 
         ctx.body = new _msg.Msg(null, ctx, packArr);
     },
+
+        //???检检查没有获得check
 });
 
 

@@ -75,6 +75,14 @@ const _msg = {
         PlnNoPowerOrNonExist:new Err('您无权访问此方案或方案不存在', 701),
         PlnNonExist:new Err('您请求的方案不存在', 702),
         PlnNeedManagerPower: new Err('需要管理员权限才能操作', 703),
+
+        MrkNotFound: new Err('此审阅不存在', 801),
+        MrkNoPower: new Err('您不是此审阅的审阅人', 802),
+
+        TskNotFound: new Err('此任务不存在', 901),
+
+        ChckHasSubmit: new Err('任务已经提交，请等待老师审阅，请勿重复提交', 1001),
+        ChckNoTeacherFound: new Err('这个实训找不到对应的老师', 1002),
     },
 };
 
