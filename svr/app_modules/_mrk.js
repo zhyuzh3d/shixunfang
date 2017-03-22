@@ -14,32 +14,36 @@ _zrouter.addApi('/mrkSetPass', {
     validator: {
         token: _conf.regx.token, //用户token认证信息
         _id: _conf.regx.mngId, //mark.id
+        comment: function (ipt, ctx) {
+            return ipt === undefined || /^[\S\s]{0,256}$/.test(ipt);
+        },
     },
     method: async function mrkSetPass(ctx) {
         var acc = await _acc.getAccByToken(ctx.xdata.token);
 
         //提取mark
-        var mark = await _mngs.models.mark.find(noDel({
+        var mark = await _mngs.models.mark.findOne(noDel({
             _id: ctx.xdata._id,
         }), 'check author');
-
         if (!mark) throw Error().zbind(_msg.Errs.MrkNotFound);
-        if (mark.author != acc._id) throw Error().zbind(_msg.Errs.MrkNoPower);
+        if (String(mark.author) != String(acc._id)) throw Error().zbind(_msg.Errs.MrkNoPower);
 
         //设置mark
-        var markRes = await _mngs.models.mark.findOneAndUpdate(noDel({
+        var markRes = await _mngs.models.mark.update(noDel({
             _id: mark._id,
         }), {
             pass: true,
-            state: 'marked'
+            state: 'marked',
+            comment: ctx.xdata.comment,
         });
 
         //设置check
-        var checkRes = await _mngs.models.mark.findOneAndUpdate(noDel({
+        var checkRes = await _mngs.models.check.update(noDel({
             _id: mark.check,
         }), {
             pass: true,
             state: 'marked',
+            lastMark: mark._id,
             checkAt: new Date(),
         });
 
@@ -62,6 +66,9 @@ _zrouter.addApi('/mrkSetReject', {
     validator: {
         token: _conf.regx.token, //用户token认证信息
         _id: _conf.regx.mngId, //mark.id
+        comment: function (ipt, ctx) {
+            return ipt === undefined || /^[\S\s]{0,256}$/.test(ipt);
+        },
     },
     method: async function mrkSetReject(ctx) {
         var acc = await _acc.getAccByToken(ctx.xdata.token);
@@ -79,7 +86,8 @@ _zrouter.addApi('/mrkSetReject', {
             _id: mark._id,
         }), {
             pass: false,
-            state: 'marked'
+            state: 'marked',
+            comment: ctx.xdata.comment,
         });
 
         //设置check
@@ -88,6 +96,7 @@ _zrouter.addApi('/mrkSetReject', {
         }), {
             pass: false,
             state: 'marked',
+            lastMark: mark._id,
             checkAt: new Date(),
         });
 
@@ -118,11 +127,15 @@ _zrouter.addApi('/mrkGetMyMarkArr', {
             },
         })).populate({
             path: 'check',
-            select: 'author title desc',
-            populate: {
+            populate: [{
                 path: 'author',
                 select: 'name avatar',
-            },
+            }, {
+                path: 'task',
+            }, {
+                path: 'plan',
+                select: 'title'
+            }],
         }).sort({
             created_at: -1
         }).limit(10);

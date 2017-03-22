@@ -62,6 +62,10 @@ xsetConf.activeName = {
                 if (!ctx.hasGetPlanArr) await ctx.getMyPlanArr();
                 await ctx.getUnfiniTasks();
                 break;
+            case 'MarkList':
+                if (!ctx.hasGetPlanArr) await ctx.getMyPlanArr();
+                await ctx.getUnfiniMarks();
+                break;
             default:
                 var com = await System.import('../../user/Profile/Profile.html');
                 cname = 'Profile';
@@ -91,7 +95,13 @@ com.data = function data() {
         curPackArr: [],
         curMarkArr: [],
         hasGetPlanArr: false,
-        showTabs: false,
+        tabShow: {
+            mark: false,
+            task: false,
+            practice: false,
+            class: false,
+            profile: false,
+        },
     };
 };
 
@@ -111,6 +121,8 @@ com.methods = {
     joinGroup,
     getMyPlanArr,
     getUnfiniTasks,
+    getUnfiniMarks,
+    refreshTabs,
 };
 
 //加载到页面前执行的函数
@@ -127,9 +139,59 @@ com.mounted = async function () {
         });
     };
 
+    await ctx.getUnfiniMarks();
 };
 
 //-------functions--------
+
+/**
+ * 获取我还没有审核的提交mark列表
+ * 只读取最近10个
+ */
+async function getUnfiniMarks() {
+    var ctx = this;
+    var showMark = false;
+
+    try {
+        var api = ctx.$xglobal.conf.apis.mrkGetMyMarkArr;
+        var data = {
+            token: localStorage.getItem('accToken'),
+        };
+
+        var res = await ctx.rRun(api, data);
+        var markArr = res.data;
+        ctx.$set(ctx.$data, 'curMarkArr', markArr);
+
+        //显示tab，或者切换到班级tab
+        if (markArr.length > 0) {
+            showMark = true;
+        } else {
+            showMark = false;
+            var xconf = ctx.$xgetConf();
+            if (xconf.xset === undefined || !xconf.xsetValue['activeName'] || xconf.xsetValue['activeName'] == 'MarkList') {
+                await ctx.$xset({
+                    activeName: 'ClassList',
+                });
+            };
+        };
+    } catch (err) {
+        ctx.$notify.error({
+            title: '读取审阅列表失败',
+            message: err.tip || err.message,
+        });
+    };
+
+    ctx.$set(ctx.$data, 'tabShow', {
+        mark: showMark,
+        task: true,
+        practice: true,
+        class: true,
+        profile: true,
+    });
+
+    return res.data;
+};
+
 
 /**
  * 获取我的所有已经激活plan的信息
@@ -149,15 +211,26 @@ async function getMyPlanArr() {
             item.active = true;
         });
 
-        ctx.$set(ctx.$data, 'myPlanArr', res.data);
+        var planArr = res.data;
+        ctx.$set(ctx.$data, 'myPlanArr', planArr);
         ctx.hasGetPlanArr = true;
+
+        //如果为空，自动跳转到classlist
+        if (planArr.length <= 0) {
+            var xconf = ctx.$xgetConf();
+            if (xconf.xset === undefined || !xconf.xsetValue['activeName'] || !xconf.xsetValue['activeName'] == 'PracticeList') {
+                await ctx.$xset({
+                    activeName: 'ClassList',
+                });
+            };
+        };
+
     } catch (err) {
         ctx.$notify.error({
             title: '读取实训列表失败',
             message: err.tip || err.message,
         });
     };
-    ctx.$set(ctx.$data, 'showTabs', true);
 
     return res.data;
 };
@@ -252,8 +325,28 @@ async function getUnfiniTasks() {
         });
     });
 
-    ctx.$set(ctx.$data, 'curPackArr', pastPackArr);
+    //计算pastPackArr每个pack是否真的包含未完的task
+    var unfiniPackArr = [];
+    pastPackArr.forEach(function (pack) {
+        pack.finished = true;
+        if (!pack.tasks || pack.tasks.length == 0) return;
+        pack.tasks.forEach(function (task) {
+            if (!task.check || !task.check.pass) pack.finished = false;
+        });
+        if (!pack.finished || pack.isToday) unfiniPackArr.push(pack);
+    });
 
+    ctx.$set(ctx.$data, 'curPackArr', unfiniPackArr);
+
+    //如果为空，自动跳转到classlist
+    if (pastPackArr.length <= 0) {
+        var xconf = ctx.$xgetConf();
+        if (xconf.xset === undefined || !xconf.xsetValue['activeName'] || !xconf.xsetValue['activeName'] == 'TaskList') {
+            await ctx.$xset({
+                activeName: 'ClassList',
+            });
+        };
+    };
 
     return pastTaskArr;
 };
@@ -330,6 +423,26 @@ async function getMyGroupArr() {
     ctx.$set(ctx.$data, 'myGroupArr', res.data);
 };
 
+
+/**
+ * 按照顺序打开tab显示
+ * 全部关闭，然后按照顺序重新逐个恢复显示状态
+ */
+async function refreshTabs() {
+    var ctx = this;
+    var tabShow = ctx.$data.tabShow;
+    var tabShowCopy = Object.assign({}, tabShow);
+    ctx.$set(ctx.$data, 'tabShow', {});
+    for (var key in tabShowCopy) {
+        console.log('>>>key', key);
+        //ctx.$set(ctx.$data.tabShow, key, tabShowCopy[key]);
+    };
+    ctx.$set(ctx.$data.tabShow, 'task', true);
+    ctx.$set(ctx.$data.tabShow, 'mark', true);
+    //    ctx.$set(ctx.$data.tabShow, 'practice', true);
+    //    ctx.$set(ctx.$data.tabShow, 'class', true);
+    //    ctx.$set(ctx.$data.tabShow, 'profile', true);
+};
 
 
 

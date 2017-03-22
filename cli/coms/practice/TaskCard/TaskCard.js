@@ -66,6 +66,8 @@ async function submit() {
         //更新check的数据
         var check = Object.assign(ctx.fill.check || {}, res.data);
         ctx.$set(ctx.fill, 'check', check);
+        ctx.$set(ctx.fill, 'show', true); //保持显示，暂不清理
+
     } catch (err) {
         ctx.$notify.error({
             title: '提交失败',

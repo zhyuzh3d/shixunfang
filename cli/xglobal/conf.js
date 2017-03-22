@@ -99,6 +99,11 @@ conf.apis = {
 
     chckSubmit: `//${location.host}/api/chckSubmit`,
 
+    mrkSetPass: `//${location.host}/api/mrkSetPass`,
+    mrkSetReject: `//${location.host}/api/mrkSetReject`,
+    mrkGetMyMarkArr: `//${location.host}/api/mrkGetMyMarkArr`,
+
+
 
 };
 

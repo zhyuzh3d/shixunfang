@@ -54,7 +54,6 @@ _zrouter.addApi('/chckSubmit', {
             ctx.body = new _msg.Msg(null, ctx, check);
             return;
         };
-        //if (check && check.state != 'reject') throw Error().zbind(_msg.Errs.ChckHasSubmit);
 
         //生成check
         if (!check) {
@@ -86,7 +85,7 @@ _zrouter.addApi('/chckSubmit', {
         //根据不同的type不同的处理：老师审阅
         if (checkMethod == 'teacher') {
             //获取plan的teachers列表,随机选择一个老师
-            var plan = await _mngs.models.plan.findeOne({
+            var plan = await _mngs.models.plan.findOne({
                 _id: ctx.xdata.planId,
             }, 'teachers');
             if (!plan) throw Error().zbind(_msg.Errs.PlnNonExist);

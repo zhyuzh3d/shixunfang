@@ -345,6 +345,10 @@ schemas.check = new $mongoose.Schema({
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'task',
     },
+    lastMark:{
+        type: $mongoose.Schema.Types.ObjectId,
+        ref: 'mark',
+    },
     state: String, //undefined,checked,marking,marked...
     pass: Boolean,
     passAt: Date,
