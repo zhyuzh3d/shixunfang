@@ -281,7 +281,7 @@ function refreshDialogData() {
         ctx.$set(ddata, 'desc', '--');
         ctx.$set(ddata, 'desc', desc);
         ctx.$set(ctx.$data, 'addDialogData', ddata);
-    }, 100);
+    }, 1000);
 };
 
 
@@ -332,12 +332,14 @@ async function removeAssistant(usr) {
  * @param {string} ref    用于validate的验证ref
  */
 async function iptMobileChange(usrkey, ref, pathObj) {
+
     var ctx = this;
     var obj = pathObj ? pathObj : ctx.$data;
 
     ctx.$set(obj, usrkey, {
         mobile: obj[usrkey].mobile
     }); //清空id和name字段
+
 
     if (ref) {
         var vali = ctx.$xglobal.fns.validate(ctx, ref);
@@ -357,6 +359,11 @@ async function iptMobileChange(usrkey, ref, pathObj) {
     usr._id = res.data._id;
     usr.name = res.data.name;
     ctx.$set(obj, usrkey, usr);
+    ctx.$set(obj[usrkey], {
+        mobile: obj[usrkey].mobile,
+        _id: res.data._id,
+        name: res.data.name,
+    });
     ctx.refreshDialogData();
 };
 
