@@ -32,6 +32,7 @@ const _crs = global._crs = require('./app_modules/_crs.js');
 const _schl = global._schl = require('./app_modules/_schl.js');
 const _chck = global._chck = require('./app_modules/_chck.js');
 const _mrk = global._mrk = require('./app_modules/_mrk.js');
+const _sbmt = global._sbmt = require('./app_modules/_sbmt.js');
 
 (async function () {
     //全部api的容器对象

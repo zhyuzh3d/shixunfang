@@ -37,11 +37,10 @@ a:visited {
 
 /*修复element-ui遗漏的样式*/
 
-.el-dropdown-menu{
+.el-dropdown-menu {
     max-height: 240px;
     overflow-y: auto;
 }
-
 .el-message-box__message {
     -webkit-user-select: initial;
     user-select: initial;
@@ -62,5 +61,11 @@ a:visited {
 
 /*常用class类选择器*/
 
+.elps {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-all;
+}
 
 /*常用id名选择器*/

@@ -48,6 +48,8 @@ com.methods = {
 
 com.mounted = function () {
     var ctx = this;
+    console.log('>>>mark.fill',ctx.fill);
+    console.log('>>>mark.fill2',ctx.fill.check.lastSubmit);
 };
 
 

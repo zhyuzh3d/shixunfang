@@ -135,6 +135,8 @@ _zrouter.addApi('/mrkGetMyMarkArr', {
             }, {
                 path: 'plan',
                 select: 'title'
+            }, {
+                path: 'lastSubmit',
             }],
         }).sort({
             created_at: -1

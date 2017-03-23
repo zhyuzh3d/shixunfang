@@ -12,7 +12,7 @@
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
 
-                    <el-tab-pane label="待我审阅" name="MarkList" v-if='tabShow.mark'>
+                    <el-tab-pane label="审阅" name="MarkList" v-if='tabShow.mark'>
                         <el-row v-for='(m,n) in curMarkArr'>
                             <component is="MarkCard" :fill='m' :index='n' style='margin:12px 0'></component>
                         </el-row>
@@ -26,13 +26,13 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="我的实训" name="PracticeList" v-if='tabShow.practice'>
+                    <el-tab-pane label="实训" name="PracticeList" v-if='tabShow.practice'>
                         <el-row v-show='myPlanArr.length>0'>
                             <component v-for='(p,n) in myPlanArr' is="practiceCard" :fill='p' :index='n' style='margin:12px 0'></component>
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="我的班级" name="ClassList" v-if='tabShow.class'>
+                    <el-tab-pane label="班级" name="ClassList" v-if='tabShow.class'>
                         <el-button type='primary' style='width:200px' @click='findMyGroup'> <i class='fa fa-search' style="margin-right:12px"></i> 寻找可加入的新班级</el-button>
                         <div v-if='grpSearching' class='tlabel'>正在搜索中...</div>
                         <el-row v-for='(p,n) in vgroupArr' style='margin:12px 0'>
@@ -46,7 +46,7 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane id='profile' label="我的资料" name="Profile" v-if='tabShow.profile'>
+                    <el-tab-pane id='profile' label="设置" name="Profile" v-if='tabShow.profile'>
                         <component :is="coms.Profile"></component>
                     </el-tab-pane>
                 </el-tabs>

@@ -110,6 +110,8 @@ conf.apis = {
     mrkSetReject: `//${location.host}/api/mrkSetReject`,
     mrkGetMyMarkArr: `//${location.host}/api/mrkGetMyMarkArr`,
 
+    sbmtCreate: `//${location.host}/api/sbmtCreate`,
+
 
 
 };

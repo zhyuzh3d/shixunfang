@@ -13,7 +13,8 @@ var checkMethods = {
 };
 
 /**
- * 用户提交一个task，围棋生成一个check并针对班级老师生成一个mark
+ * 用户提交一个task，为其生成一个check并针对班级老师生成一个mark
+ * 用户提交之前要自行生成一个submitId，如果是none则可以不生成
  * 自动检测task类型，自动类型直接标记check的pass，不生成mark
  * 返回check(并不一定完整，但是最新)
  */
@@ -22,19 +23,8 @@ _zrouter.addApi('/chckSubmit', {
         token: _conf.regx.token, //用户token认证信息
         _id: _conf.regx.mngId, //task.id
         planId: _conf.regx.mngId, //plan.id用此获得group.teachers
-        files: function (ipt, ctx) {
-            if (ipt != undefined) {
-                var res = JSON.safeParse(ipt);
-                if (res == undefined || res.constructor !== Array) return false;
-            };
-            return true;
-        },
-        urls: function (ipt, ctx) {
-            if (ipt != undefined) {
-                var res = JSON.safeParse(ipt);
-                if (res == undefined || res.constructor !== Array) return false;
-            };
-            return true;
+        submitId: function (ipt, ctx) {
+            return ipt === undefined || _conf.regx.mngId.test(ipt);
         },
     },
     method: async function chckSubmit(ctx) {
@@ -61,8 +51,6 @@ _zrouter.addApi('/chckSubmit', {
                 task: task._id,
                 author: acc._id,
                 plan: ctx.xdata.planId,
-                files: JSON.safeParse(ctx.xdata.files),
-                urls: JSON.safeParse(ctx.xdata.urls),
             }).save();
         };
 
@@ -74,6 +62,7 @@ _zrouter.addApi('/chckSubmit', {
             res = {
                 state: 'marked',
                 pass: true,
+                lastSubmit:ctx.xdata.submitId,
                 passAt: new Date(),
             };
 
@@ -101,6 +90,7 @@ _zrouter.addApi('/chckSubmit', {
 
             //更新check.state=marking
             res = {
+                lastSubmit:ctx.xdata.submitId,
                 state: 'marking',
             };
             await _mngs.models.check.updateOne({

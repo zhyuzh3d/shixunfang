@@ -3,8 +3,20 @@
 <template>
     <div sid='MarkCard'>
         <el-row class="card">
-            <el-col :span='22' :lg='22' class='cardLeft'>
-                <div class='inline lbtnGrp'>
+            <div class='textGrp elps'>
+                <div class='ptitle'>{{fill.check.task.type}} : {{fill.check.plan.title}} / {{fill.check.task.title}}</div>
+                <div class="subtitle">{{fill.check.author.name}} / {{Moment(fill.created_at).format('MM-DD hh:mm:ss')}}</div>
+                <div class="elps" v-if='fill.check && fill.check.lastSubmit' style="margin-top:8px">
+                    <p v-if='fill.check.lastSubmit.type=="text"'>{{fill.check.lastSubmit.content}}</p>
+                    <a v-if='fill.check.lastSubmit.type=="image"' :href="fill.check.lastSubmit.content" target="_blank">
+                        <img src='fill.check.lastSubmit.content' style='height:180px'>
+                    </a>
+                    <a v-if='fill.check.lastSubmit.type=="video"' :href="fill.check.lastSubmit.content" target="_blank">
+                        <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
+                    </a>
+                    <a v-if='fill.check.lastSubmit.type=="link"' :href="fill.check.lastSubmit.content" target="_blank">{{fill.check.lastSubmit.content}}</a>
+                </div>
+                <div class='lbtnGrp elps'>
                     <div v-if='fill.state=="marked"'>
                         <el-tooltip v-show='fill.pass' content="已通过" placement="left-start">
                             <i class="fa fa-check fa-lg"></i>
@@ -16,47 +28,45 @@
                     <div v-if='!fill.state || fill.state=="marking"'>
                         <el-tooltip v-show='!fill.pass' content="不通过" placement="top">
                             <el-button type='danger' class='checkBtn' @click='setReject'>
-                                <i class="fa fa-close fa-lg"></i>
+                                <i class="fa fa-close fa-lg"></i> 驳回
                             </el-button>
                         </el-tooltip>
                         <el-tooltip v-show='!fill.pass' content="通过" placement="top">
                             <el-button type='primary' class='checkBtn' @click='setPass'>
-                                <i class="fa fa-check fa-lg"></i>
+                                <i class="fa fa-check fa-lg"></i> 通过
                             </el-button>
                         </el-tooltip>
                     </div>
                 </div>
-                <div class='inline' style='padding-left:12px'>
-                    <div class='ptitle'>{{fill.check.task.type}} : {{fill.check.plan.title}} / {{fill.check.task.title}}</div>
-                    <p>{{fill.check.author.name}} / {{Moment(fill.created_at).format('MM-DD hh:mm:ss')}}</p>
-                    <div v-if='fill.check && fill.check.lastSubmit'>
-                        <p v-if='fill.check.lastSubmit=="text"'>fill.check.lastSubmit.content</p>
-                        <a v-if='fill.check.lastSubmit=="image"' :href="fill.check.lastSubmit.content" target="_blank">
-                            <img src='fill.check.lastSubmit.content' style='height:180px'>
-                        </a>
-                        <a v-if='fill.check.lastSubmit=="video"' :href="fill.check.lastSubmit.content" target="_blank">
-                            <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
-                        </a>
-                        <a v-if='fill.check.lastSubmit=="link"' :href="fill.check.lastSubmit.content" target="_blank">fill.check.lastSubmit.content</a>
-                    </div>
-                </div>
-            </el-col>
+
+            </div>
+
         </el-row>
     </div>
 </template>
 
 <style scoped>
+    .textGrp {
+        padding-left: 12px;
+    }
+
+    .subtitle{
+        font-size: 13px;
+        color:#CCC;
+    }
+
+    a{
+        font-size: 13px;
+    }
+
     .checkBtn {
-        padding: 16px 18px;
+        padding: 8px 18px;
         display: inline-block;
     }
 
     .lbtnGrp {
-        width: 120px;
-        border-right: 1px solid #CCC;
-        height: 100%;
-        vertical-align: top;
-        text-align: center;
+        text-align: left;
+        margin-top: 16px;
     }
 
     .inline {
@@ -79,6 +89,10 @@
         font-size: 16px;
         font-weight: bold;
         margin: 8px 0;
+    }
+
+    .cardLeft {
+        white-space: nowrap;
     }
 
     .cardLeft p {
