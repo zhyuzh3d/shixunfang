@@ -19,13 +19,13 @@
                     </el-tooltip>
                     <el-tooltip v-if='!fill.check' placement="right-start">
                         <div slot="content" class='tip'>如果您已经完成此任务，请点击提交按钮，请求审核通过</div>
-                        <el-button  type='primary' style='padding:18px' @click='submit'>提交</el-button>
+                        <el-button type='primary' style='padding:18px' @click='submit'>提交</el-button>
                     </el-tooltip>
                 </div>
                 <div class='inline' style='padding-left:12px'>
                     <div v-show='!fill.link' class='ptitle'>{{fill.type}} : {{fill.title}}</div>
                     <a v-show='fill.link' class='ptitle' :href='fill.link' target="_blank">{{fill.type}} : {{fill.title}}</a>
-                    <p>{{fill.desc}}</p>
+                    <p v-if='fill&&fill.desc'>{{fill.desc}}</p>
                 </div>
             </el-col>
             <el-col v-show='fill.link' :span='2' class='cardBtn'>
@@ -38,8 +38,8 @@
 </template>
 
 <style scoped>
-    .tip{
-        width:120px
+    .tip {
+        width: 120px
     }
 
     .priColor {

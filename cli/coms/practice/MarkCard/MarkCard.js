@@ -23,13 +23,14 @@ Vue.use(Row);
 Vue.use(Col);
 const notify = Notification
 Vue.prototype.$notify = notify;
-const prompt = MessageBox.prompt;
-Vue.prototype.$prompt = prompt;
+const elAlert = MessageBox.elAlert;
+Vue.prototype.$alert = elAlert;
 
 //所有数据写在这里
 com.data = function data() {
     return {
         msg: 'Hello from paractice/TaskCard/TaskCard.js',
+        taskDialogVis: false,
     };
 };
 
@@ -48,13 +49,14 @@ com.methods = {
 
 com.mounted = function () {
     var ctx = this;
-    console.log('>>>mark.fill',ctx.fill);
-    console.log('>>>mark.fill2',ctx.fill.check.lastSubmit);
 };
 
 
 
 //----------------------------functions----------------------
+
+
+
 /**
  * 通过审阅;先弹窗输入评语
  */

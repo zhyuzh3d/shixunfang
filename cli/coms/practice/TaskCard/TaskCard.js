@@ -27,6 +27,8 @@ Vue.prototype.$prompt = prompt;
 com.data = function data() {
     return {
         msg: 'Hello from paractice/TaskCard/TaskCard.js',
+        text: '',
+        textDialogVis: false,
     };
 };
 
@@ -78,6 +80,16 @@ async function submit() {
             submit = res.data;
             await ctx.checkSubmit(submit._id);
         };
+
+        if (ctx.fill.submitType == 'text') {
+            ctx.text = '';
+            ctx.textDialogVis = true;
+        };
+
+
+
+
+
     } catch (err) {
         if (ipt === undefined) return;
         ctx.$notify.error({
@@ -86,6 +98,9 @@ async function submit() {
         });
     }
 };
+
+
+
 
 
 

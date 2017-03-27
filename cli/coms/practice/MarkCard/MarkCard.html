@@ -6,10 +6,17 @@
             <div class='textGrp elps'>
                 <div class='ptitle'>{{fill.check.task.type}} : {{fill.check.plan.title}} / {{fill.check.task.title}}</div>
                 <div class="subtitle">{{fill.check.author.name}} / {{Moment(fill.created_at).format('MM-DD hh:mm:ss')}}</div>
-                <div class="elps" v-if='fill.check && fill.check.lastSubmit' style="margin-top:8px">
-                    <p v-if='fill.check.lastSubmit.type=="text"'>{{fill.check.lastSubmit.content}}</p>
+                <div class="elps" v-if='fill.check && fill.check.lastSubmit'>
+                    <div class="content">
+                        <span>待审内容：</span>
+                        <el-button type='text' @click='taskDialogVis=true'>查看审核标准</el-button>
+                    </div>
+                    <div class="content" v-if='fill.check.lastSubmit.type=="text"'>{{fill.check.lastSubmit.content}}</div>
                     <a v-if='fill.check.lastSubmit.type=="image"' :href="fill.check.lastSubmit.content" target="_blank">
                         <img src='fill.check.lastSubmit.content' style='height:180px'>
+                    </a>
+                    <a v-if='fill.check.lastSubmit.type=="audio"' :href="fill.check.lastSubmit.content" target="_blank">
+                        <audio :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持音频播放</audio>
                     </a>
                     <a v-if='fill.check.lastSubmit.type=="video"' :href="fill.check.lastSubmit.content" target="_blank">
                         <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
@@ -38,24 +45,30 @@
                         </el-tooltip>
                     </div>
                 </div>
-
             </div>
-
         </el-row>
+        <el-dialog title="审核标准" v-model="taskDialogVis" size="small">
+            <span >{{fill.check.task?fill.check.task.desc:'无'}}</span>
+        </el-dialog>
+
     </div>
 </template>
 
 <style scoped>
+    .content {
+        font-size: 13px
+    }
+
     .textGrp {
         padding-left: 12px;
     }
 
-    .subtitle{
+    .subtitle {
         font-size: 13px;
-        color:#CCC;
+        color: #CCC;
     }
 
-    a{
+    a {
         font-size: 13px;
     }
 
