@@ -18,8 +18,9 @@
                         <el-button type='danger' style='padding:18px' @click='submit'>重新提交</el-button>
                     </el-tooltip>
                     <el-tooltip v-if='!fill.check' placement="right-start">
-                        <div slot="content" class='tip'>如果您已经完成此任务，请点击提交按钮，请求审核通过</div>
-                        <el-button type='primary' style='padding:18px' @click='submit'>提交</el-button>
+                        <div slot="content" class='tip'>如果您已经完成此任务，请点击这里提交作业，请求审核通过</div>
+                        <el-button type='primary' style='padding:18px' @click='submit' :disabled='submitting'>提交</el-button>
+                        <div class="procBar" :style='{width:uploadPer+"%"}'  v-show='submitting'></div>
                     </el-tooltip>
                 </div>
                 <div class='inline' style='padding-left:12px'>
@@ -34,12 +35,29 @@
                 </a>
             </el-col>
         </el-row>
+
+        <el-dialog title="提交文字内容" v-model="textDialogVis" size="small">
+            <div>
+                <el-input type='textarea' v-model="textDialogData" :placeholder='validates.textDialogDesc.tip' ref='textDialogDesc' @change='validate("textDialogDesc")' :autosize='{minRows:4}'>
+                </el-input>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="textDialogVis = false">取 消</el-button>
+                <el-button type="primary" @click="sumbitText">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <style scoped>
+    .procBar{
+        height: 5px;
+        background-color: #04FF00;
+    }
+
     .tip {
-        width: 120px
+        width: 120px;
+        text-align: justify;
     }
 
     .priColor {

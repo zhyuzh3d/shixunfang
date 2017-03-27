@@ -276,7 +276,9 @@ async function startUploadQn(opt) {
         uploadIptChanged.call(ctx, evt, opt);
     });
     iptBox.append(iptJo);
-    iptJo.click();
+    setTimeout(function () {
+        iptJo.click();
+    }, 50);
 };
 
 /**
@@ -285,6 +287,8 @@ async function startUploadQn(opt) {
  * @param   {object}   opt opt
  */
 async function uploadIptChanged(evt, opt) {
+    console.log('Start uploading...');
+
     var ctx = this;
     var file = evt.target.files[0];
     if (!file) return;
@@ -303,7 +307,7 @@ async function uploadIptChanged(evt, opt) {
     var tag = (opt && opt.tag) ? opt.tag : 'none';
     var fileName = (opt && opt.fileName) ? opt.fileName : file.name;
 
-    var res = await uploadFile.call(ctx, tag, fileName, file);
+    var res = await uploadFile.call(ctx, tag, fileName, file, opt.progress);
 
     if (opt && opt.success) {
         await opt.success.call(ctx, res);
@@ -321,7 +325,7 @@ async function uploadIptChanged(evt, opt) {
  * @param   {string} file     上传的文件对象或者blob
  * @returns {object} token接口和upload接口两次数据的合并结果
  */
-async function uploadFile(tag, fileName, file) {
+async function uploadFile(tag, fileName, file, progressFn) {
     var ctx = this;
     try {
         //获取随机key的token
@@ -350,13 +354,29 @@ async function uploadFile(tag, fileName, file) {
         formdata.append('token', tokenRes.data.token);
         formdata.append('key', tokenRes.data.key);
 
-        var uploadRes = await ctx.rRun({
+
+        //选项设置
+        var set = {
             url: "http://up.qiniu.com",
             data: formdata,
             type: 'POST',
             processData: false,
             contentType: false,
-        });
+        };
+
+        //上传过程中自动更新文件进度
+        if (progressFn) {
+            set.xhr = function () {
+                //为ajax添加progress事件监听
+                var xhr = $.ajaxSettings.xhr();
+                xhr.upload.addEventListener("progress", function (evt) {
+                    progressFn(file, evt);
+                }, false);
+                return xhr;
+            };
+        };
+
+        var uploadRes = await ctx.rRun(set);
 
         var fileInfo = Object.assign({
             file: file

@@ -8,20 +8,32 @@
                 <div class="subtitle">{{fill.check.author.name}} / {{Moment(fill.created_at).format('MM-DD hh:mm:ss')}}</div>
                 <div class="elps" v-if='fill.check && fill.check.lastSubmit'>
                     <div class="content">
-                        <span>待审内容：</span>
-                        <el-button type='text' @click='taskDialogVis=true'>查看审核标准</el-button>
+                        <span style="margin-right:8px">待审作业</span>
+                        <el-button type='text' @click='taskDialogVis=true' style='font-size:13px'><i class="fa fa-question-circle"></i>点击查看审核标准</el-button>
                     </div>
-                    <div class="content" v-if='fill.check.lastSubmit.type=="text"'>{{fill.check.lastSubmit.content}}</div>
-                    <a v-if='fill.check.lastSubmit.type=="image"' :href="fill.check.lastSubmit.content" target="_blank">
-                        <img src='fill.check.lastSubmit.content' style='height:180px'>
-                    </a>
-                    <a v-if='fill.check.lastSubmit.type=="audio"' :href="fill.check.lastSubmit.content" target="_blank">
-                        <audio :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持音频播放</audio>
-                    </a>
-                    <a v-if='fill.check.lastSubmit.type=="video"' :href="fill.check.lastSubmit.content" target="_blank">
-                        <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
-                    </a>
-                    <a v-if='fill.check.lastSubmit.type=="link"' :href="fill.check.lastSubmit.content" target="_blank">{{fill.check.lastSubmit.content}}</a>
+
+                    <div class="contentPart">
+                        <code class="content" v-if='fill.check.lastSubmit.type=="text"' style="white-space:pre-line">{{fill.check.lastSubmit.content}}</code>
+
+                        <a v-if='fill.check.lastSubmit.type=="link"' :href="fill.check.lastSubmit.content" target="_blank">{{fill.check.lastSubmit.content}}</a>
+
+                        <a v-if='fill.check.lastSubmit.type=="image"' :href="fill.check.lastSubmit.content" target="_blank">
+                            <img :src='fill.check.lastSubmit.content' style='height:180px'>
+                        </a>
+
+                        <a v-if='fill.check.lastSubmit.type=="audio"' :href="fill.check.lastSubmit.content" target="_blank">
+                            <audio :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持音频播放</audio>
+                        </a>
+
+                        <a v-if='fill.check.lastSubmit.type=="video"' :href="fill.check.lastSubmit.content" target="_blank">
+                            <video :src="fill.check.lastSubmit.content" controls="controls" style='height:180px'>您的浏览器不支持视频播放</video>
+                        </a>
+
+                        <a v-if='fill.check.lastSubmit.type=="file"' :href="fill.check.lastSubmit.content">
+                            <div class="elps">{{fill.check.lastSubmit.content}}</div>
+                        </a>
+
+                    </div>
                 </div>
                 <div class='lbtnGrp elps'>
                     <div v-if='fill.state=="marked"'>
@@ -47,14 +59,26 @@
                 </div>
             </div>
         </el-row>
-        <el-dialog title="审核标准" v-model="taskDialogVis" size="small">
-            <span >{{fill.check.task?fill.check.task.desc:'无'}}</span>
+        <el-dialog title="任务详情" v-model="taskDialogVis" size="small">
+            <div>{{fill.check.task?fill.check.task.desc:'无'}}</div>
+            <div v-if='fill.check.task.link'>
+                <a :href="fill.check.task.link" target="_blank">
+                    <div class="elps">{{fill.check.task.link}}</div>
+                </a>
+            </div>
         </el-dialog>
 
     </div>
 </template>
 
 <style scoped>
+    .contentPart {
+        font-weight: bold;
+        background: #EEE;
+        padding: 12px;
+        margin-right: 12px
+    }
+
     .content {
         font-size: 13px
     }
