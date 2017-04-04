@@ -445,8 +445,9 @@ async function getPlanInfo() {
             item.active = true;
         });
 
-        //计算日期
+        //计算每个pack的日期,同时设定pack.plan以便于向下传递到task才能提交
         ctx.genPackDate();
+
 
         //对管理员显示成员列表，对普通成员不显示成员列表
         if (plan.myRole) await ctx.getGroupVmembers();
@@ -471,8 +472,9 @@ function genPackDate() {
     var date = begin;
     for (var i = 0; i < packs.length; i++) {
         var pack = packs[i];
-        date = Moment(date).add(Number(pack.days), 'days');
+        pack.plan = ctx.planInfo;
         pack.date = date;
+        date = Moment(date).add(Number(pack.days), 'days');
     };
 };
 

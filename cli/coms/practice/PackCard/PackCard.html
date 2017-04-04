@@ -1,28 +1,46 @@
 <script src="./PackCard.js"></script>
 
 <template>
-    <div sid='PackCard' :class='{expired:Moment(fill.date)<Moment()}'>
-        <el-row class="card">
-            <el-col :span='3' :lg='2' class='cardcheck' style='font-size:13px'>
-                <div style="font-weight:600">{{Moment(fill.date).format('MMMD')}}</div>
-                <div style="font-weight:600">{{Moment(fill.date).format('dddd')}}</div>
-            </el-col>
-            <el-col :span='19' :lg='20' class='cardLeft'>
-                <div class='ptitle'>{{fill.title}}</div>
-                <p>{{fill.desc || "暂无信息"}}</p>
-            </el-col>
-            <el-col :span='2' class='cardBtn'>
-                <el-button @click='goPackDetail' type='text'>
-                    <i class="fa fa-chevron-right"></i>
-                </el-button>
-            </el-col>
-        </el-row>
+    <div sid='PackCard' :class='{expired:Moment(fill.date).add(Number(fill.days), "days")<Moment()}'>
+        <div @click='showTasks' >
+            <el-row class="card"  :class='{today:fill.isToday}'>
+                <el-col :span='3' :lg='2' class='cardcheck' style='font-size:13px'>
+                    <div style="font-weight:600">{{Moment(fill.date).format('M月D日')}}</div>
+                    <div style="font-weight:600">{{Moment(fill.date).format('dddd')}}</div>
+                </el-col>
+                <el-col :span='19' :lg='20' class='cardLeft'>
+                    <div class='ptitle'>{{fill.title}}</div>
+                    <p>{{fill.desc || "暂无信息"}}</p>
+                </el-col>
+                <el-col :span='2' class='cardBtn'>
+                    <el-button type='text'>
+                        <i v-show='!tasksVis' class="fa fa-caret-left fa-lg"></i>
+                        <i v-show='tasksVis' class="fa fa-caret-down fa-lg"></i>
+                    </el-button>
+                </el-col>
+            </el-row>
+        </div>
+        <div v-if='tasksVis' :class='{tasksBox:!fill.isToday,tasksBox2:fill.isToday}'>
+            <component v-for='t in fill.tasks' is="taskCard" :fill='t' style='margin:12px 0'></component>
+        </div>
     </div>
 </template>
 
 <style scoped>
+    .today{
+        background: #baffc7;
+    }
+    .tasksBox {
+        padding-left: 12px;
+        border-left: 8px solid #EEE;
+    }
+    .tasksBox2 {
+        padding-left: 12px;
+        border-left: 8px solid #baffc7;
+    }
+
     .expired {
-        opacity: 0.5
+        opacity: 0.5;
     }
 
     .cardcheck {

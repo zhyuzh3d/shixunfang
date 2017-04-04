@@ -1,3 +1,5 @@
+//需要指定task.check和task.plan
+
 import Vue from 'vue'
 import $ from 'jquery';
 var com = {};
@@ -77,7 +79,20 @@ async function submit() {
     try {
         //根据task.submitType判断
         var submit;
-        if (ctx.fill.submitType == 'link') {
+        if (ctx.fill.submitType == 'none') {
+            ipt = 'none';
+            //请求生成submit
+            var api = ctx.$xglobal.conf.apis.sbmtCreate;
+            var data = {
+                token: localStorage.getItem('accToken'),
+                content: ipt.value,
+                type: ctx.fill.submitType,
+            };
+            var res = await ctx.rRun(api, data);
+            submit = res.data;
+            await ctx.checkSubmit(submit._id);
+
+        } else if (ctx.fill.submitType == 'link') {
             //弹窗让用户输入链接地址
             ipt = await ctx.$prompt('请输入您的作业链接地址', '提交链接', {
                 confirmButtonText: '确定',
@@ -98,6 +113,7 @@ async function submit() {
             await ctx.checkSubmit(submit._id);
         } else if (ctx.fill.submitType == 'text') {
             ctx.textDialogVis = true;
+            ctx.$set(ctx, 'textDialogVis', true);
         } else {
             var mimes = {
                 'image': 'image/*',
@@ -138,7 +154,7 @@ async function submit() {
         ctx.$set(ctx.$data, 'submitting', false);
         if (ipt === undefined) return;
         ctx.$notify.error({
-            title: '提交失败',
+            title: '提交任务失败',
             message: err.tip || err.message,
         });
     }
@@ -159,6 +175,7 @@ async function sumbitText() {
     var res = await ctx.rRun(api, data);
     submit = res.data;
     await ctx.checkSubmit(submit._id);
+    ctx.$set(ctx, 'textDialogVis', false);
 };
 
 

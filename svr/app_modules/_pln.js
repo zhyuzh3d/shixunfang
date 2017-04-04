@@ -507,13 +507,13 @@ _zrouter.addApi('/plnGetCheckArr', {
     method: async function plnGetCheckArr(ctx) {
         var acc = await _acc.getAccByToken(ctx.xdata.token);
 
-        var packArr = await _mngs.models.check.find({
+        var checkArr = await _mngs.models.check.find({
             task: {
                 $in: JSON.parse(ctx.xdata.idArr),
             }
         });
 
-        ctx.body = new _msg.Msg(null, ctx, packArr);
+        ctx.body = new _msg.Msg(null, ctx, checkArr);
     },
 
         //???检检查没有获得check
