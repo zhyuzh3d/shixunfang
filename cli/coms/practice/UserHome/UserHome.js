@@ -95,12 +95,13 @@ com.data = function data() {
         curPackArr: [],
         curMarkArr: [],
         hasGetPlanArr: false,
+        showMarkTab: false,
         tabShow: {
             mark: false,
-            task: false,
-            practice: false,
-            class: false,
-            profile: false,
+            task: true,
+            practice: true,
+            class: true,
+            profile: true,
         },
     };
 };
@@ -123,6 +124,7 @@ com.methods = {
     getUnfiniTasks,
     getUnfiniMarks,
     refreshTabs,
+    showMarks,
 };
 
 //加载到页面前执行的函数
@@ -135,14 +137,22 @@ com.mounted = async function () {
     var xconf = ctx.$xgetConf();
     if (xconf.xset === undefined || !xconf.xsetValue['activeName']) {
         await ctx.$xset({
-            activeName: 'TaskList',
+            activeName: 'ClassList',
         });
     };
-
-    await ctx.getUnfiniMarks();
 };
 
 //-------functions--------
+
+async function showMarks() {
+    var ctx = this;
+    ctx.$xset(ctx.tabShow, 'mark', true);
+    await ctx.$xset({
+        showMarkTab: true,
+    });
+    await ctx.getUnfiniMarks();
+};
+
 
 /**
  * 获取我还没有审核的提交mark列表
@@ -162,32 +172,12 @@ async function getUnfiniMarks() {
         var markArr = res.data;
         ctx.$set(ctx.$data, 'curMarkArr', markArr);
 
-        //显示tab，或者切换到班级tab
-        if (markArr.length > 0) {
-            showMark = true;
-        } else {
-            showMark = false;
-            var xconf = ctx.$xgetConf();
-            if (xconf.xset === undefined || !xconf.xsetValue['activeName'] || xconf.xsetValue['activeName'] == 'MarkList') {
-                await ctx.$xset({
-                    activeName: 'ClassList',
-                });
-            };
-        };
     } catch (err) {
         ctx.$notify.error({
             title: '读取审阅列表失败',
             message: err.tip || err.message,
         });
     };
-
-    ctx.$set(ctx.$data, 'tabShow', {
-        mark: showMark,
-        task: true,
-        practice: true,
-        class: true,
-        profile: true,
-    });
 
     return res.data;
 };

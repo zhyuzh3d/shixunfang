@@ -12,13 +12,13 @@
             <el-col :span="20" :sm="16">
                 <el-tabs v-model="activeName" @tab-click="xgoTab" style='width:100%'>
 
-                    <el-tab-pane label="审阅" name="MarkList" v-if='tabShow.mark'>
+                    <el-tab-pane label="打分" name="false" v-if='showMarkTab'>
                         <el-row v-for='(m,n) in curMarkArr'>
                             <component is="MarkCard" :fill='m' :index='n' style='margin:12px 0'></component>
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="今日任务" name="TaskList" v-if='tabShow.task'>
+                    <el-tab-pane label="任务" name="TaskList">
                         <el-row v-for='(p,n) in curPackArr'>
                             <div style="height:4px"></div>
                             <div class='planTitle'>{{Moment(p.date).format('MM/DD(dddd)')}} : {{p.plan.title}} / {{p.title}}</div>
@@ -26,7 +26,7 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane label="实训" name="PracticeList" v-if='tabShow.practice'>
+                    <el-tab-pane label="实训" name="PracticeList" >
                         <el-row v-show='myPlanArr.length>0'>
                             <component v-for='(p,n) in myPlanArr' is="practiceCard" :fill='p' :index='n' style='margin:12px 0'></component>
                         </el-row>
@@ -46,8 +46,12 @@
                         </el-row>
                     </el-tab-pane>
 
-                    <el-tab-pane id='profile' label="设置" name="Profile" v-if='tabShow.profile'>
+                    <el-tab-pane id='profile' label="设置" name="Profile">
                         <component :is="coms.Profile"></component>
+                        <el-row>
+                            <el-button v-show='showMarkTab'  @click='showMarkTab=false'>我不是老师（不显示评分）</el-button>
+                            <el-button type="primary" v-show='!showMarkTab' @click='showMarks' style='margin-left:0'>我是老师（显示评分）</el-button>
+                        </el-row>
                     </el-tab-pane>
                 </el-tabs>
             </el-col>
@@ -57,15 +61,20 @@
 </template>
 
 <style>
+    .plabel {
+        margin-right: 12px;
+        display: inline-block;
+    }
+
     .ttUserHome {
         letter-spacing: 0.2px;
     }
 
-    .ttUserHome .el-textarea__inner{
+    .ttUserHome .el-textarea__inner {
         border-radius: 0
     }
 
-    .ttUserHome .el-dialog--small{
+    .ttUserHome .el-dialog--small {
         min-width: 400px;
     }
 
