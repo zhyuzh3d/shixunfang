@@ -12,6 +12,8 @@ var checkMethods = {
     '考试': 'ai',
 };
 
+
+
 /**
  * 用户提交一个task，为其生成一个check并针对班级老师生成一个mark
  * 用户提交之前要自行生成一个submitId，如果是none则可以不生成
@@ -102,6 +104,9 @@ _zrouter.addApi('/chckSubmit', {
     },
 });
 
+
+
+//
 
 
 

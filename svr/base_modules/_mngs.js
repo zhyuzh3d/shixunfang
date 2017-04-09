@@ -8,7 +8,10 @@ var _mngs = {};
 
 _mngs.startPrms = function () {
     var prms = new Promise(function (resolvefn, rejectfn) {
-        $mongoose.connect('mongodb://localhost/shixunfang');
+        var opt = _xconf.Mongo;
+        var uri = `mongodb://${opt.user}:${opt.pass}@localhost/shixunfang?authSource=shixunfang`;
+        $mongoose.connect(uri);
+
         _mngs.db = $mongoose.connection;
         _mngs.db.on('error', function (err) {
             _zloger.err('_mngs:startPrms:db error', err);
@@ -223,7 +226,7 @@ schemas.task = new $mongoose.Schema({
     desc: String,
     type: String,
     link: String,
-    submitType:String,//提交的类型,与sumbit.type同步，none,text,image,video,link...
+    submitType: String, //提交的类型,与sumbit.type同步，none,text,image,video,link...
     author: {
         type: $mongoose.Schema.Types.ObjectId,
         ref: 'user',
